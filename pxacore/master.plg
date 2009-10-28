@@ -1,0 +1,199 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: master - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP14D.tmp" with contents
+[
+/nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MASTER_EXPORTS" /Fp"Debug/master.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\NetCore\IPV4_IMP.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\NetCore\LOW_API.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\NetCore\NET_COMM.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\NetCore\NETBUFF.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\NetCore\UDP_IMP.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\DRIVERS\COMDRV.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Drivers\PCI_DRV.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Drivers\RT8139.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\BUFFMGR.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\COMQUEUE.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\DEVMGR.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\dim.cpp"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\HEAP.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\HELLOCN.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\IDEHDDRV.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\KERNEL\IOMGR.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\KERNEL\KAPI.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\KEYHDLR.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\KMEMMGR.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\KTHREAD.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\KTMGR.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\KERNEL\KTMGR2.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\MAILBOX.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\memmgr.cpp"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\OBJMGR.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\OBJQUEUE.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\PAGEIDX.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\PERF.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\SHELL.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\KERNEL\STATCPU.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\SYN_MECH.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\SYNOBJ.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\SYSTEM.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\TASKCTRL.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\TIMER.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\TYPES.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\VMM.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\LIB\L_STDIO.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\LIB\STRING.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\KTHREAD\IOCTRL_S.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\KTHREAD\STAT_S.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\KTHREAD\SYSD_S.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\ARCH\ARCH_X86.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\DRVENTRY.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\EXTCMD.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\FIBONACCI.CPP"
+"D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\OS_ENTRY.CPP"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP14D.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP14E.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /base:"0x110000" /entry:"?__init@@YAXXZ" /dll /incremental:yes /pdb:"Debug/master.pdb" /debug /machine:I386 /out:"Debug/master.dll" /implib:"Debug/master.lib" /pdbtype:sept /ALIGN:16 
+".\Debug\IPV4_IMP.OBJ"
+".\Debug\LOW_API.OBJ"
+".\Debug\NET_COMM.OBJ"
+".\Debug\NETBUFF.OBJ"
+".\Debug\UDP_IMP.OBJ"
+".\Debug\COMDRV.OBJ"
+".\Debug\PCI_DRV.OBJ"
+".\Debug\RT8139.OBJ"
+".\Debug\BUFFMGR.OBJ"
+".\Debug\COMQUEUE.OBJ"
+".\Debug\DEVMGR.OBJ"
+".\Debug\dim.obj"
+".\Debug\HEAP.OBJ"
+".\Debug\HELLOCN.OBJ"
+".\Debug\IDEHDDRV.OBJ"
+".\Debug\IOMGR.OBJ"
+".\Debug\KAPI.OBJ"
+".\Debug\KEYHDLR.OBJ"
+".\Debug\KMEMMGR.OBJ"
+".\Debug\KTHREAD.OBJ"
+".\Debug\KTMGR.OBJ"
+".\Debug\KTMGR2.OBJ"
+".\Debug\MAILBOX.OBJ"
+".\Debug\memmgr.obj"
+".\Debug\OBJMGR.OBJ"
+".\Debug\OBJQUEUE.OBJ"
+".\Debug\PAGEIDX.OBJ"
+".\Debug\PERF.OBJ"
+".\Debug\SHELL.OBJ"
+".\Debug\STATCPU.OBJ"
+".\Debug\SYN_MECH.OBJ"
+".\Debug\SYNOBJ.OBJ"
+".\Debug\SYSTEM.OBJ"
+".\Debug\TASKCTRL.OBJ"
+".\Debug\TIMER.OBJ"
+".\Debug\TYPES.OBJ"
+".\Debug\VMM.OBJ"
+".\Debug\L_STDIO.OBJ"
+".\Debug\STRING.OBJ"
+".\Debug\IOCTRL_S.OBJ"
+".\Debug\STAT_S.OBJ"
+".\Debug\SYSD_S.OBJ"
+".\Debug\ARCH_X86.OBJ"
+".\Debug\DRVENTRY.OBJ"
+".\Debug\EXTCMD.OBJ"
+".\Debug\FIBONACCI.OBJ"
+".\Debug\OS_ENTRY.OBJ"
+]
+Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP14E.tmp"
+<h3>Output Window</h3>
+Compiling...
+IPV4_IMP.CPP
+d:\_book_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\cd_hellocn_srccode\mstr15\c_src\include\shell.h(55) : warning C4200: nonstandard extension used : zero-sized array in struct/union
+LOW_API.CPP
+NET_COMM.CPP
+NETBUFF.CPP
+d:\_book_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\cd_hellocn_srccode\mstr15\c_src\include\shell.h(55) : warning C4200: nonstandard extension used : zero-sized array in struct/union
+UDP_IMP.CPP
+d:\_book_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\cd_hellocn_srccode\mstr15\c_src\include\shell.h(55) : warning C4200: nonstandard extension used : zero-sized array in struct/union
+COMDRV.CPP
+d:\_book_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\cd_hellocn_srccode\mstr15\c_src\include\shell.h(55) : warning C4200: nonstandard extension used : zero-sized array in struct/union
+PCI_DRV.CPP
+d:\_book_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\cd_hellocn_srccode\mstr15\c_src\include\shell.h(55) : warning C4200: nonstandard extension used : zero-sized array in struct/union
+RT8139.CPP
+d:\_book_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\cd_hellocn_srccode\mstr15\c_src\include\shell.h(55) : warning C4200: nonstandard extension used : zero-sized array in struct/union
+BUFFMGR.CPP
+d:\_book_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\cd_hellocn_srccode\mstr15\c_src\include\shell.h(55) : warning C4200: nonstandard extension used : zero-sized array in struct/union
+COMQUEUE.CPP
+DEVMGR.CPP
+dim.cpp
+HEAP.CPP
+HELLOCN.CPP
+D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\HELLOCN.CPP(114) : warning C4035: 'SetKeyHandler' : no return value
+D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\HELLOCN.CPP(145) : warning C4035: 'SetTimerHandler' : no return value
+D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\HELLOCN.CPP(162) : warning C4035: 'SetGdtEntry' : no return value
+IDEHDDRV.CPP
+IOMGR.CPP
+KAPI.CPP
+KEYHDLR.CPP
+d:\_book_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\cd_hellocn_srccode\mstr15\c_src\include\shell.h(55) : warning C4200: nonstandard extension used : zero-sized array in struct/union
+KMEMMGR.CPP
+KTHREAD.CPP
+KTMGR.CPP
+KTMGR2.CPP
+MAILBOX.CPP
+memmgr.cpp
+OBJMGR.CPP
+OBJQUEUE.CPP
+PAGEIDX.CPP
+PERF.CPP
+SHELL.CPP
+STATCPU.CPP
+d:\_book_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\cd_hellocn_srccode\mstr15\c_src\include\shell.h(55) : warning C4200: nonstandard extension used : zero-sized array in struct/union
+SYN_MECH.CPP
+d:\_book_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\cd_hellocn_srccode\mstr15\c_src\include\shell.h(55) : warning C4200: nonstandard extension used : zero-sized array in struct/union
+d:\_book_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\cd_hellocn_srccode\mstr15\c_src\kernel\syn_mech.cpp(35) : warning C4035: 'AtomicGet' : no return value
+d:\_book_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\cd_hellocn_srccode\mstr15\c_src\kernel\syn_mech.cpp(190) : warning C4035: 'TestLock' : no return value
+SYNOBJ.CPP
+SYSTEM.CPP
+D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\SYSTEM.CPP(204) : warning C4518: 'unsigned long ' : storage-class or type specifier(s) unexpected here; ignored
+D:\_BOOK_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\CD_HELLOCN_SRCCODE\MSTR15\C_SRC\Kernel\SYSTEM.CPP(485) : warning C4101: 'wIsr' : unreferenced local variable
+TASKCTRL.CPP
+TIMER.CPP
+TYPES.CPP
+VMM.CPP
+L_STDIO.CPP
+STRING.CPP
+d:\_book_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\cd_hellocn_srccode\mstr15\c_src\include\shell.h(55) : warning C4200: nonstandard extension used : zero-sized array in struct/union
+IOCTRL_S.CPP
+d:\_book_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\cd_hellocn_srccode\mstr15\c_src\include\shell.h(55) : warning C4200: nonstandard extension used : zero-sized array in struct/union
+STAT_S.CPP
+d:\_book_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\cd_hellocn_srccode\mstr15\c_src\include\shell.h(55) : warning C4200: nonstandard extension used : zero-sized array in struct/union
+SYSD_S.CPP
+d:\_book_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\cd_hellocn_srccode\mstr15\c_src\include\shell.h(55) : warning C4200: nonstandard extension used : zero-sized array in struct/union
+ARCH_X86.CPP
+d:\_book_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\cd_hellocn_srccode\mstr15\c_src\include\shell.h(55) : warning C4200: nonstandard extension used : zero-sized array in struct/union
+DRVENTRY.CPP
+d:\_book_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\cd_hellocn_srccode\mstr15\c_src\include\shell.h(55) : warning C4200: nonstandard extension used : zero-sized array in struct/union
+EXTCMD.CPP
+d:\_book_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\cd_hellocn_srccode\mstr15\c_src\include\shell.h(55) : warning C4200: nonstandard extension used : zero-sized array in struct/union
+FIBONACCI.CPP
+d:\_book_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\cd_hellocn_srccode\mstr15\c_src\fibonacci.cpp(4) : warning C4067: unexpected tokens following preprocessor directive - expected a newline
+d:\_book_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\cd_hellocn_srccode\mstr15\c_src\include\shell.h(55) : warning C4200: nonstandard extension used : zero-sized array in struct/union
+OS_ENTRY.CPP
+d:\_book_9606_簡_自己動手寫嵌入式操作系統-範例程式hellow china，請您全部修改\書籍資料\cd_hellocn_srccode\mstr15\c_src\include\shell.h(55) : warning C4200: nonstandard extension used : zero-sized array in struct/union
+Linking...
+LINK : warning LNK4108: /ALIGN specified without /DRIVER or /VXD; image may not run
+LINK : warning LNK4096: /BASE value "110000" is invalid for Windows 95; image may not run
+
+
+
+<h3>Results</h3>
+master.dll - 0 error(s), 29 warning(s)
+</pre>
+</body>
+</html>
