@@ -10,15 +10,15 @@
 #endif
 
 #ifndef __STRING__
-#include "../INCLUDE/string.h"    //Different folder.
+#include "string.h"    //Different folder.
 #endif
 
 #ifndef __TYPES_H__
-#include "TYPES.H"
+#include "types.H"
 #endif
 
 #ifndef __PERF_H__
-#include "PERF.H"
+#include "perf.H"
 #endif
 
 #ifndef __COMMOBJ_H__
@@ -26,11 +26,11 @@
 #endif
 
 #ifndef __SYN_MECH_H__
-#include "SYN_MECH.H"
+#include "syn_mech.H"
 #endif
 
 #ifndef __COMQUEUE_H__
-#include "COMQUEUE.H"
+#include "comqueue.H"
 #endif
 
 #ifndef __OBJQUEUE_H__
@@ -50,11 +50,11 @@
 #endif
 
 #ifndef __DEVMGR_H__
-#include "DEVMGR.H"
+#include "devmgr.H"
 #endif
 
 #ifndef __MAILBOX_H__
-#include "MailBox.h"
+#include "mailbox.h"
 #endif
 
 #ifndef __DIM_H__
@@ -66,15 +66,15 @@
 #endif
 
 #ifndef __PAGEIDX_H__
-#include "PAGEIDX.H"
+#include "pagedix.H"
 #endif
 
 #ifndef __VMM_H__
-#include "VMM.H"
+#include "vmm.H"
 #endif
 
 #ifndef __HEAP_H__
-#include "HEAP.H"
+#include "heap.H"
 #endif
 
 #ifndef __TASK_CTRL__

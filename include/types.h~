@@ -18,8 +18,6 @@
 #ifndef __TYPES_H__
 #define __TYPES_H__
 
-/*#define __I386__
-
 #define BOOL    unsigned long
 #define DWORD   unsigned long
 #define NULL    0
@@ -31,12 +29,17 @@
 #define WORD    unsigned short
 
 #define LOWORD(dw)  ((unsigned short)(dw))
-#define LOBYTE(wr)  ((signed char)(wr))*/
+#define LOBYTE(wr)  ((signed char)(wr))
+
+#define true	1
+#define false	0
+
+extern void SerialInit();
 
 //
 //The definition of unsigned 64 bit integer.
 //
-
+/*
 #define U64_ZERO {0,0}
 #define U64_MAX  {0xFFFFFFFF,0xFFFFFFFF}
 
@@ -88,5 +91,5 @@ VOID u64RotateRight(__U64* lpu64_1,DWORD dwTimes); //Shift dwTimes bit(s) of lpu
 //VOID u64Div(__U64* lpu64_1,__U64* lpu64_2,__U64* lpu64_result);
 
 BOOL u64Hex2Str(__U64* lpu64,LPSTR lpszResult);
-
+*/
 #endif

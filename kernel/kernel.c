@@ -1,10 +1,10 @@
-#ifndef __STDAFX_H__
-#include "StdAfx.h"
-#endif
 
-#include "statcpu.H"
-#include "stat_s.H"
-#include "l_stdio.H"
+#include "types.h"
+//#include "port.h"
+
+//#include "statcpu.h"
+//#include "stat_s.h"
+//#include "l_stdio.h"
 
 //Welcome information.
 char* pszStartMsg1 = "Hello Taiwan running now.If you have any question,";
@@ -15,10 +15,12 @@ char* pszWelcome   = "Welcome to use Hello Taiwan!";
 char* pszHelpInfo = "Any help please press 'help' + return.";
 
 //External global variables.
-extern __DRIVER_ENTRY DriverEntryArray[];
+//extern __DRIVER_ENTRY DriverEntryArray[];
 
-KEY_HANDLER g_keyHandler = NULL;
-INT_HANDLER g_intHandler = NULL;
+//KEY_HANDLER g_keyHandler = NULL;
+//INT_HANDLER g_intHandler = NULL;
+
+extern void SerialInit();
 
 void DeadLoop()
 {
@@ -33,10 +35,12 @@ void DeadLoop()
 //
 
 #define GLOBAL_COUNTER 1024*1024*8*20
-
+/**/
+/*
 static DWORD dwIdleCounter = 0L;
 DWORD SystemIdle(LPVOID lpData)
 {
+
 	DWORD* lpdwCounter = NULL;
 	lpdwCounter = (DWORD*)lpData;
 	//DWORD dwCounter = 0L;
@@ -49,16 +53,18 @@ DWORD SystemIdle(LPVOID lpData)
 			//PrintLine("System idle thread is sheduled,I-I-I-I-I-I-I-I-I-I-I.");
 		}
 	}
-}
 
+}
+*/
 //
 //System shell thread.
 //This kernel thread is a shell.
 //
-
+/*
 DWORD SystemShell(LPVOID)
 {
 	EntryPoint();
+*/
 	/*DWORD dwCounter = 0L;
 	while(TRUE)
 	{
@@ -69,13 +75,14 @@ DWORD SystemShell(LPVOID)
 			PrintLine("System shell thread is scheduled.");
 		}
 	}*/
+/*
 	return 0L;
 }
-
+*/
 //
 //System keeper kernel thread.
 //
-
+/*
 DWORD SystemKeeper(LPVOID)
 {
 	DWORD dwCounter = 0L;
@@ -89,21 +96,28 @@ DWORD SystemKeeper(LPVOID)
 		}
 	}
 }
-
+*/
 //
 //The following function as a kernal thread function's wraper.
 //The kernal thread's start routine's type is VOID KThreadRoutine(LPVOID).
 //
+/*
 VOID ShellThreadWrap(LPVOID)
 {
 	EntryPoint();
 }
-
-void main()
+*/
+int main()
 {
-	__KERNEL_THREAD_OBJECT*       lpIdleThread     = NULL;
-	__KERNEL_THREAD_OBJECT*       lpShellThread    = NULL;
-	__KERNEL_THREAD_OBJECT*       lpKeeperThread   = NULL;
+	//__KERNEL_THREAD_OBJECT*       lpIdleThread     = NULL;
+	//__KERNEL_THREAD_OBJECT*       lpShellThread    = NULL;
+	//__KERNEL_THREAD_OBJECT*       lpKeeperThread   = NULL;
+	SerialInit();
+	//init_interrupt_control();
+	DeadLoop();
+
+	return 0;
+/*
 	DWORD                         dwKThreadID      = 0;
 	DWORD                         dwIndex          = 0;
 	BYTE                          strInfo[64];
@@ -125,7 +139,7 @@ void main()
 	*(__PDE*)PD_START = NULL_PDE;    //Set the first page directory entry to NULL,to indicate
 	                                 //this location is not initialized yet.
 
-
+*/
 	/********************************************************************************
 	*********************************************************************************
 	*********************************************************************************
@@ -146,7 +160,9 @@ void main()
 	if(!lpVirtualMemoryMgr->Initialize((__COMMON_OBJECT*)lpVirtualMemoryMgr))
 		goto __TERMINAL;
 #endif
-*/	
+*/
+
+/*
 	if(!KernelThreadManager.Initialize((__COMMON_OBJECT*)&KernelThreadManager))
 		goto __TERMINAL;                                                     //Initialize 
 	                                                                         //Kernel Thread
@@ -256,6 +272,7 @@ void main()
 		__ERROR_HANDLER(ERROR_LEVEL_FATAL,0L,NULL);
 		goto __TERMINAL;
 	}
+*/
 
 /*
 #ifdef __ENABLE_VIRTUAL_MEMORY
@@ -273,10 +290,12 @@ void main()
 	}
 #endif
 */
+
+/*
 	//g_intHandler = SetTimerHandler(TimerHandler);  //Set the timer interrupt handler.
 	SetTimerHandler(GeneralIntHandler);
 
-	//g_pCurrentTask = &tcbShell;  //************  Will be deleted *********
+	//g_pCurrentTask = &tcbShell;  //Will be deleted
 
 	StrCpy("[system-view]",&HostName[0]);
 
@@ -286,8 +305,9 @@ void main()
 	//The following kernal thread is created,and it is the
 	//first kernal thread,as a operating system shell.
 	//
+*/
 
-	/*dwKThreadID = CreateKThread(16384,
+/*	dwKThreadID = CreateKThread(16384,
 		KTHREAD_STATUS_READY,
 		0L,
 		ShellThreadWrap,
@@ -298,18 +318,18 @@ void main()
 
 	g_pShellCtrlBlock = GetKThreadControlBlock(dwKThreadID);  //Initialize the shell's
 	                                                          //control block.*/
-	EnableInterrupt();
+	//EnableInterrupt();
 
-	DeadLoop();
+	//DeadLoop();
 	//EntryPoint();
 	//ScheduleKThread();            //Schedule the kernal thread.
 
 	//The following code will never be executed if corrected.
-__TERMINAL:
-	ChangeLine();
-	GotoHome();
+//__TERMINAL:
+	//ChangeLine();
+	//GotoHome();
 	//PrintStr("STOP : An error occured,please power off your computer and restart it.");
-	__ERROR_HANDLER(ERROR_LEVEL_FATAL,0L,"Initializing process failed!");
+	//__ERROR_HANDLER(ERROR_LEVEL_FATAL,0L,"Initializing process failed!");
     
-	DeadLoop();
+	//DeadLoop();
 }
