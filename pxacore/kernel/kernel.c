@@ -108,7 +108,6 @@ void start_pxacore()
 	DWORD                         dwIndex          = 0;
 	BYTE                          strInfo[64];
 
-
 	DisableInterrupt();    //The following code is executed in no-interruptable envrionment.
 
 	ClearScreen();         //Print out welcome message.

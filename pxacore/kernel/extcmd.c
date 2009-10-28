@@ -13,11 +13,12 @@
 //    Lines number              :
 //***********************************************************************/
 
-#include ".\INCLUDE\StdAfx.h"
-#include "EXTCMD.H"
-#include "FIBONACCI.H"
+#include "StdAfx.h"
+#include "extcmd.h"
+#include "fibonacci.h"
 
-__EXTERNAL_COMMAND ExtCmdArray[] = {
+__EXTERNAL_COMMAND ExtCmdArray[] = 
+{
 	{"fibonacci",NULL,FALSE,Fibonacci},
 	{NULL,NULL,FALSE,NULL}
 };

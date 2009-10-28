@@ -2,14 +2,15 @@
 //Application simple of Hello Taiwan.
 //
 #ifndef __STDAFX.H__
-#include ".\INCLUDE\StdAfx.h"
+#include "StdAfx.h"
 #endif
 
 #ifndef __KAPI_H__
-#include ".\INCLUDE\KAPI.H"
+#include "kapi.h"
 #endif
 
-typedef struct{
+typedef struct
+{
     DWORD dwInitNum;
     DWORD dwResult;
 }__FIBONACCI_CONTROL_BLOCK;

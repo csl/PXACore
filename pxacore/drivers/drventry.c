@@ -17,12 +17,13 @@
 //***********************************************************************/
 
 #ifndef __STDAFX_H__
-#include ".\INCLUDE\StdAfx.h"
+#include "StdAfx.h"
 #endif
 
-#include ".\DRIVERS\COMMDRV.H"
+#include "COMMDRV.H"
 
-__DRIVER_ENTRY DriverEntryArray[] = {
+__DRIVER_ENTRY DriverEntryArray[] = 
+{
 	Com1DrvEntry,
 	Com2DrvEntry,
 	Com3DrvEntry,

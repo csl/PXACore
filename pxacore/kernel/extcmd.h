@@ -13,7 +13,8 @@
 //    Lines number              :
 //***********************************************************************/
 
-typedef struct{
+typedef struct
+{
 	LPSTR lpszCmdName;
 	LPSTR lpszHelpInfo;
 	BOOL  bBackground;
