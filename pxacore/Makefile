@@ -27,7 +27,7 @@ OBJCOPYFLAGS = \
 	-R .note -R .note.gnu.build-id -R .comment \
 	-S
 
-SHELL_SRC = ./main.c
+SHELL_SRC = ./kernel/main.c
 
 HW_DEP_ASM_SRC = \
 	./arch/arm/mach-pxa/start.S \
@@ -56,7 +56,6 @@ KERNEL_SRC = \
 	./kernel/ktmsg.c \
 	./kernel/mailbox.c \
 	./kernel/mailbox_.c \
-	./kernel/main.c \
 	./kernel/memmgr.c \
 	./kernel/objmgr.c \
 	./kernel/objqueue.c \

@@ -99,7 +99,7 @@ VOID ShellThreadWrap(LPVOID)
 	EntryPoint();
 }
 
-void start_pxacore()
+void main()
 {
 	__KERNEL_THREAD_OBJECT*       lpIdleThread     = NULL;
 	__KERNEL_THREAD_OBJECT*       lpShellThread    = NULL;
