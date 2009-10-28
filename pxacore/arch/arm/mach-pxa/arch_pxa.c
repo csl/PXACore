@@ -15,10 +15,10 @@
 //***********************************************************************/
 
 #ifndef __STDAFX_H__
-#include "..\INCLUDE\StdAfx.h"
+#include "StdAfx.h"
 #endif
 
-#include "ARCH.H"
+#include "arch.h"
 
 //
 //This routine switches the current executing path to the new one identified

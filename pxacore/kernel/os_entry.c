@@ -1,10 +1,10 @@
 #ifndef __STDAFX_H__
-#include ".\INCLUDE\StdAfx.h"
+#include "StdAfx.h"
 #endif
 
-#include ".\INCLUDE\STATCPU.H"
-#include ".\INCLUDE\STAT_S.H"
-#include ".\INCLUDE\L_STDIO.H"
+#include "STATCPU.H"
+#include "STAT_S.H"
+#include "L_STDIO.H"
 
 //Welcome information.
 char* pszStartMsg1 = "Hello Taiwan running now.If you have any question,";
@@ -99,7 +99,7 @@ VOID ShellThreadWrap(LPVOID)
 	EntryPoint();
 }
 
-void __init()
+void start_paxcore()
 {
 	__KERNEL_THREAD_OBJECT*       lpIdleThread     = NULL;
 	__KERNEL_THREAD_OBJECT*       lpShellThread    = NULL;
@@ -313,8 +313,4 @@ __TERMINAL:
 	__ERROR_HANDLER(ERROR_LEVEL_FATAL,0L,"Initializing process failed!");
     
 	DeadLoop();
-}
-
-void main()
-{
 }
