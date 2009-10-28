@@ -1,5 +1,7 @@
 
 #include "types.h"
+#include "l_stdio.h"
+
 //#include "port.h"
 
 //#include "statcpu.h"
@@ -7,8 +9,7 @@
 //#include "l_stdio.h"
 
 //Welcome information.
-char* pszStartMsg1 = "Hello Taiwan running now.If you have any question,";
-char* pszStartMsg2 = "please send email to : garryxin@yahoo.com.cn.";
+char* pszStartMsg1 = "Hello Taiwan for arm running now";
 char* pszWelcome   = "Welcome to use Hello Taiwan!";
 
 //Help information.
@@ -112,10 +113,15 @@ int main()
 	//__KERNEL_THREAD_OBJECT*       lpIdleThread     = NULL;
 	//__KERNEL_THREAD_OBJECT*       lpShellThread    = NULL;
 	//__KERNEL_THREAD_OBJECT*       lpKeeperThread   = NULL;
-	SerialInit();
-	//init_interrupt_control();
-	DeadLoop();
 
+	//initizal serial device
+	SerialInit();
+
+	//init_interrupt_control();
+	
+	printf("%s\n\n",pszStartMsg1);
+	printf("%s\n",pszWelcome);
+	DeadLoop();
 	return 0;
 /*
 	DWORD                         dwKThreadID      = 0;

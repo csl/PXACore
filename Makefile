@@ -11,7 +11,7 @@ MACH_CFLAGS = -march=armv5te -mtune=xscale -Wa,-mcpu=xscale \
 CFLAGS = \
 	-I./include/arch/arm/mach-pxa \
 	-I./include \
-	-Wall -Werror \
+	#-Wall -Werror \
 	-fno-builtin \
 	-O0 -g $(MACH_CFLAGS)
 
@@ -34,8 +34,8 @@ HW_DEP_ASM_SRC = \
 
 HW_DEP_C_SRC = \
 	./drivers/serial.c \
+	./lib/l_stdio.c \
 #	./arch/arm/mach-pxa/port.c \
-#	./lib/l_stdio.c \
 #	./lib/string.c \
 
 KERNEL_SRC = \
@@ -82,6 +82,7 @@ all:	$(PXACORE_IMAGE).bin
 
 $(PXACORE_IMAGE).bin: $(PXACORE_IMAGE).elf
 	$(OBJCOPY) $(OBJCOPYFLAGS) $< $@
+	cp $(PXACORE_IMAGE).bin ../bootloader/src/
 
 $(PXACORE_IMAGE).elf: $(SHELL_OBJ) $(HW_DEP_C_OBJ) $(HW_DEP_ASM_OBJ) $(KERNEL_OBJ)
 	$(LD) $(LDFLAGS) \

@@ -14,7 +14,7 @@
 //***********************************************************************/
 
 #ifndef __HELLO_TAIWAN__
-#include "..\INCLUDE\StdAfx.h"
+//#include "stdafx.h"
 #endif
 
 #ifndef __STRING__
