@@ -10,7 +10,7 @@ MACH_CFLAGS = -march=armv5te -mtune=xscale -Wa,-mcpu=xscale \
 	      -mno-thumb-interwork
 
 CFLAGS = \
-	-I../../includes/arch/arm/mach-pxa \
+	-I../../include/arch/arm/mach-pxa \
 	-I../../include \
 	-Wall -Werror \
 	-fno-builtin \
@@ -30,13 +30,13 @@ OBJCOPYFLAGS = \
 SHELL_SRC = ./main.c
 
 HW_DEP_ASM_SRC = \
-	../../arch/arm/mach-pxa/start.S \
-	../../arch/arm/mach-pxa/asm_port.S \
+	./arch/arm/mach-pxa/start.S \
+	./arch/arm/mach-pxa/asm_port.S \
 
 HW_DEP_C_SRC = \
-	../../device/serial.c \
-	../../lib/stdio.c \
-	../../arch/arm/mach-pxa/port.c
+	./device/serial.c \
+	./lib/l_stdio.c \
+	./arch/arm/mach-pxa/port.c
 
 KERNEL_SRC = \
 	../../kernel/kernel.c \

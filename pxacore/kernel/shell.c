@@ -12,23 +12,23 @@
 //    Lines number              :
 //***********************************************************************/
 #ifndef __STDAFX_H__
-#include "..\INCLUDE\STDAFX.H"
+#include "stdafx.H"
 #endif
 
 #ifndef __KAPI_H__
-#include "..\INCLUDE\KAPI.H"
+#include "KAPI.H"
 #endif
 
 #ifndef __IOCTRL_S_H__
-#include "..\INCLUDE\IOCTRL_S.H"
+#include "IOCTRL_S.H"
 #endif
 
 #ifndef __SYSD_S_H__
-#include "..\INCLUDE\SYSD_S.H"
+#include "SYSD_S.H"
 #endif
 
 #ifndef __RT8139_H__
-#include "..\INCLUDE\RT8139.H"
+#include "RT8139.H"
 #endif
 
 #ifndef __EXTCMD_H__

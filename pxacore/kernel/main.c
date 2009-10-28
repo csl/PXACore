@@ -58,7 +58,3 @@ void __init()
 	g_keyHandler = SetKeyHandler(_KeyHandler);
 	DeadLoop();
 }
-
-void main()
-{
-}

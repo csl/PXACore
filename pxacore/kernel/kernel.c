@@ -2,9 +2,9 @@
 #include "StdAfx.h"
 #endif
 
-#include "STATCPU.H"
-#include "STAT_S.H"
-#include "L_STDIO.H"
+#include "statcpu.H"
+#include "stat_s.H"
+#include "l_stdio.H"
 
 //Welcome information.
 char* pszStartMsg1 = "Hello Taiwan running now.If you have any question,";
@@ -99,7 +99,7 @@ VOID ShellThreadWrap(LPVOID)
 	EntryPoint();
 }
 
-void start_paxcore()
+void start_pxacore()
 {
 	__KERNEL_THREAD_OBJECT*       lpIdleThread     = NULL;
 	__KERNEL_THREAD_OBJECT*       lpShellThread    = NULL;
@@ -135,7 +135,7 @@ void start_paxcore()
 	//
 	//The following code initializes system level global objects.
 	//
-
+/*
 #ifdef __ENABLE_VIRTUAL_MEMORY    //Should enable virtual memory model.
 
 	lpVirtualMemoryMgr = (__VIRTUAL_MEMORY_MANAGER*)ObjectManager.CreateObject(&ObjectManager,
@@ -147,7 +147,7 @@ void start_paxcore()
 	if(!lpVirtualMemoryMgr->Initialize((__COMMON_OBJECT*)lpVirtualMemoryMgr))
 		goto __TERMINAL;
 #endif
-	
+*/	
 	if(!KernelThreadManager.Initialize((__COMMON_OBJECT*)&KernelThreadManager))
 		goto __TERMINAL;                                                     //Initialize 
 	                                                                         //Kernel Thread
@@ -258,6 +258,7 @@ void start_paxcore()
 		goto __TERMINAL;
 	}
 
+/*
 #ifdef __ENABLE_VIRTUAL_MEMORY
 	//
 	//Now,we enable the page mechanism.
@@ -272,7 +273,7 @@ void start_paxcore()
 		pop eax
 	}
 #endif
-
+*/
 	//g_intHandler = SetTimerHandler(TimerHandler);  //Set the timer interrupt handler.
 	SetTimerHandler(GeneralIntHandler);
 
@@ -298,7 +299,6 @@ void start_paxcore()
 
 	g_pShellCtrlBlock = GetKThreadControlBlock(dwKThreadID);  //Initialize the shell's
 	                                                          //control block.*/
-
 	EnableInterrupt();
 
 	DeadLoop();

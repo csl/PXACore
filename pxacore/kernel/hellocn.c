@@ -17,7 +17,7 @@
 //#endif
 
 #ifndef __STDAFX_H__
-#include "..\INCLUDE\StdAfx.h"
+#include "StdAfx.h"
 #endif
 
 void PrintStr(const char* pszMsg)
