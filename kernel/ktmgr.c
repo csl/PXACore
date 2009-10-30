@@ -18,24 +18,20 @@
 //***********************************************************************/
 
 #ifndef __STDAFX_H__
-#include "..\INCLUDE\StdAfx.h"
+#include "stdafx.h"
 #endif
 
-#include "..\INCLUDE\ARCHSTD.H"
+#include "archstd.h"
 
 //
 //Pre-declare for extern global routines,these routines may
 //be implemented in KTMGRx.CPP file,where x is 2,3,etc.
 //
-extern __THREAD_HOOK_ROUTINE SetThreadHook(DWORD dwHookType,
-										   __THREAD_HOOK_ROUTINE lpRoutine);
-extern VOID                  CallThreadHook(DWORD dwHookType,
-											__KERNEL_THREAD_OBJECT* lpPrev,
+extern __THREAD_HOOK_ROUTINE SetThreadHook(DWORD dwHookType, __THREAD_HOOK_ROUTINE lpRoutine);
+extern VOID    CallThreadHook(DWORD dwHookType, __KERNEL_THREAD_OBJECT* lpPrev,
 											__KERNEL_THREAD_OBJECT* lpNext);
-extern __KERNEL_THREAD_OBJECT* GetScheduleKernelThread(__COMMON_OBJECT* lpThis,
-													   DWORD dwPriority);
-extern VOID AddReadyKernelThread(__COMMON_OBJECT* lpThis,
-								 __KERNEL_THREAD_OBJECT* lpKernelThread);
+extern __KERNEL_THREAD_OBJECT* GetScheduleKernelThread(__COMMON_OBJECT* lpThis, DWORD dwPriority);
+extern VOID AddReadyKernelThread(__COMMON_OBJECT* lpThis,__KERNEL_THREAD_OBJECT* lpKernelThread);
 extern VOID KernelThreadWrapper(__COMMON_OBJECT*);
 extern DWORD WaitForKernelThreadObject(__COMMON_OBJECT* lpThis);
 
@@ -242,38 +238,21 @@ __TERMINAL:
 // 4. Insert the kernel thread object into proper queue.
 //
 
-static __KERNEL_THREAD_OBJECT* CreateKernelThread(__COMMON_OBJECT*             lpThis,
-												  DWORD                        dwStackSize,
-												  DWORD                        dwStatus,
-												  DWORD                        dwPriority,
-												  __KERNEL_THREAD_ROUTINE      lpStartRoutine,
-												  LPVOID                       lpRoutineParam,
-												  LPVOID                       lpReserved,
-												  LPSTR                        lpszName)
+static __KERNEL_THREAD_OBJECT* CreateKernelThread(__COMMON_OBJECT*  lpThis, DWORD dwStackSize, DWORD dwStatus,
+DWORD dwPriority, __KERNEL_THREAD_ROUTINE lpStartRoutine, LPVOID lpRoutineParam, LPVOID lpReserved, LPSTR lpszName)
 {
-	__KERNEL_THREAD_OBJECT*             lpKernelThread      = NULL;
-	__KERNEL_THREAD_MANAGER*            lpMgr               = NULL;
-	LPVOID                              lpStack             = NULL;
-	BOOL                                bSuccess            = FALSE;
-	DWORD*                              lpStackPtr          = NULL;
-	DWORD                               i;
+	__KERNEL_THREAD_OBJECT* lpKernelThread = NULL;
+	__KERNEL_THREAD_MANAGER* lpMgr = NULL;
+	LPVOID lpStack = NULL;
+	BOOL bSuccess = FALSE;
+	DWORD* lpStackPtr = NULL;
+	DWORD i;
 
 	if((NULL == lpThis) || (NULL == lpStartRoutine))    //Parameter check.
 		goto __TERMINAL;
 
-	if((KERNEL_THREAD_STATUS_READY != dwStatus) &&      //The initation status of a kernel
-		                                                //thread should only be READY or
-														//SUSPENDED.If the initation status
-														//is READY,then the kernel thread maybe
-														//scheduled to run in the NEXT schedule
-														//circle(please note the kernel thread
-														//does not be scheduled immediately),
-														//else,the kernel thread will be susp-
-														//ended,the kernel thread in this status
-														//can be activated by ResumeKernelThread
-														//calls.
-	   (KERNEL_THREAD_STATUS_SUSPENDED != dwStatus))
-	    goto __TERMINAL;
+	if((KERNEL_THREAD_STATUS_READY != dwStatus) && (KERNEL_THREAD_STATUS_SUSPENDED != dwStatus))
+		goto __TERMINAL;
 
 	lpMgr = (__KERNEL_THREAD_MANAGER*)lpThis;
 
@@ -287,14 +266,13 @@ static __KERNEL_THREAD_OBJECT* CreateKernelThread(__COMMON_OBJECT*             l
 	if(!lpKernelThread->Initialize((__COMMON_OBJECT*)lpKernelThread))    //Failed to initialize.
 		goto __TERMINAL;
 
-	if(0 == dwStackSize)          //If the dwStackSize is zero,then allocate the default size's
-		                          //stack.
+	if(0 == dwStackSize)       //If the dwStackSize is zero,then allocate the default size's stack.
 	{
 		dwStackSize = DEFAULT_STACK_SIZE;
 	}
-	else
+	else			//If dwStackSize is too small.
 	{
-		if(dwStackSize < MIN_STACK_SIZE)    //If dwStackSize is too small.
+		if(dwStackSize < MIN_STACK_SIZE)    
 		{
 			dwStackSize = MIN_STACK_SIZE;
 		}
@@ -352,8 +330,7 @@ static __KERNEL_THREAD_OBJECT* CreateKernelThread(__COMMON_OBJECT*             l
 
 	if(KERNEL_THREAD_STATUS_READY == dwStatus)         //Add into Ready Queue.
 	{
-		lpMgr->AddReadyKernelThread((__COMMON_OBJECT*)lpMgr,
-			lpKernelThread);
+		lpMgr->AddReadyKernelThread((__COMMON_OBJECT*)lpMgr, lpKernelThread);
 	}
 	else                                               //Add into Suspended Queue.
 	{
@@ -363,8 +340,7 @@ static __KERNEL_THREAD_OBJECT* CreateKernelThread(__COMMON_OBJECT*             l
 	}
 
 	//Call the create hook.
-	lpMgr->CallThreadHook(THREAD_HOOK_TYPE_CREATE,lpKernelThread,
-		NULL);
+	lpMgr->CallThreadHook(THREAD_HOOK_TYPE_CREATE,lpKernelThread, NULL);
 	bSuccess = TRUE;  //Now,the TRANSACTION of create a kernel thread is successfully.
 
 __TERMINAL:

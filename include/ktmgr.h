@@ -260,7 +260,7 @@ typedef DWORD (*__THREAD_HOOK_ROUTINE)(__KERNEL_THREAD_OBJECT*,
 
 BEGIN_DEFINE_OBJECT(__KERNEL_THREAD_MANAGER)
     DWORD                                    dwCurrentIRQL;
-    __KERNEL_THREAD_OBJECT*                  lpCurrentKernelThread;   //Current kernel thread.
+    __KERNEL_THREAD_OBJECT*           lpCurrentKernelThread;   //Current kernel thread.
 
     __PRIORITY_QUEUE*                        lpRunningQueue;
 	__PRIORITY_QUEUE*                        lpSuspendedQueue;

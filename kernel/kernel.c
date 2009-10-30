@@ -117,10 +117,15 @@ int main()
 	//initizal serial device
 	SerialInit();
 
-	//init_interrupt_control();
-	
 	printf("%s\n\n",pszStartMsg1);
 	printf("%s\n",pszWelcome);
+
+	//Initialize Kernel Thread Manager.
+	if(!KernelThreadManager.Initialize((__COMMON_OBJECT*)&KernelThreadManager))
+		goto __TERMINAL; 
+
+	//init_interrupt_control();
+	
 	DeadLoop();
 	return 0;
 /*
@@ -331,7 +336,8 @@ int main()
 	//ScheduleKThread();            //Schedule the kernal thread.
 
 	//The following code will never be executed if corrected.
-//__TERMINAL:
+
+__TERMINAL:
 	//ChangeLine();
 	//GotoHome();
 	//PrintStr("STOP : An error occured,please power off your computer and restart it.");
