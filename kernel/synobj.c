@@ -24,7 +24,7 @@
 //***********************************************************************/
 
 #ifndef __STDAFX_H__
-#include "..\INCLUDE\StdAfx.h"
+#include "stdafx.h"
 #endif
 
 //Timer handler's parameter.

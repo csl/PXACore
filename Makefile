@@ -39,6 +39,9 @@ HW_DEP_C_SRC = \
 #	./lib/string.c \
 
 KERNEL_SRC = \
+	./kernel/ktmgr.c \
+	./kernel/ktmgr2.c \
+	./kernel/objmgr.c \
 #	./kernel/main.c \
 #	./kernel/comqueue.c \
 #	./kernel/dim.c \
@@ -50,13 +53,10 @@ KERNEL_SRC = \
 #	./kernel/keyhdlr.c \
 #	./kernel/kmemmgr.c \
 #	./kernel/kthread.c \
-#	./kernel/ktmgr.c \
-#	./kernel/ktmgr2.c \
 #	./kernel/ktmsg.c \
 #	./kernel/mailbox.c \
 #	./kernel/mailbox_.c \
 #	./kernel/memmgr.c \
-#	./kernel/objmgr.c \
 #	./kernel/objqueue.c \
 #	./kernel/pageidx.c \
 #	./kernel/perf.c \

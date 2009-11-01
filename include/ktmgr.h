@@ -31,7 +31,7 @@ DECLARE_PREDEFINED_OBJECT(__EVENT)
 
 
 //Kernel thread's context.
-
+/*
 BEGIN_DEFINE_OBJECT(__KERNEL_THREAD_CONTEXT)
     DWORD           dwEFlags;
     WORD            wCS;
@@ -84,7 +84,7 @@ BEGIN_DEFINE_OBJECT(__KERNEL_THREAD_CONTEXT)
 #define CONTEXT_OFFSET_ESP           0x28
 
 END_DEFINE_OBJECT()
-
+*/
 //
 //Common synchronization object's definition.
 //The common synchronization object is a abstract object,all synchronization objects,such
@@ -92,7 +92,7 @@ END_DEFINE_OBJECT()
 //
 
 BEGIN_DEFINE_OBJECT(__COMMON_SYNCHRONIZATION_OBJECT)
-    DWORD                (*WaitForThisObject)(__COMMON_SYNCHRONIZATION_OBJECT*);
+    DWORD                (*WaitForThisObject)(struct __COMMON_SYNCHRONIZATION_OBJECT*);
 END_DEFINE_OBJECT()
 
 //
@@ -100,7 +100,7 @@ END_DEFINE_OBJECT()
 //common synchronization object.
 //
 #define INHERIT_FROM_COMMON_SYNCHRONIZATION_OBJECT \
-	DWORD                (*WaitForThisObject)(__COMMON_OBJECT*);
+	DWORD                (*WaitForThisObject) (struct __COMMON_OBJECT*);
 
 
 //
@@ -108,11 +108,12 @@ END_DEFINE_OBJECT()
 //
 
 BEGIN_DEFINE_OBJECT(__KERNEL_THREAD_MESSAGE)
-    WORD             wCommand;
-    WORD             wParam;
+	WORD             wCommand;
+	WORD             wParam;
 	DWORD            dwParam;
 	//DWORD            (*MsgAssocRoutine)(__KERNEL_THREAD_MESSAGE*);
 END_DEFINE_OBJECT()
+
 
 //
 //The definition of kernel thread's message.
@@ -191,24 +192,24 @@ END_DEFINE_OBJECT()
 //
 
 BEGIN_DEFINE_OBJECT(__KERNEL_THREAD_OBJECT)
-    INHERIT_FROM_COMMON_OBJECT
+	INHERIT_FROM_COMMON_OBJECT
 	INHERIT_FROM_COMMON_SYNCHRONIZATION_OBJECT
-	__KERNEL_THREAD_CONTEXT              KernelThreadContext;
-    __KERNEL_THREAD_CONTEXT*             lpKernelThreadContext;   //Added in V1.5.
-    DWORD                                dwThreadID;
+	//__KERNEL_THREAD_CONTEXT              KernelThreadContext;
+	//__KERNEL_THREAD_CONTEXT*             lpKernelThreadContext;   //Added in V1.5.
+	DWORD                                dwThreadID;
 	DWORD                                dwThreadStatus;          //Kernel Thread's current
-	                                                              //status.
-	__PRIORITY_QUEUE*                    lpWaitingQueue;          //Waiting queue of the
-	                                                              //kernel thread object.
-	                                                              //One kernel thread who
-	                                                              //want to wait the current
-	                                                              //kernel thread object
-	                                                              //will be put into this
-	                                                              //queue.
+		                                                      //status.
+	struct __PRIORITY_QUEUE*                    lpWaitingQueue;          //Waiting queue of the
+		                                                      //kernel thread object.
+		                                                      //One kernel thread who
+		                                                      //want to wait the current
+		                                                      //kernel thread object
+		                                                      //will be put into this
+		                                                      //queue.
 
 	DWORD                                dwThreadPriority;        //Initialize priority.
 	DWORD                                dwScheduleCounter;       //Schedule counter,used to
-	                                                              //control the scheduler.
+		                                                      //control the scheduler.
 	DWORD                                dwReturnValue;
 
 	DWORD                                dwTotalRunTime;
@@ -227,12 +228,12 @@ BEGIN_DEFINE_OBJECT(__KERNEL_THREAD_OBJECT)
 
 	//The following four members are used to manage the message queue of the
 	//current kernel thread.
-	__KERNEL_THREAD_MESSAGE              KernelThreadMsg[MAX_KTHREAD_MSG_NUM];
+	struct __KERNEL_THREAD_MESSAGE       KernelThreadMsg[MAX_KTHREAD_MSG_NUM];
 	UCHAR                                ucMsgQueueHeader;
 	UCHAR                                ucMsgQueueTrial;
 	UCHAR                                ucCurrentMsgNum;
 	UCHAR                                ucAligment;
-	__PRIORITY_QUEUE*                    lpMsgWaitingQueue;
+	struct __PRIORITY_QUEUE*                    lpMsgWaitingQueue;
 
 	DWORD                                dwUserData;  //User custom data.
 	DWORD                                dwLastError;
@@ -243,12 +244,12 @@ BEGIN_DEFINE_OBJECT(__KERNEL_THREAD_OBJECT)
 END_DEFINE_OBJECT()
 
 //Kernel thread object's initialize and uninitialize routine's definition.
-BOOL KernelThreadInitialize(__COMMON_OBJECT* lpThis);
-VOID KernelThreadUninitialize(__COMMON_OBJECT* lpThis);
+BOOL KernelThreadInitialize(struct __COMMON_OBJECT* lpThis);
+VOID KernelThreadUninitialize(struct __COMMON_OBJECT* lpThis);
 
 
 typedef DWORD (*__KERNEL_THREAD_ROUTINE)(LPVOID);  //Kernel thread's start routine.
-typedef DWORD (*__THREAD_HOOK_ROUTINE)(__KERNEL_THREAD_OBJECT*,
+typedef DWORD (*__THREAD_HOOK_ROUTINE)(struct __KERNEL_THREAD_OBJECT*,
 									   DWORD*);    //Thread hook's protype.
 
 #define THREAD_HOOK_TYPE_CREATE        0x00000001
@@ -259,14 +260,14 @@ typedef DWORD (*__THREAD_HOOK_ROUTINE)(__KERNEL_THREAD_OBJECT*,
 //Kernel Thread Manager's definition.
 
 BEGIN_DEFINE_OBJECT(__KERNEL_THREAD_MANAGER)
-    DWORD                                    dwCurrentIRQL;
-    __KERNEL_THREAD_OBJECT*           lpCurrentKernelThread;   //Current kernel thread.
+	DWORD                                    dwCurrentIRQL;
+	struct __KERNEL_THREAD_OBJECT*           lpCurrentKernelThread;   //Current kernel thread.
 
-    __PRIORITY_QUEUE*                        lpRunningQueue;
-	__PRIORITY_QUEUE*                        lpSuspendedQueue;
-	__PRIORITY_QUEUE*                        lpSleepingQueue;
-	__PRIORITY_QUEUE*                        lpTerminalQueue;
-	__PRIORITY_QUEUE*                        ReadyQueue[MAX_KERNEL_THREAD_PRIORITY + 1];
+	struct __PRIORITY_QUEUE*                        lpRunningQueue;
+	struct __PRIORITY_QUEUE*                        lpSuspendedQueue;
+	struct __PRIORITY_QUEUE*                        lpSleepingQueue;
+	struct __PRIORITY_QUEUE*                        lpTerminalQueue;
+	struct __PRIORITY_QUEUE*                        ReadyQueue[MAX_KERNEL_THREAD_PRIORITY + 1];
 
 	DWORD                                    dwNextWakeupTick;
 
@@ -275,139 +276,89 @@ BEGIN_DEFINE_OBJECT(__KERNEL_THREAD_MANAGER)
 	__THREAD_HOOK_ROUTINE                    lpBeginScheduleHook;
 	__THREAD_HOOK_ROUTINE                    lpTerminalHook;
 
-	__THREAD_HOOK_ROUTINE                    (*SetThreadHook)(
-		                                     DWORD          dwHookType,
-											 __THREAD_HOOK_ROUTINE lpNew);
-	VOID                                     (*CallThreadHook)(
-		                                     DWORD          dwHookType,
-											 __KERNEL_THREAD_OBJECT* lpPrev,
-											 __KERNEL_THREAD_OBJECT* lpNext);
+
+	__THREAD_HOOK_ROUTINE	(*SetThreadHook)(DWORD  dwHookType, 
+							  __THREAD_HOOK_ROUTINE lpNew);
+
+	VOID	(*CallThreadHook)(DWORD	dwHookType, 
+				  struct __KERNEL_THREAD_OBJECT* lpPrev,
+				  struct __KERNEL_THREAD_OBJECT* lpNext);
 
 	//Get a schedulable kernel thread from ready queue.
-	__KERNEL_THREAD_OBJECT*                  (*GetScheduleKernelThread)(
-		                                      __COMMON_OBJECT*  lpThis,
-											  DWORD           dwPriority);
+	struct __KERNEL_THREAD_OBJECT* (*GetScheduleKernelThread)(struct __COMMON_OBJECT*  lpThis,
+							   	  DWORD           dwPriority);
 
 	//Add a ready kernel thread to ready queue.
-	VOID                                     (*AddReadyKernelThread)(
-		                                      __COMMON_OBJECT*  lpThis,
-											  __KERNEL_THREAD_OBJECT* lpThread);
+	VOID	(*AddReadyKernelThread)(struct __COMMON_OBJECT*  lpThis, 
+					struct __KERNEL_THREAD_OBJECT* lpThread);
 
-	BOOL                                     (*Initialize)(__COMMON_OBJECT* lpThis);
+	BOOL	(*Initialize)(struct __COMMON_OBJECT* lpThis);
 
-	__KERNEL_THREAD_OBJECT*                  (*CreateKernelThread)(
-		                                      __COMMON_OBJECT*          lpThis,
-											  DWORD                     dwStackSize,
-											  DWORD                     dwStatus,
-											  DWORD                     dwPriority,
-											  __KERNEL_THREAD_ROUTINE   lpStartRoutine,
-											  LPVOID                    lpRoutineParam,
-											  LPVOID                    lpReserved,
-											  LPSTR                     lpszName);
+	struct __KERNEL_THREAD_OBJECT*	(*CreateKernelThread)(struct __COMMON_OBJECT* lpThis,
+						      DWORD dwStackSize,
+									  DWORD dwStatus,
+									  DWORD dwPriority,
+						__KERNEL_THREAD_ROUTINE lpStartRoutine,
+									  LPVOID lpRoutineParam,
+									  LPVOID lpReserved,
+									  LPSTR lpszName);
 
-	VOID                                     (*DestroyKernelThread)(__COMMON_OBJECT* lpThis,
-		                                     __COMMON_OBJECT*           lpKernelThread
-											 );
+	VOID (*DestroyKernelThread)(struct __COMMON_OBJECT* lpThis, 
+				    struct __COMMON_OBJECT* lpKernelThread );
 
-	BOOL                                     (*SuspendKernelThread)(
-		                                     __COMMON_OBJECT*           lpThis,
-											 __COMMON_OBJECT*           lpKernelThread
-											 );
+	BOOL (*SuspendKernelThread)(struct __COMMON_OBJECT* lpThis, 
+				    struct __COMMON_OBJECT* lpKernelThread );
 
-	BOOL                                     (*ResumeKernelThread)(
-		                                     __COMMON_OBJECT*           lpThis,
-											 __COMMON_OBJECT*           lpKernelThread
-											 );
+	BOOL (*ResumeKernelThread)(struct __COMMON_OBJECT*  lpThis, 
+				   struct __COMMON_OBJECT* lpKernelThread );
 
-	VOID                                     (*ScheduleFromProc)(
-		                                     __KERNEL_THREAD_CONTEXT*   lpContext
-											 );
-	VOID                                     (*ScheduleFromInt)(
-		                                     __COMMON_OBJECT*           lpThis,
-											 LPVOID                     lpESP
-											 );
+	//VOID (*ScheduleFromProc)( __KERNEL_THREAD_CONTEXT*   lpContext );
+	VOID (*ScheduleFromInt)( struct __COMMON_OBJECT* lpThis, LPVOID lpESP );
 
-	DWORD                                    (*SetThreadPriority)(
-											 __COMMON_OBJECT*           lpKernelThread,
-											 DWORD                      dwNewPriority
-											 );
+	DWORD (*SetThreadPriority)(struct __COMMON_OBJECT* lpKernelThread, DWORD wNewPriority );
 
-	DWORD                                    (*GetThreadPriority)(
-		                                     __COMMON_OBJECT*           lpKernelThread
-											 );
+	DWORD (*GetThreadPriority)(struct __COMMON_OBJECT* lpKernelThread );
 
-	DWORD                                    (*TerminalKernelThread)(
-		                                     __COMMON_OBJECT*           lpThis,
-											 __COMMON_OBJECT*           lpKernelThread
-											 );
+	DWORD (*TerminalKernelThread)(struct __COMMON_OBJECT* lpThis, 
+				      struct __COMMON_OBJECT* lpKernelThread );
 
-	BOOL                                     (*Sleep)(
-		                                     __COMMON_OBJECT*           lpThis,
-											 //__COMMON_OBJECT*           lpKernelThread,
-											 DWORD                      dwMilliSecond
-											 );
+	BOOL (*Sleep)(struct __COMMON_OBJECT* lpThis,//__COMMON_OBJECT*           lpKernelThread,
+		      DWORD dwMilliSecond);
 
-	BOOL                                     (*CancelSleep)(
-		                                     __COMMON_OBJECT*           lpThis,
-											 __COMMON_OBJECT*           lpKernelThread
-											 );
+	BOOL (*CancelSleep)(struct __COMMON_OBJECT* lpThis, 
+			    struct __COMMON_OBJECT* lpKernelThread );
 
-	DWORD                                    (*SetCurrentIRQL)(
-		                                     __COMMON_OBJECT*           lpThis,
-											 DWORD                      dwNewIRQL
-											 );
+	DWORD (*SetCurrentIRQL)(struct __COMMON_OBJECT* lpThis, DWORD dwNewIRQL );
 
-	DWORD                                    (*GetCurrentIRQL)(
-		                                     __COMMON_OBJECT*           lpThis
-											 );
+	DWORD (*GetCurrentIRQL)(struct __COMMON_OBJECT* lpThis );
 
-	DWORD                                    (*GetLastError)(
-		                                     //__COMMON_OBJECT*           lpKernelThread
-											 );
-	
-	DWORD                                    (*SetLastError)(
-		                                     //__COMMON_OBJECT*           lpKernelThread,
-											 DWORD                      dwNewError
-											 );
+	DWORD (*GetLastError)( //__COMMON_OBJECT*           lpKernelThread 
+										);
 
-	DWORD                                    (*GetThreadID)(
-		                                     __COMMON_OBJECT*           lpKernelThread
-											 );
+	DWORD (*SetLastError)( //__COMMON_OBJECT*           lpKernelThread,
+			       DWORD dwNewError );
 
-	DWORD                                    (*GetThreadStatus)(
-		                                     __COMMON_OBJECT*           lpKernelThread
-											 );
+	DWORD (*GetThreadID)(struct __COMMON_OBJECT* lpKernelThread );
 
-	DWORD                                    (*SetThreadStatus)(
-		                                     __COMMON_OBJECT*           lpKernelThread,
-											 DWORD                      dwStatus
-											 );
+	DWORD (*GetThreadStatus)(struct __COMMON_OBJECT* lpKernelThread );
 
-	BOOL                                     (*SendMessage)(
-		                                     __COMMON_OBJECT*           lpKernelThread,
-											 __KERNEL_THREAD_MESSAGE*   lpMsg
-											 );
+	DWORD (*SetThreadStatus)(struct __COMMON_OBJECT* lpKernelThread, DWORD dwStatus );
 
-	BOOL                                     (*GetMessage)(
-		                                     __COMMON_OBJECT*           lpKernelThread,
-											 __KERNEL_THREAD_MESSAGE*   lpMsg
-											 );
+	BOOL (*SendMessage)(struct __COMMON_OBJECT* lpKernelThread, 
+			    struct __KERNEL_THREAD_MESSAGE*   lpMsg );
 
-	BOOL                                     (*MsgQueueFull)(
-		                                     __COMMON_OBJECT*           lpKernelThread
-											 );
+	BOOL (*GetMessage)(struct __COMMON_OBJECT* lpKernelThread, 
+			   struct __KERNEL_THREAD_MESSAGE*   lpMsg);
 
-	BOOL                                     (*MsgQueueEmpty)(
-		                                     __COMMON_OBJECT*           lpKernelThread
-											 );
+	BOOL (*MsgQueueFull)(struct __COMMON_OBJECT* lpKernelThread );
 
-	BOOL                                     (*LockKernelThread)(
-		                                     __COMMON_OBJECT*           lpThis,
-											 __COMMON_OBJECT*           lpKernelThread);
+	BOOL (*MsgQueueEmpty)(struct __COMMON_OBJECT* lpKernelThread );
 
-	VOID                                     (*UnlockKernelThread)(
-		                                     __COMMON_OBJECT*           lpThis,
-											 __COMMON_OBJECT*           lpKernelThread);
+	BOOL (*LockKernelThread)(struct __COMMON_OBJECT* lpThis, 
+				 struct __COMMON_OBJECT* lpKernelThread);
+
+	VOID (*UnlockKernelThread)(struct __COMMON_OBJECT* lpThis, 
+				   struct __COMMON_OBJECT* lpKernelThread);
 
 END_DEFINE_OBJECT()          //End of the kernel thread manager's definition.
 
@@ -417,15 +368,16 @@ END_DEFINE_OBJECT()          //End of the kernel thread manager's definition.
 //
 typedef DWORD (*__KERNEL_THREAD_MESSAGE_HANDLER)(WORD,WORD,DWORD);  //The protype of event handler.
 
-DWORD DispatchMessage(__KERNEL_THREAD_MESSAGE*,__KERNEL_THREAD_MESSAGE_HANDLER);
+DWORD DispatchMessage(struct __KERNEL_THREAD_MESSAGE*, __KERNEL_THREAD_MESSAGE_HANDLER);
                                                                   //The routine dispatch a
                                                                   //message to it's handler.
 
-BOOL  GetMessage(__KERNEL_THREAD_MESSAGE*);                       //Get a message from the 
+BOOL  GetMessage(struct __KERNEL_THREAD_MESSAGE*);                       //Get a message from the 
                                                                   //current kernel thread's
                                                                   //message queue.
 
-BOOL  SendMessage(__COMMON_OBJECT* lpThread,__KERNEL_THREAD_MESSAGE*); //Send a message to the
+//Send a message to the
+BOOL  SendMessage(struct __COMMON_OBJECT* lpThread, struct __KERNEL_THREAD_MESSAGE*); 
                                                                        //kernel thread.
 
 
@@ -435,7 +387,7 @@ BOOL  SendMessage(__COMMON_OBJECT* lpThread,__KERNEL_THREAD_MESSAGE*); //Send a 
 ****************************************************************************************
 ***************************************************************************************/
 
-extern __KERNEL_THREAD_MANAGER KernelThreadManager;
+extern struct __KERNEL_THREAD_MANAGER KernelThreadManager;
 
 //--------------------------------------------------------------------------------------
 //
@@ -450,14 +402,14 @@ extern __KERNEL_THREAD_MANAGER KernelThreadManager;
 //
 
 BEGIN_DEFINE_OBJECT(__EVENT)
-    INHERIT_FROM_COMMON_OBJECT
+	INHERIT_FROM_COMMON_OBJECT
 	INHERIT_FROM_COMMON_SYNCHRONIZATION_OBJECT
 	DWORD                 dwEventStatus;
-    __PRIORITY_QUEUE*     lpWaitingQueue;
-	DWORD                 (*SetEvent)(__COMMON_OBJECT*);
-	DWORD                 (*ResetEvent)(__COMMON_OBJECT*);
-	DWORD                 (*WaitForThisObjectEx)(__COMMON_OBJECT*,
-		                                         DWORD);  //Time out waiting operation.
+	struct  __PRIORITY_QUEUE*     lpWaitingQueue;
+	DWORD                 (*SetEvent)(struct  __COMMON_OBJECT*);
+	DWORD                 (*ResetEvent)(struct  __COMMON_OBJECT*);
+	DWORD                 (*WaitForThisObjectEx)(struct  __COMMON_OBJECT*,
+			                                 DWORD);  //Time out waiting operation.
 END_DEFINE_OBJECT()
 
 #define EVENT_STATUS_FREE            0x00000001    //Event status.
@@ -473,8 +425,8 @@ END_DEFINE_OBJECT()
 #define OBJECT_WAIT_TIMEOUT          0x00000002
 #define OBJECT_WAIT_DELETED          0x00000004
 
-BOOL EventInitialize(__COMMON_OBJECT*);            //The event object's initializing routine
-VOID EventUninitialize(__COMMON_OBJECT*);          //and uninitializing routine.
+BOOL EventInitialize(struct __COMMON_OBJECT*);            //The event object's initializing routine
+VOID EventUninitialize(struct  __COMMON_OBJECT*);          //and uninitializing routine.
 
 //--------------------------------------------------------------------------------------
 //
@@ -487,14 +439,14 @@ VOID EventUninitialize(__COMMON_OBJECT*);          //and uninitializing routine.
 //
 
 BEGIN_DEFINE_OBJECT(__MUTEX)
-    INHERIT_FROM_COMMON_OBJECT                  //Inherit from __COMMON_OBJECT.
+	INHERIT_FROM_COMMON_OBJECT                  //Inherit from __COMMON_OBJECT.
 	INHERIT_FROM_COMMON_SYNCHRONIZATION_OBJECT  //Inherit from common synchronization object.
 	DWORD             dwMutexStatus;
-    DWORD             dwWaitingNum;
-    __PRIORITY_QUEUE* lpWaitingQueue;
-    DWORD             (*ReleaseMutex)(__COMMON_OBJECT* lpThis);
-	DWORD             (*WaitForThisObjectEx)(__COMMON_OBJECT* lpThis,
-		                                     DWORD dwMillionSecond); //Extension waiting.
+	DWORD             dwWaitingNum;
+	struct __PRIORITY_QUEUE* lpWaitingQueue;
+	DWORD             (*ReleaseMutex)(struct  __COMMON_OBJECT* lpThis);
+	DWORD             (*WaitForThisObjectEx)(struct  __COMMON_OBJECT* lpThis,
+			                             DWORD dwMillionSecond); //Extension waiting.
 END_DEFINE_OBJECT()
 
 #define MUTEX_STATUS_FREE      0x00000001
@@ -504,8 +456,8 @@ END_DEFINE_OBJECT()
 //The initializing routine of MUTEX object and uninitializing routine.
 //
 
-BOOL MutexInitialize(__COMMON_OBJECT* lpThis);
-VOID MutexUninitialize(__COMMON_OBJECT* lpThis);
+BOOL MutexInitialize(struct  __COMMON_OBJECT* lpThis);
+VOID MutexUninitialize(struct  __COMMON_OBJECT* lpThis);
 
 //-----------------------------------------------------------------------------------
 //

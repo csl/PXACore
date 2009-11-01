@@ -1,12 +1,12 @@
 
-#include "types.h"
+#include "stdafx.h"
 #include "l_stdio.h"
+
 
 //#include "port.h"
 
 //#include "statcpu.h"
 //#include "stat_s.h"
-//#include "l_stdio.h"
 
 //Welcome information.
 char* pszStartMsg1 = "Hello Taiwan for arm running now";
@@ -36,8 +36,8 @@ void DeadLoop()
 //
 
 #define GLOBAL_COUNTER 1024*1024*8*20
+
 /**/
-/*
 static DWORD dwIdleCounter = 0L;
 DWORD SystemIdle(LPVOID lpData)
 {
@@ -56,8 +56,7 @@ DWORD SystemIdle(LPVOID lpData)
 	}
 
 }
-*/
-//
+
 //System shell thread.
 //This kernel thread is a shell.
 //
@@ -110,7 +109,7 @@ VOID ShellThreadWrap(LPVOID)
 */
 int main()
 {
-	//__KERNEL_THREAD_OBJECT*       lpIdleThread     = NULL;
+	struct __KERNEL_THREAD_OBJECT*       lpIdleThread     = NULL;
 	//__KERNEL_THREAD_OBJECT*       lpShellThread    = NULL;
 	//__KERNEL_THREAD_OBJECT*       lpKeeperThread   = NULL;
 
@@ -121,8 +120,19 @@ int main()
 	printf("%s\n",pszWelcome);
 
 	//Initialize Kernel Thread Manager.
-	if(!KernelThreadManager.Initialize((__COMMON_OBJECT*)&KernelThreadManager))
+	if(!KernelThreadManager.Initialize((struct __COMMON_OBJECT*) &KernelThreadManager))
 		goto __TERMINAL; 
+
+	lpIdleThread = KernelThreadManager.CreateKernelThread(    //Create system idle thread.
+		(struct __COMMON_OBJECT*)&KernelThreadManager,
+		0L,
+		KERNEL_THREAD_STATUS_READY,
+		PRIORITY_LEVEL_LOWEST,                                //Lowest priority level.
+		SystemIdle,
+		(LPVOID)(&dwIdleCounter),
+		NULL,
+		"IDLE");
+
 
 	//init_interrupt_control();
 	

@@ -16,17 +16,18 @@
 #ifndef __COMMOBJ_H__
 #define __COMMOBJ_H__
 
-struct __COMMON_OBJECT{
+struct __COMMON_OBJECT
+{
 	DWORD              dwObjectType;         //Object type.
 	DWORD              dwObjectID;           //Object ID.
 	DWORD              dwObjectSize;         //This object's size.
-	__COMMON_OBJECT*   lpPrevObject;         //Point to previous object.
-	__COMMON_OBJECT*   lpNextObject;         //Point to next object.
-	__COMMON_OBJECT*   lpObjectOwner;        //This object's owner.
+	struct __COMMON_OBJECT*   lpPrevObject;         //Point to previous object.
+	struct __COMMON_OBJECT*   lpNextObject;         //Point to next object.
+	struct __COMMON_OBJECT*   lpObjectOwner;        //This object's owner.
 	//__COMMON_OBJECT*   lpLeft;               //Used in the future,AVL tree's left branch.
 	//__COMMON_OBJECT*   lpRight;              //Used in the ruture,AVL tree's right branch.
-	BOOL               (*Initialize)(__COMMON_OBJECT*); //Object's initialize routine.
-	VOID               (*Uninitialize)(__COMMON_OBJECT*);
+	BOOL               (*Initialize)(struct __COMMON_OBJECT*); //Object's initialize routine.
+	VOID               (*Uninitialize)(struct __COMMON_OBJECT*);
 };
 
 
@@ -38,11 +39,11 @@ struct __COMMON_OBJECT{
 	DWORD              dwObjectType;        \
 	DWORD              dwObjectID;          \
 	DWORD              dwObjectSize;        \
-	__COMMON_OBJECT*   lpPrevObject;        \
-	__COMMON_OBJECT*   lpNextObject;        \
-	__COMMON_OBJECT*   lpObjectOwner;       \
-	BOOL               (*Initialize)(__COMMON_OBJECT*);    \
-	VOID               (*Uninitialize)(__COMMON_OBJECT*);  
+	struct __COMMON_OBJECT*   lpPrevObject;        \
+	struct __COMMON_OBJECT*   lpNextObject;        \
+	struct __COMMON_OBJECT*   lpObjectOwner;       \
+	BOOL               (*Initialize)(struct __COMMON_OBJECT*);    \
+	VOID               (*Uninitialize)(struct __COMMON_OBJECT*);  
 
 //
 //Begin to define a object type,i.e,a class.
@@ -71,8 +72,8 @@ struct __COMMON_OBJECT{
 BEGIN_DEFINE_OBJECT(__OBJECT_INIT_DATA)
 	DWORD               dwObjectType;
 	DWORD               dwObjectSize;
-	BOOL                (*Initialize)(__COMMON_OBJECT*);
-	VOID                (*Uninitialize)(__COMMON_OBJECT*);
+	BOOL                (*Initialize)(struct __COMMON_OBJECT*);
+	VOID                (*Uninitialize)(struct __COMMON_OBJECT*);
 END_DEFINE_OBJECT()
 
 //
@@ -103,9 +104,9 @@ END_DEFINE_OBJECT()
 //
 
 BEGIN_DEFINE_OBJECT(__OBJECT_LIST_HEADER)
-    DWORD              dwObjectNum;
-    DWORD              dwMaxObjectID;
-	__COMMON_OBJECT*   lpFirstObject;
+	DWORD              dwObjectNum;
+	DWORD              dwMaxObjectID;
+	struct __COMMON_OBJECT*   lpFirstObject;
 END_DEFINE_OBJECT()
 
 
@@ -116,12 +117,13 @@ END_DEFINE_OBJECT()
 #define MAX_OBJECT_TYPE    64         //The maximal types in this version.
 
 BEGIN_DEFINE_OBJECT(__OBJECT_MANAGER)
-    DWORD                        dwCurrentObjectID;
-	__OBJECT_LIST_HEADER         ObjectListHeader[MAX_OBJECT_TYPE];
-	__COMMON_OBJECT*             (*CreateObject)(__OBJECT_MANAGER*,__COMMON_OBJECT*,DWORD);
-	__COMMON_OBJECT*             (*GetObjectByID)(__OBJECT_MANAGER*,DWORD);
-	__COMMON_OBJECT*             (*GetFirstObjectByType)(__OBJECT_MANAGER*,DWORD);
-	VOID                         (*DestroyObject)(__OBJECT_MANAGER*,__COMMON_OBJECT*);
+	DWORD                        dwCurrentObjectID;
+	struct __OBJECT_LIST_HEADER  ObjectListHeader[MAX_OBJECT_TYPE];
+	struct __COMMON_OBJECT*	(*CreateObject)(struct __OBJECT_MANAGER*,
+						struct __COMMON_OBJECT*,DWORD);
+	struct __COMMON_OBJECT* (*GetObjectByID)(struct __OBJECT_MANAGER*,DWORD);
+	struct __COMMON_OBJECT* (*GetFirstObjectByType)(struct __OBJECT_MANAGER*,DWORD);
+	VOID                    (*DestroyObject)(struct __OBJECT_MANAGER*,struct __COMMON_OBJECT*);
 END_DEFINE_OBJECT()
 
 //
@@ -131,7 +133,7 @@ END_DEFINE_OBJECT()
 //The declare of ObjectManager,the first global object of Hello Taiwan!
 //
 
-extern __OBJECT_MANAGER ObjectManager;
+extern struct __OBJECT_MANAGER ObjectManager;
 
 
 //

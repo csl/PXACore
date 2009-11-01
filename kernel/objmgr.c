@@ -13,7 +13,7 @@
 //***********************************************************************/
 
 #ifndef __STDAFX_H__
-#include "..\INCLUDE\StdAfx.h"
+#include "stdafx.h"
 #endif
 
 //
@@ -108,8 +108,8 @@ __OBJECT_MANAGER    ObjectManager = {
 //
 
 static __COMMON_OBJECT* CreateObject(__OBJECT_MANAGER* lpObjectManager,    //Object Manager.
-									 __COMMON_OBJECT*  lpObjectOwner,      //Object's owner.
-									 DWORD             dwType)
+				     __COMMON_OBJECT*  lpObjectOwner,      //Object's owner.
+				     DWORD dwType)
 {
 	__COMMON_OBJECT* pObject         = NULL;
 	DWORD            dwLoop          = 0L;
@@ -164,7 +164,7 @@ static __COMMON_OBJECT* CreateObject(__OBJECT_MANAGER* lpObjectManager,    //Obj
 		lpObjectManager->ObjectListHeader[dwType].lpFirstObject = pObject;
 		if(lpObjectManager->ObjectListHeader[dwType].dwMaxObjectID < pObject->dwObjectID)
 		{
-			lpObjectManager->ObjectListHeader[dwType].dwMaxObjectID = pObject->dwObjectID;
+		  lpObjectManager->ObjectListHeader[dwType].dwMaxObjectID = pObject->dwObjectID;
 		}
 		lpObjectManager->ObjectListHeader[dwType].dwObjectNum ++;
 		goto __TERMINAL;
@@ -197,8 +197,7 @@ __TERMINAL:
 //   The base address of the object,if failed,returns NULL.
 //
 
-static __COMMON_OBJECT* GetObjectByID(__OBJECT_MANAGER* lpObjectManager,
-									  DWORD             dwObjectID)
+static __COMMON_OBJECT* GetObjectByID(__OBJECT_MANAGER* lpObjectManager, DWORD dwObjectID)
 {
 	__COMMON_OBJECT*         lpObject     = NULL;
 	DWORD                    dwLoop       = 0L;
@@ -248,8 +247,7 @@ __TERMINAL:
 //   Returns the base address of the first object,if failed,returns NULL.
 //
 
-static __COMMON_OBJECT* GetFirstObjectByType(__OBJECT_MANAGER* lpObjectManager,
-											 DWORD             dwObjectType)
+static __COMMON_OBJECT* GetFirstObjectByType(__OBJECT_MANAGER* lpObjectManager, DWORD dwObjectType)
 {
 	__COMMON_OBJECT* lpObject = NULL;
 
@@ -274,8 +272,7 @@ __TERMINAL:
 //   No.
 //
 
-static VOID DestroyObject(__OBJECT_MANAGER* lpObjectManager,
-						  __COMMON_OBJECT*  lpObject)
+static VOID DestroyObject(__OBJECT_MANAGER* lpObjectManager, __COMMON_OBJECT*  lpObject)
 {
 	__OBJECT_LIST_HEADER*      lpListHeader      = NULL;
 	__COMMON_OBJECT*           lpTmpObject       = NULL;

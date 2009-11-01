@@ -1,28 +1,28 @@
 #ifndef __STDAFX_H__
 #define __STDAFX_H__
 
-#ifndef __I386
-#define __I386
-#endif
 /*
 #ifndef __HELLO_TAIWAN__
 #include "hellocn.h"
 #endif
 */
+
+#include "types.h"
+
+#define LPVOID              void*
+#define UCHAR               unsigned char
+
+#include "commobj.h"
+#include "ktmgr.h"
+#include "objqueue.h"
+
+/*
 #ifndef __STRING__
 #include "string.h"    //Different folder.
 #endif
 
-#ifndef __TYPES_H__
-#include "types.H"
-#endif
-
 #ifndef __PERF_H__
 #include "perf.H"
-#endif
-
-#ifndef __COMMOBJ_H__
-#include "commobj.h"
 #endif
 
 #ifndef __SYN_MECH_H__
@@ -31,14 +31,6 @@
 
 #ifndef __COMQUEUE_H__
 #include "comqueue.H"
-#endif
-
-#ifndef __OBJQUEUE_H__
-#include "objqueue.h"
-#endif
-
-#ifndef __KTMGR_H__
-#include "ktmgr.h"
 #endif
 
 //#ifndef __SYNOBJ_H__
@@ -116,7 +108,7 @@
 #ifndef __GLOBAL_VAR__
 #include "globvar.h"
 #endif
-
+*/
 ////////////////////////////////////////////////////////////////////////////////
 //
 //                   Debug mechanism supporting code.

@@ -18,36 +18,27 @@
 //Priority Queue's element.
 
 BEGIN_DEFINE_OBJECT(__PRIORITY_QUEUE_ELEMENT)
-    __COMMON_OBJECT*          lpObject;
+    struct __COMMON_OBJECT*          lpObject;
     DWORD                     dwPriority;
-	__PRIORITY_QUEUE_ELEMENT* lpNextElement;
-	__PRIORITY_QUEUE_ELEMENT* lpPrevElement;
+    struct __PRIORITY_QUEUE_ELEMENT* lpNextElement;
+    struct __PRIORITY_QUEUE_ELEMENT* lpPrevElement;
 END_DEFINE_OBJECT()
 
 //The definition of Priority Queue.
 
 BEGIN_DEFINE_OBJECT(__PRIORITY_QUEUE)
     INHERIT_FROM_COMMON_OBJECT                            //Inherit from __COMMON_OBJECT.
-    __PRIORITY_QUEUE_ELEMENT     ElementHeader;
-    DWORD                        dwCurrElementNum;
-	BOOL                         (*InsertIntoQueue)(
-		                         __COMMON_OBJECT* lpThis,
-								 __COMMON_OBJECT* lpObject,
-								 DWORD            dwPriority
-								 );
-	BOOL                         (*DeleteFromQueue)(
-		                         __COMMON_OBJECT* lpThis,
-								 __COMMON_OBJECT* lpObject
-								 );
-	__COMMON_OBJECT*             (*GetHeaderElement)(
-		                         __COMMON_OBJECT* lpThis,
-								 DWORD*           lpPriority
-								 );
+    	struct __PRIORITY_QUEUE_ELEMENT     ElementHeader;
+	DWORD                        dwCurrElementNum;
+	BOOL  (*InsertIntoQueue)(struct __COMMON_OBJECT* lpThis,  
+				  struct __COMMON_OBJECT* lpObject, DWORD  dwPriority);
+	BOOL  (*DeleteFromQueue)(struct __COMMON_OBJECT* lpThis, struct __COMMON_OBJECT* lpObject);
+	struct __COMMOfN_OBJECT*  (*GetHeaderElement)(struct __COMMON_OBJECT* lpThis, DWORD* lpPriority);
 END_DEFINE_OBJECT()
 
 //Initialize routine and Uninitialize's definition.
 
-BOOL PriQueueInitialize(__COMMON_OBJECT* lpThis);
-VOID PriQueueUninitialize(__COMMON_OBJECT* lpThis);
+BOOL PriQueueInitialize(struct __COMMON_OBJECT* lpThis);
+VOID PriQueueUninitialize(struct __COMMON_OBJECT* lpThis);
 
 #endif

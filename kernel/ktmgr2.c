@@ -22,10 +22,10 @@
 //***********************************************************************/
 
 #ifndef __STDAFX_H__
-#include "..\INCLUDE\StdAfx.h"
+#include "stdafx.h"
 #endif
 
-#include "..\INCLUDE\ARCHSTD.H"
+//#include "archstd.H"
 
 //
 //This routine tris to get a schedulable kernel thread from ready queue,
@@ -262,6 +262,7 @@ __TERMINAL:
 //    current kernel thread(who want to wait),put it into the object's waiting queue;
 // 3. Call ScheduleFromProc to fetch next kernel thread whose status is READY to run.
 //
+/*
 DWORD WaitForKernelThreadObject(__COMMON_OBJECT* lpThis)
 {
 	__KERNEL_THREAD_OBJECT*           lpKernelThread = NULL;
@@ -302,3 +303,4 @@ DWORD WaitForKernelThreadObject(__COMMON_OBJECT* lpThis)
 
 	return 0L;
 }
+*/
