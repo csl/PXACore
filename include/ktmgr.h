@@ -25,6 +25,7 @@
 //
 #define SYSTEM_TIME_SLICE  10    //***** debug *****
 #define MAX_THREAD_NAME    32    //Maximal kernel thread name's length.
+#define MIN_STACK_SIZE	   255
 
 DECLARE_PREDEFINED_OBJECT(__KERNEL_FILE)
 DECLARE_PREDEFINED_OBJECT(__EVENT)
@@ -199,7 +200,7 @@ BEGIN_DEFINE_OBJECT(__KERNEL_THREAD_OBJECT)
 	DWORD                                dwThreadID;
 	DWORD                                dwThreadStatus;          //Kernel Thread's current
 		                                                      //status.
-	struct __PRIORITY_QUEUE*                    lpWaitingQueue;          //Waiting queue of the
+	struct __PRIORITY_QUEUE*             lpWaitingQueue;          //Waiting queue of the
 		                                                      //kernel thread object.
 		                                                      //One kernel thread who
 		                                                      //want to wait the current
@@ -233,7 +234,7 @@ BEGIN_DEFINE_OBJECT(__KERNEL_THREAD_OBJECT)
 	UCHAR                                ucMsgQueueTrial;
 	UCHAR                                ucCurrentMsgNum;
 	UCHAR                                ucAligment;
-	struct __PRIORITY_QUEUE*                    lpMsgWaitingQueue;
+	struct __PRIORITY_QUEUE*             lpMsgWaitingQueue;
 
 	DWORD                                dwUserData;  //User custom data.
 	DWORD                                dwLastError;
@@ -312,7 +313,7 @@ BEGIN_DEFINE_OBJECT(__KERNEL_THREAD_MANAGER)
 	BOOL (*ResumeKernelThread)(struct __COMMON_OBJECT*  lpThis, 
 				   struct __COMMON_OBJECT* lpKernelThread );
 
-	//VOID (*ScheduleFromProc)( __KERNEL_THREAD_CONTEXT*   lpContext );
+	VOID (*ScheduleFromProc)(); //__KERNEL_THREAD_CONTEXT*   lpContext
 	VOID (*ScheduleFromInt)( struct __COMMON_OBJECT* lpThis, LPVOID lpESP );
 
 	DWORD (*SetThreadPriority)(struct __COMMON_OBJECT* lpKernelThread, DWORD wNewPriority );

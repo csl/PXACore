@@ -16,18 +16,18 @@
 //***********************************************************************/
 
 #ifndef __STDAFX_H__
-#include "..\INCLUDE\StdAfx.h"
+#include "StdAfx.h"
 #endif
 
 #ifndef __SYSD_S_H__
-#include "..\INCLUDE\SYSD_S.H"
+#include "SYSD_S.H"
 #endif
 
 #ifndef __PCI_DRV_H__
-#include "..\INCLUDE\PCI_DRV.H"
+#include "PCI_DRV.H"
 #endif
 
-#include "..\INCLUDE\STAT_S.H"
+#include "STAT_S.H"
 
 //
 //Pre-declare routines.

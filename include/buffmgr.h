@@ -35,13 +35,13 @@ struct __BUFFER_CONTROL_BLOCK;
 struct __FREE_BUFFER_HEADER;
 struct __USED_BUFFER_HEADER;
 
-typedef BOOL     (*__CREATE_BUFFER_1)(__BUFFER_CONTROL_BLOCK*,DWORD);
-typedef BOOL     (*__CREATE_BUFFER_2)(__BUFFER_CONTROL_BLOCK*,LPVOID,DWORD);
-typedef LPVOID   (*__ALLOCATE)(__BUFFER_CONTROL_BLOCK*,DWORD);
-typedef VOID     (*__FREE)(__BUFFER_CONTROL_BLOCK*,LPVOID);
-typedef DWORD    (*__GET_BUFFER_FLAG)(__BUFFER_CONTROL_BLOCK*,LPVOID);
-typedef BOOL     (*__SET_BUFFER_FLAG)(__BUFFER_CONTROL_BLOCK*,LPVOID,DWORD);
-typedef VOID     (*__DESTROY_BUFFER)(__BUFFER_CONTROL_BLOCK*);
+typedef BOOL     (*__CREATE_BUFFER_1)(struct __BUFFER_CONTROL_BLOCK*,DWORD);
+typedef BOOL     (*__CREATE_BUFFER_2)(struct __BUFFER_CONTROL_BLOCK*,LPVOID,DWORD);
+typedef LPVOID   (*__ALLOCATE)(struct __BUFFER_CONTROL_BLOCK*,DWORD);
+typedef VOID     (*__FREE)(struct __BUFFER_CONTROL_BLOCK*,LPVOID);
+typedef DWORD    (*__GET_BUFFER_FLAG)(struct __BUFFER_CONTROL_BLOCK*,LPVOID);
+typedef BOOL     (*__SET_BUFFER_FLAG)(struct __BUFFER_CONTROL_BLOCK*,LPVOID,DWORD);
+typedef VOID     (*__DESTROY_BUFFER)(struct __BUFFER_CONTROL_BLOCK*);
 
 //Buffer operation function.
 
@@ -69,14 +69,15 @@ struct __BUFFER_OPERATIONS{
                                               //This bit must be set before the buffer manager
                                               //can be used.
 
-struct __BUFFER_CONTROL_BLOCK{
+struct __BUFFER_CONTROL_BLOCK
+{
 	DWORD                         dwFlags;
 	LPVOID                        lpPoolStartAddress;
 	DWORD                         dwPoolSize;
 	DWORD                         dwFreeSize;
-	DWORD                         (*GetControlBlockFlag)(__BUFFER_CONTROL_BLOCK*);
-	__FREE_BUFFER_HEADER*         lpFreeBufferHeader;
-	__BUFFER_OPERATIONS           BufferOperations;
+	DWORD                         (*GetControlBlockFlag)(struct __BUFFER_CONTROL_BLOCK*);
+	struct __FREE_BUFFER_HEADER*         lpFreeBufferHeader;
+	struct __BUFFER_OPERATIONS           BufferOperations;
 };
 
 //
@@ -89,14 +90,16 @@ struct __BUFFER_CONTROL_BLOCK{
 #define BUFFER_STATUS_MODIFIED    0x00000004  //If this buffer's content is modified,
                                               //set this bit.
 
-struct __FREE_BUFFER_HEADER{
+struct __FREE_BUFFER_HEADER
+{
 	DWORD                  dwFlags;
 	DWORD                  dwBlockSize;
-	__FREE_BUFFER_HEADER*  lpNextBlock;
-	__FREE_BUFFER_HEADER*  lpPrevBlock;
+	struct __FREE_BUFFER_HEADER*  lpNextBlock;
+	struct __FREE_BUFFER_HEADER*  lpPrevBlock;
 };
 
-struct __USED_BUFFER_HEADER{
+struct __USED_BUFFER_HEADER
+{
 	DWORD                  dwFlags;
 	DWORD                  dwBlockSize;
 	LPVOID                 lpReserved1;            //Make sure the size of __FREE_BUFFER_HEADER
@@ -111,6 +114,6 @@ struct __USED_BUFFER_HEADER{
 //This function fills the control block operations field to proper functions,so,
 //the client can call to request service.
 //
-BOOL InitBufferMgr(__BUFFER_CONTROL_BLOCK*);
+BOOL InitBufferMgr(struct __BUFFER_CONTROL_BLOCK*);
 
 #endif //End of buffmgr.h

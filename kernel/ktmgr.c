@@ -83,7 +83,9 @@ BOOL KernelThreadInitialize(struct __COMMON_OBJECT* lpThis)
 	lpKernelThread->lpWaitingQueue    = lpWaitingQueue;
 	lpKernelThread->lpMsgWaitingQueue = lpMsgWaitingQueue;
 	lpKernelThread->WaitForThisObject = WaitForKernelThreadObject;
-	lpKernelThread->lpKernelThreadContext = NULL;
+
+	//Depend on Arch
+	//lpKernelThread->lpKernelThreadContext = NULL;
 
 	bResult = TRUE;
 
@@ -342,7 +344,8 @@ static struct __KERNEL_THREAD_OBJECT* CreateKernelThread(struct __COMMON_OBJECT*
 	//It's implementation depends on the hardware platform,so
 	//this routine is implemented in ARCH directory.
 	//
-	InitKernelThreadContext(lpKernelThread,KernelThreadWrapper);
+	//Depend on ARCH
+	//InitKernelThreadContext(lpKernelThread, KernelThreadWrapper);
 
 	if(KERNEL_THREAD_STATUS_READY == dwStatus)         //Add into Ready Queue.
 	{
@@ -432,14 +435,14 @@ static BOOL ResumeKernelThread(struct __COMMON_OBJECT* lpThis,struct __COMMON_OB
 //ScheduleFromProc's implementation.
 //This routine can be called anywhere that re-schedule is required.
 //
-/*
-static VOID ScheduleFromProc(__KERNEL_THREAD_CONTEXT* lpContext)
+
+static VOID ScheduleFromProc()//__KERNEL_THREAD_CONTEXT* lpContext
 {
 	struct __KERNEL_THREAD_OBJECT*          lpKernelThread     = NULL;
 	struct __KERNEL_THREAD_OBJECT*          lpCurrent          = NULL;
 	struct __KERNEL_THREAD_OBJECT*          lpNew              = NULL;
-	__KERNEL_THREAD_CONTEXT**        lppOldContext      = NULL;
-	__KERNEL_THREAD_CONTEXT**        lppNewContext      = NULL;
+	//__KERNEL_THREAD_CONTEXT**        lppOldContext      = NULL;
+	//__KERNEL_THREAD_CONTEXT**        lppNewContext      = NULL;
 	DWORD                            dwFlags            = 0L;
 
 	__ENTER_CRITICAL_SECTION(NULL,dwFlags);
@@ -470,8 +473,8 @@ static VOID ScheduleFromProc(__KERNEL_THREAD_CONTEXT* lpContext)
 				THREAD_HOOK_TYPE_ENDSCHEDULE | THREAD_HOOK_TYPE_BEGINSCHEDULE,
 				lpCurrent,lpNew);
 
-			__SaveAndSwitch(&lpCurrent->lpKernelThreadContext,
-				&lpNew->lpKernelThreadContext);  //Switch.
+			//Depend on ARCH
+			//__SaveAndSwitch(&lpCurrent->lpKernelThreadContext, &lpNew->lpKernelThreadContext);  //Switch.
 			__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
 			return;
 		}
@@ -504,8 +507,8 @@ static VOID ScheduleFromProc(__KERNEL_THREAD_CONTEXT* lpContext)
 				THREAD_HOOK_TYPE_ENDSCHEDULE | THREAD_HOOK_TYPE_BEGINSCHEDULE,
 				lpCurrent,lpNew);
 
-			__SaveAndSwitch(&lpCurrent->lpKernelThreadContext,
-				&lpNew->lpKernelThreadContext);
+			//Depend on ARCH
+			//__SaveAndSwitch(&lpCurrent->lpKernelThreadContext,&lpNew->lpKernelThreadContext);
 			__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
 			return;
 		}
@@ -522,7 +525,7 @@ static VOID ScheduleFromProc(__KERNEL_THREAD_CONTEXT* lpContext)
 		{
 			__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
 			BUG();
-			PrintLine("Fatal error: in ScheduleFromProc,lpNew == NULL.");
+			printf("Fatal error: in ScheduleFromProc,lpNew == NULL.");
 			return;
 		}
 		lpNew->dwThreadStatus = KERNEL_THREAD_STATUS_RUNNING;
@@ -533,9 +536,8 @@ static VOID ScheduleFromProc(__KERNEL_THREAD_CONTEXT* lpContext)
 		KernelThreadManager.CallThreadHook(
 			THREAD_HOOK_TYPE_ENDSCHEDULE | THREAD_HOOK_TYPE_BEGINSCHEDULE,
 			lpCurrent,lpNew);
-
-		__SaveAndSwitch(&lpCurrent->lpKernelThreadContext,
-			&lpNew->lpKernelThreadContext);
+		//Depend on ARCH
+		//__SaveAndSwitch(&lpCurrent->lpKernelThreadContext, &lpNew->lpKernelThreadContext);
 		__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
 		return;
 		break;
@@ -544,19 +546,19 @@ static VOID ScheduleFromProc(__KERNEL_THREAD_CONTEXT* lpContext)
 		break;
 	}
 }
-*/
+
 //ScheduleFromInt's implementation.
-/*
-static VOID ScheduleFromInt(struct __COMMON_OBJECT* lpThis,LPVOID lpESP)
+
+static VOID ScheduleFromInt(struct __COMMON_OBJECT* lpThis, LPVOID lpESP)
 {
 	struct __KERNEL_THREAD_OBJECT*         lpNextThread    = NULL;
 	struct __KERNEL_THREAD_OBJECT*         lpCurrentThread = NULL;
-	__KERNEL_THREAD_MANAGER*        lpMgr           = NULL;
+	struct __KERNEL_THREAD_MANAGER*        lpMgr           = NULL;
 
 	if((NULL == lpThis) || (NULL == lpESP))    //Parameters check.
 		return;
 
-	lpMgr = (__KERNEL_THREAD_MANAGER*)lpThis;
+	lpMgr = (struct __KERNEL_THREAD_MANAGER*)lpThis;
 
 	if(NULL == lpMgr->lpCurrentKernelThread)   //The routine is called first time.
 	{
@@ -575,13 +577,16 @@ static VOID ScheduleFromInt(struct __COMMON_OBJECT* lpThis,LPVOID lpESP)
 		KernelThreadManager.CallThreadHook(
 			THREAD_HOOK_TYPE_BEGINSCHEDULE,NULL,lpNextThread);
 
-		__SwitchTo(lpNextThread->lpKernelThreadContext);  //Switch to this thread.
+		//Depend or ARCH
+		//__SwitchTo(lpNextThread->lpKernelThreadContext);  //Switch to this thread.
 	}
 	else  //Not the first time be called.
 	{
 		lpCurrentThread = KernelThreadManager.lpCurrentKernelThread;
 		//This code line saves the context of current kernel thread.
-		lpCurrentThread->lpKernelThreadContext = (__KERNEL_THREAD_CONTEXT*)lpESP;
+
+		//Depend or ARCH
+		//lpCurrentThread->lpKernelThreadContext = (struct __KERNEL_THREAD_CONTEXT*)lpESP;
 
 		switch(lpCurrentThread->dwThreadStatus)
 		{
@@ -594,8 +599,8 @@ static VOID ScheduleFromInt(struct __COMMON_OBJECT* lpThis,LPVOID lpESP)
 			//lpContext = lpCurrentThread->lpKernelThreadContext;
 			KernelThreadManager.CallThreadHook(
 				THREAD_HOOK_TYPE_BEGINSCHEDULE,NULL,lpCurrentThread);
-
-			__SwitchTo(lpCurrentThread->lpKernelThreadContext);
+			//Depend or ARCH
+			//__SwitchTo(lpCurrentThread->lpKernelThreadContext);
 			break;                             //This instruction will never reach.
 
 		case KERNEL_THREAD_STATUS_RUNNING:
@@ -607,8 +612,8 @@ static VOID ScheduleFromInt(struct __COMMON_OBJECT* lpThis,LPVOID lpESP)
 				lpCurrentThread->dwTotalRunTime += SYSTEM_TIME_SLICE;
 				KernelThreadManager.CallThreadHook(
 					THREAD_HOOK_TYPE_BEGINSCHEDULE,NULL,lpCurrentThread);
-
-				__SwitchTo(lpCurrentThread->lpKernelThreadContext);
+				//Depend or ARCH
+				//__SwitchTo(lpCurrentThread->lpKernelThreadContext);
 				return;
 			}
 			else
@@ -623,7 +628,8 @@ static VOID ScheduleFromInt(struct __COMMON_OBJECT* lpThis,LPVOID lpESP)
 				lpMgr->lpCurrentKernelThread = lpNextThread;
 				KernelThreadManager.CallThreadHook(
 					THREAD_HOOK_TYPE_BEGINSCHEDULE,NULL,lpNextThread);
-				__SwitchTo(lpNextThread->lpKernelThreadContext);
+				//Depend or ARCH
+				//__SwitchTo(lpNextThread->lpKernelThreadContext);
 				return;
 			}
 		default:
@@ -632,7 +638,7 @@ static VOID ScheduleFromInt(struct __COMMON_OBJECT* lpThis,LPVOID lpESP)
 		}
 	}
 }
-*/
+
 //SetThreadPriority.
 static DWORD SetThreadPriority(struct __COMMON_OBJECT* lpKernelThread,DWORD dwPriority)
 {
@@ -1022,8 +1028,8 @@ struct __KERNEL_THREAD_MANAGER KernelThreadManager = {
 	GetThreadPriority,                               //GetThreadPriority routine.
 
 	TerminalKernelThread,                            //TerminalKernelThread routine.
-	Sleep,                                           //Sleep routine.
-	CancelSleep,                                     //CancelSleep routine.
+	//Sleep,                                           //Sleep routine.
+	//CancelSleep,                                     //CancelSleep routine.
 
 	SetCurrentIRQL,                                  //SetCurrentIRQL routine.
 	GetCurrentIRQL,                                  //GetCurrentIRQL routine.

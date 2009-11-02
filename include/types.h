@@ -34,6 +34,8 @@
 #define true	1
 #define false	0
 #define bool	int
+
+
 //
 //The definition of unsigned 64 bit integer.
 //

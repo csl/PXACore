@@ -29,3 +29,4 @@ __THREAD_MSG_QUEUE::__THREAD_MSG_QUEUE()
 	this->dwCurrentMsgNum = 0L;
 	this->dwHeader        = 0L;
 	this->dwTrial         = 0L;
+}

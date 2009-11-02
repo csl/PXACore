@@ -16,6 +16,8 @@
 #include "ktmgr.h"
 #include "objqueue.h"
 #include "kmemmgr.h"
+#include "syn_mech.h"
+#include "buffmgr.h"
 
 /*
 #ifndef __STRING__

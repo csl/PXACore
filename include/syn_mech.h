@@ -16,19 +16,26 @@
 #define __SYN_MECH_H__
 #endif
 
-#define __ENTER_CRITICAL_SECTION(lpObj,dwFlags) \
-        __asm push eax             \
-        __asm pushfd               \
+
+#define __ENTER_CRITICAL_SECTION(lpObj,dwFlags)
+
+#define __LEAVE_CRITICAL_SECTION(lpObj,dwFlags)
+
+#ifdef __I386
+
+	#define __ENTER_CRITICAL_SECTION(lpObj,dwFlags) \
+		__asm push eax             \
+		__asm pushfd               \
 		__asm pop eax              \
 		__asm mov dwFlags,eax      \
-        __asm pop eax              \
-        __asm cli                  \
+		__asm pop eax              \
+		__asm cli                  \
 
 
-#define __LEAVE_CRITICAL_SECTION(lpObj,dwFlags) \
-    __asm push dwFlags \
-    __asm popfd                         
-
+	#define __LEAVE_CRITICAL_SECTION(lpObj,dwFlags) \
+	    __asm push dwFlags \
+	    __asm popfd                         
+#endif
 
 #define _ENTER_CRITICAL_SECTION(lpObj)    \
     //
@@ -46,10 +53,10 @@
 //This macros is used to flush cache's content to memory.
 //
 #ifdef __I386
-#define FLUSH_CACHE()  \
-	__asm wbinvd
-#else
-#define FLUSH_CACHE
+	#define FLUSH_CACHE()  \
+		__asm wbinvd
+	#else
+	#define FLUSH_CACHE
 #endif
 
 #define SYNCHRONIZE_MEMORY() FLUSH_CACHE()
@@ -68,10 +75,10 @@
 //writing operations into device immediately,the following macro must be called.
 //
 #ifdef __I386
-#define BARRIER() \
-	__asm LOCK add dword ptr [esp],0
-#else
-#define BARRIER()
+	#define BARRIER() \
+		__asm LOCK add dword ptr [esp],0
+	#else
+	#define BARRIER()
 #endif
 
 

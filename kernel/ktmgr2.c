@@ -21,34 +21,37 @@
 //    Lines number              :
 //***********************************************************************/
 
-#ifndef __STDAFX_H__
 #include "stdafx.h"
-#endif
 
-//#include "archstd.H"
+
+void BUG()
+{
+	printf("BUG oencountered.");
+}
 
 //
 //This routine tris to get a schedulable kernel thread from ready queue,
 //the target kernel thread's priority must larger or equal dwPriority.
 //If can not find,returns NULL.
 //
-__KERNEL_THREAD_OBJECT* GetScheduleKernelThread(__COMMON_OBJECT* lpThis,
-												DWORD dwPriority)
+struct __KERNEL_THREAD_OBJECT* GetScheduleKernelThread(struct __COMMON_OBJECT* lpThis, DWORD dwPriority)
 {
+	DWORD i;
+
 	if((NULL == lpThis) || (dwPriority > MAX_KERNEL_THREAD_PRIORITY)) //Invalid parameters.
 	{
 		return NULL;
 	}
-	__KERNEL_THREAD_OBJECT*   lpKernel = NULL;
-	__KERNEL_THREAD_MANAGER*  lpMgr    = (__KERNEL_THREAD_MANAGER*)lpThis;
-	__PRIORITY_QUEUE*         lpQueue  = NULL;
+	struct __KERNEL_THREAD_OBJECT*   lpKernel = NULL;
+	struct __KERNEL_THREAD_MANAGER*  lpMgr    = (struct __KERNEL_THREAD_MANAGER*)lpThis;
+	struct __PRIORITY_QUEUE*         lpQueue  = NULL;
 	
 	//Search a kernel thread from ready queue.
-	for(DWORD i = dwPriority;i < MAX_KERNEL_THREAD_PRIORITY + 1;i ++)
+	for(i = dwPriority;i < MAX_KERNEL_THREAD_PRIORITY + 1;i ++)
 	{
 		lpQueue  = lpMgr->ReadyQueue[MAX_KERNEL_THREAD_PRIORITY - i + dwPriority];
-		lpKernel = (__KERNEL_THREAD_OBJECT*)lpQueue->GetHeaderElement(
-			(__COMMON_OBJECT*)lpQueue,
+		lpKernel = (struct __KERNEL_THREAD_OBJECT*)lpQueue->GetHeaderElement(
+			(struct __COMMON_OBJECT*)lpQueue,
 			NULL);
 		if(lpKernel)  //Found one successfully.
 		{
@@ -63,8 +66,8 @@ __KERNEL_THREAD_OBJECT* GetScheduleKernelThread(__COMMON_OBJECT* lpThis,
 //The kernel thread's priority acts as index to locate the queue element
 //in ready queue array.
 //
-VOID AddReadyKernelThread(__COMMON_OBJECT* lpThis,
-						  __KERNEL_THREAD_OBJECT* lpKernelThread)
+VOID AddReadyKernelThread(struct __COMMON_OBJECT* lpThis,
+						  struct __KERNEL_THREAD_OBJECT* lpKernelThread)
 {
 	if((NULL == lpThis) || (NULL == lpKernelThread)) //Invalid parameters.
 	{
@@ -79,11 +82,11 @@ VOID AddReadyKernelThread(__COMMON_OBJECT* lpThis,
 		return;
 	}
 
-	__PRIORITY_QUEUE* lpQueue = ((__KERNEL_THREAD_MANAGER*)lpThis)->ReadyQueue[
+	struct __PRIORITY_QUEUE* lpQueue = ((struct __KERNEL_THREAD_MANAGER*)lpThis)->ReadyQueue[
 		lpKernelThread->dwThreadPriority];
 
-	lpQueue->InsertIntoQueue((__COMMON_OBJECT*)lpQueue,
-		(__COMMON_OBJECT*)lpKernelThread,
+	lpQueue->InsertIntoQueue((struct __COMMON_OBJECT*)lpQueue,
+		(struct __COMMON_OBJECT*)lpKernelThread,
 		0L);
 	return;
 }
@@ -130,8 +133,8 @@ __THREAD_HOOK_ROUTINE SetThreadHook(DWORD dwHookType,
 //to the dwHookType value.
 //
 VOID CallThreadHook(DWORD dwHookType,
-					__KERNEL_THREAD_OBJECT* lpPrev,
-					__KERNEL_THREAD_OBJECT* lpNext)
+					struct __KERNEL_THREAD_OBJECT* lpPrev,
+					struct __KERNEL_THREAD_OBJECT* lpNext)
 {
 	if(dwHookType & THREAD_HOOK_TYPE_CREATE)  //Should call create hook.
 	{
@@ -201,18 +204,18 @@ VOID CallThreadHook(DWORD dwHookType,
 // 4. Reschedule all kernel thread(s).
 //This routine will never return.
 //
-VOID KernelThreadWrapper(__COMMON_OBJECT* lpKThread)
+VOID KernelThreadWrapper(struct __COMMON_OBJECT* lpKThread)
 {
-	__KERNEL_THREAD_OBJECT*        lpKernelThread      = NULL;
-	__KERNEL_THREAD_OBJECT*        lpWaitingThread     = NULL;
-	__PRIORITY_QUEUE*              lpWaitingQueue      = NULL;
+	struct __KERNEL_THREAD_OBJECT*        lpKernelThread      = NULL;
+	struct __KERNEL_THREAD_OBJECT*        lpWaitingThread     = NULL;
+	struct __PRIORITY_QUEUE*              lpWaitingQueue      = NULL;
 	DWORD                          dwRetValue          = 0L;
 	DWORD                          dwFlags             = 0L;
 
 	if(NULL == lpKThread)                                //Parameter check.
 		goto __TERMINAL;
 
-	lpKernelThread = (__KERNEL_THREAD_OBJECT*)lpKThread;
+	lpKernelThread = (struct __KERNEL_THREAD_OBJECT*)lpKThread;
 
 	if(NULL == lpKernelThread->KernelThreadRoutine)      //If the main routine is empty.
 		goto __TERMINAL;
@@ -228,27 +231,27 @@ VOID KernelThreadWrapper(__COMMON_OBJECT* lpKThread)
 	//object.
 	//
 	lpWaitingQueue  = lpKernelThread->lpWaitingQueue;
-	lpWaitingThread = (__KERNEL_THREAD_OBJECT*)lpWaitingQueue->GetHeaderElement(
-		(__COMMON_OBJECT*)lpWaitingQueue,
+	lpWaitingThread = (struct __KERNEL_THREAD_OBJECT*)lpWaitingQueue->GetHeaderElement(
+		(struct __COMMON_OBJECT*)lpWaitingQueue,
 		NULL);
 	while(lpWaitingThread)
 	{
 		lpWaitingThread->dwThreadStatus = KERNEL_THREAD_STATUS_READY;
 		KernelThreadManager.AddReadyKernelThread(
-			(__COMMON_OBJECT*)&KernelThreadManager,
+			(struct __COMMON_OBJECT*)&KernelThreadManager,
 			lpWaitingThread);  //Add to ready queue.
-		lpWaitingThread = (__KERNEL_THREAD_OBJECT*)lpWaitingQueue->GetHeaderElement(
-			(__COMMON_OBJECT*)lpWaitingQueue,
+		lpWaitingThread = (struct __KERNEL_THREAD_OBJECT*)lpWaitingQueue->GetHeaderElement(
+			(struct __COMMON_OBJECT*)lpWaitingQueue,
 			NULL);
 	}
 	__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
 
 __TERMINAL:
-	KernelThreadManager.lpTerminalQueue->InsertIntoQueue((__COMMON_OBJECT*)KernelThreadManager.lpTerminalQueue,
-		(__COMMON_OBJECT*)lpKernelThread,
+	KernelThreadManager.lpTerminalQueue->InsertIntoQueue((struct __COMMON_OBJECT*)KernelThreadManager.lpTerminalQueue,
+		(struct __COMMON_OBJECT*)lpKernelThread,
 		0L);    //Insert the current kernel thread object into TERMINAL queue.
 
-	KernelThreadManager.ScheduleFromProc(NULL);  //Re-schedule kernel thread.
+	//KernelThreadManager.ScheduleFromProc(NULL);  //Re-schedule kernel thread.
 
 	return;        //***** CAUTION! ***** : This instruction will never reach.
 }
@@ -262,18 +265,18 @@ __TERMINAL:
 //    current kernel thread(who want to wait),put it into the object's waiting queue;
 // 3. Call ScheduleFromProc to fetch next kernel thread whose status is READY to run.
 //
-/*
-DWORD WaitForKernelThreadObject(__COMMON_OBJECT* lpThis)
+
+DWORD WaitForKernelThreadObject(struct __COMMON_OBJECT* lpThis)
 {
-	__KERNEL_THREAD_OBJECT*           lpKernelThread = NULL;
-	__KERNEL_THREAD_OBJECT*           lpCurrent      = NULL;
-	__PRIORITY_QUEUE*                 lpWaitingQueue = NULL;
+	struct __KERNEL_THREAD_OBJECT*           lpKernelThread = NULL;
+	struct __KERNEL_THREAD_OBJECT*           lpCurrent      = NULL;
+	struct __PRIORITY_QUEUE*                 lpWaitingQueue = NULL;
 	DWORD                             dwFlags        = 0L;
 	
 	if(NULL == lpThis)    //Parameter check.
 		return 1L;
 
-	lpKernelThread = (__KERNEL_THREAD_OBJECT*)lpThis;
+	lpKernelThread = (struct __KERNEL_THREAD_OBJECT*)lpThis;
 
 	__ENTER_CRITICAL_SECTION(NULL,dwFlags);
 	if(KERNEL_THREAD_STATUS_TERMINAL == lpKernelThread->dwThreadStatus)  //If the object's
@@ -294,13 +297,13 @@ DWORD WaitForKernelThreadObject(__COMMON_OBJECT* lpThis)
 	lpCurrent = KernelThreadManager.lpCurrentKernelThread;
 	lpCurrent->dwThreadStatus = KERNEL_THREAD_STATUS_BLOCKED;
 
-	lpWaitingQueue->InsertIntoQueue((__COMMON_OBJECT*)lpWaitingQueue,
-		(__COMMON_OBJECT*)lpCurrent,
+	lpWaitingQueue->InsertIntoQueue((struct __COMMON_OBJECT*)lpWaitingQueue,
+		(struct __COMMON_OBJECT*)lpCurrent,
 		0L);    //Insert into the current kernel thread into waiting queue.
 	__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
 
-	KernelThreadManager.ScheduleFromProc(NULL);
+	//KernelThreadManager.ScheduleFromProc(NULL);
 
 	return 0L;
 }
-*/
+

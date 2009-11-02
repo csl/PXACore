@@ -27,7 +27,7 @@
 //
 //4K block pool controller.
 //
-static __4KSIZE_BLOCK g_4kBlockPool[] = 
+static struct __4KSIZE_BLOCK g_4kBlockPool[] = 
 {
 	{(LPVOID)(KMEM_4K_START_ADDRESS + 0x00000000),0x00100000,0x00000000},  //First 1M pool.
 	{(LPVOID)(KMEM_4K_START_ADDRESS + 0x00100000),0x00100000,0x00000000},  //Second 1M pool.
@@ -47,7 +47,7 @@ static __4KSIZE_BLOCK g_4kBlockPool[] =
 	{0x00000000,0x00000000,0x00000000}
 };
 
-static __BUFFER_CONTROL_BLOCK  AnySizeBuffer = {0};
+static struct __BUFFER_CONTROL_BLOCK  AnySizeBuffer = {0};
 
 //
 //Helper functions.
@@ -125,7 +125,7 @@ DWORD Find0String(DWORD dwNum,BYTE* pdwArray)
 //Set bit to 0 or 1.This function is used by allocater to set occupy map bit.
 //
 
-VOID SetBit(DWORD dwStart,DWORD dwBitNum,BYTE* pbArray)
+VOID SetBit(DWORD dwStart, DWORD dwBitNum, BYTE* pbArray)
 {
 	BYTE bt = 1;
 
@@ -219,13 +219,14 @@ LPVOID _4kAllocate(DWORD dwSize)        //The parameter,dwSize must be 4k's time
 	BOOL   bFind         = FALSE;
 	DWORD  dw0Num        = 0;
 	DWORD  dwIndex       = 0;
+	DWORD i = 0;
 
 	if((dwSize % 4096) || (!dwSize))    //If the size is not 4k's times,return false.
 		return pStartAddress;
 	if(dwSize > KMEM_MAX_BLOCK_SIZE)
 		return pStartAddress;
 
-	for(DWORD i = 0;i < KMEM_MAX_4K_POOL_NUM;i ++)
+	for(i = 0;i < KMEM_MAX_4K_POOL_NUM;i ++)
 	{
 		if(g_4kBlockPool[i].dwMaxBlockSize >= dwSize)  //To find the enough large block.
 		{
@@ -261,6 +262,7 @@ VOID _4kFree(LPVOID pStartAddress,DWORD dwSize)
 	DWORD dwIndex     = 0x0000;
 	DWORD dwStartPos  = 0x0000;
 	DWORD dw1Num      = 0x0000;
+	DWORD i = 0;
 
 	if((0 == dwSize)
 		|| (NULL == pStartAddress)
@@ -285,7 +287,7 @@ VOID _4kFree(LPVOID pStartAddress,DWORD dwSize)
 	RoundTo4k(dwSize);                    //Round to 4k.
 	dw1Num = dwSize / 4096;               //How many 4k blocks will be freed.
 
-	for(DWORD i = 0;i < dw1Num;i ++)
+	for(i = 0;i < dw1Num;i ++)
 	{
 		ClearBit(g_4kBlockPool[dwLoop].dwOccupMap[dwIndex],dwStartPos);  //Clear the bit.
 		dwStartPos += 1;             //Get the start position of the 1 bit.
@@ -317,7 +319,7 @@ LPVOID KMemAlloc(DWORD dwSize,DWORD dwSizeType)
 		if(bFirst)
 		{
 			bFirst = FALSE;
-			InitBufferMgr(&AnySizeBuffer);  //Initialize the buffer manager.
+			//InitBufferMgr(&AnySizeBuffer);  //Initialize the buffer manager.
 			AnySizeBuffer.BufferOperations.lpCreateBuffer2(&AnySizeBuffer, //Init buffer pool.
 			              (LPVOID)KMEM_ANYSIZE_START_ADDRESS,
 			              (DWORD)(KMEM_ANYSIZE_END_ADDRESS - KMEM_ANYSIZE_START_ADDRESS + 1));

@@ -25,7 +25,7 @@ HANDLE CreateKernelThread(DWORD dwStackSize,
 						  LPSTR lpszName)
 {
 	return (HANDLE)KernelThreadManager.CreateKernelThread(
-		(__COMMON_OBJECT*)&KernelThreadManager,
+		(struct __COMMON_OBJECT*)&KernelThreadManager,
 		dwStackSize,
 		dwInitStatus,
 		dwPriority,
@@ -38,7 +38,7 @@ HANDLE CreateKernelThread(DWORD dwStackSize,
 VOID DestroyKernelThread(HANDLE hThread)
 {
 	KernelThreadManager.DestroyKernelThread(
-		(__COMMON_OBJECT*)&KernelThreadManager,
+		(struct __COMMON_OBJECT*)&KernelThreadManager,
 		hThread);
 }
 
@@ -71,7 +71,7 @@ BOOL GetMessage(MSG* lpMsg)
 	__KERNEL_THREAD_OBJECT*  lpKernelThread = NULL;
 
 	lpKernelThread = KernelThreadManager.lpCurrentKernelThread;
-	return KernelThreadManager.GetMessage((__COMMON_OBJECT*)lpKernelThread,lpMsg);
+	return KernelThreadManager.GetMessage((struct __COMMON_OBJECT*)lpKernelThread,lpMsg);
 }
 
 BOOL SendMessage(HANDLE hThread,MSG* lpMsg)
@@ -83,10 +83,10 @@ BOOL SendMessage(HANDLE hThread,MSG* lpMsg)
 BOOL Sleep(DWORD dwMillionSecond)
 {
 	return KernelThreadManager.Sleep(
-		(__COMMON_OBJECT*)&KernelThreadManager,
+		(struct __COMMON_OBJECT*)&KernelThreadManager,
 		dwMillionSecond);
 }
-
+/*
 HANDLE SetTimer(DWORD dwTimerID,
 				DWORD dwMillionSecond,
 				__DIRECT_TIMER_HANDLER lpHandler,
@@ -94,7 +94,7 @@ HANDLE SetTimer(DWORD dwTimerID,
 				DWORD dwTimerFlags)
 {
 	return System.SetTimer(
-		(__COMMON_OBJECT*)&System,
+		(struct __COMMON_OBJECT*)&System,
 		KernelThreadManager.lpCurrentKernelThread,
 		dwTimerID,
 		dwMillionSecond,
@@ -106,13 +106,13 @@ HANDLE SetTimer(DWORD dwTimerID,
 VOID CancelTimer(HANDLE hTimer)
 {
 	System.CancelTimer(
-		(__COMMON_OBJECT*)&System,
+		(struct __COMMON_OBJECT*)&System,
 		hTimer);
 }
-
+*/
 HANDLE CreateEvent(BOOL bInitialStatus)
 {
-	__COMMON_OBJECT*         lpCommonObject    = NULL;
+	struct __COMMON_OBJECT*         lpCommonObject    = NULL;
 	__EVENT*                 lpEvent           = NULL;
 
 	lpCommonObject = ObjectManager.CreateObject(&ObjectManager,
@@ -130,7 +130,7 @@ HANDLE CreateEvent(BOOL bInitialStatus)
 
 	lpEvent = (__EVENT*)lpCommonObject;
 	if(bInitialStatus)
-		lpEvent->SetEvent((__COMMON_OBJECT*)lpEvent);
+		lpEvent->SetEvent((struct __COMMON_OBJECT*)lpEvent);
 
 __TERMINAL:
 	return lpCommonObject;
@@ -163,15 +163,15 @@ HANDLE CreateMutex()
 	{
 		return NULL;
 	}
-	if(!lpMutex->Initialize((__COMMON_OBJECT*)lpMutex))  //Can not initialize.
+	if(!lpMutex->Initialize((struct __COMMON_OBJECT*)lpMutex))  //Can not initialize.
 	{
 		ObjectManager.DestroyObject(
 			&ObjectManager,
-			(__COMMON_OBJECT*)lpMutex);
+			(struct __COMMON_OBJECT*)lpMutex);
 		return NULL;
 	}
 
-	return (__COMMON_OBJECT*)lpMutex;  //Create successfully.
+	return (struct __COMMON_OBJECT*)lpMutex;  //Create successfully.
 }
 
 VOID DestroyMutex(HANDLE hMutex)
@@ -186,9 +186,10 @@ DWORD ReleaseMutex(HANDLE hEvent)
 	return ((__MUTEX*)hEvent)->ReleaseMutex(hEvent);
 }
 
+
 DWORD WaitForThisObject(HANDLE hObject)
 {
-	__COMMON_OBJECT* lpCommonObject = (__COMMON_OBJECT*)hObject;
+	struct __COMMON_OBJECT* lpCommonObject = (struct __COMMON_OBJECT*)hObject;
 	__KERNEL_THREAD_OBJECT* lpThread = NULL;
 	__EVENT* lpEvent = NULL;
 	__MUTEX* lpMutex = NULL;
@@ -200,22 +201,22 @@ DWORD WaitForThisObject(HANDLE hObject)
 	{
 	case OBJECT_TYPE_KERNEL_THREAD:
 		lpThread = (__KERNEL_THREAD_OBJECT*)lpCommonObject;
-		return lpThread->WaitForThisObject((__COMMON_OBJECT*)lpThread);
+		return lpThread->WaitForThisObject((struct __COMMON_OBJECT*)lpThread);
 	case OBJECT_TYPE_EVENT:
 		lpEvent = (__EVENT*)lpCommonObject;
-		return lpEvent->WaitForThisObject((__COMMON_OBJECT*)lpEvent);
+		return lpEvent->WaitForThisObject((struct __COMMON_OBJECT*)lpEvent);
 	case OBJECT_TYPE_MUTEX:
 		lpMutex = (__MUTEX*)lpCommonObject;
-		return lpMutex->WaitForThisObject((__COMMON_OBJECT*)lpMutex);
+		return lpMutex->WaitForThisObject((struct __COMMON_OBJECT*)lpMutex);
 	default:
 		break;
 	}
 	return OBJECT_WAIT_FAILED;
 }
-
+/*
 DWORD WaitForThisObjectEx(HANDLE hObject,DWORD dwMillionSecond)
 {
-	__COMMON_OBJECT* lpCommonObject = (__COMMON_OBJECT*)hObject;
+	struct __COMMON_OBJECT* lpCommonObject = (struct __COMMON_OBJECT*)hObject;
 	__KERNEL_THREAD_OBJECT* lpThread = NULL;
 	__EVENT* lpEvent = NULL;
 	__MUTEX* lpMutex = NULL;
@@ -229,10 +230,10 @@ DWORD WaitForThisObjectEx(HANDLE hObject,DWORD dwMillionSecond)
 		return OBJECT_WAIT_FAILED;  //Don't support timeout waiting yet.
 	case OBJECT_TYPE_EVENT:
 		lpEvent = (__EVENT*)lpCommonObject;
-		return lpEvent->WaitForThisObjectEx((__COMMON_OBJECT*)lpEvent,dwMillionSecond);
+		return lpEvent->WaitForThisObjectEx((struct __COMMON_OBJECT*)lpEvent,dwMillionSecond);
 	case OBJECT_TYPE_MUTEX:
 		lpMutex = (__MUTEX*)lpCommonObject;
-		return lpMutex->WaitForThisObjectEx((__COMMON_OBJECT*)lpMutex,dwMillionSecond);
+		return lpMutex->WaitForThisObjectEx((struct __COMMON_OBJECT*)lpMutex,dwMillionSecond);
 	default:
 		break;
 	}
@@ -244,7 +245,7 @@ HANDLE ConnectInterrupt(__INTERRUPT_HANDLER lpInterruptHandler,
 						UCHAR               ucVector)
 {
 	return System.ConnectInterrupt(
-		(__COMMON_OBJECT*)&System,
+		(struct __COMMON_OBJECT*)&System,
 		lpInterruptHandler,
 		lpHandlerParam,
 		ucVector,
@@ -258,7 +259,7 @@ HANDLE ConnectInterrupt(__INTERRUPT_HANDLER lpInterruptHandler,
 VOID DisconnectInterrupt(HANDLE hInterrupt)
 {
 	System.DisconnectInterrupt(
-		(__COMMON_OBJECT*)&System,
+		(struct __COMMON_OBJECT*)&System,
 		hInterrupt);
 }
 
@@ -269,7 +270,7 @@ LPVOID VirtualAlloc(LPVOID lpDesiredAddr,
 					UCHAR* lpszRegName)
 {
 	return lpVirtualMemoryMgr->VirtualAlloc(
-		(__COMMON_OBJECT*)lpVirtualMemoryMgr,
+		(struct __COMMON_OBJECT*)lpVirtualMemoryMgr,
 		lpDesiredAddr,
 		dwSize,
 		dwAllocateFlags,
@@ -281,6 +282,7 @@ LPVOID VirtualAlloc(LPVOID lpDesiredAddr,
 VOID VirtualFree(LPVOID lpVirtualAddr)
 {
 	lpVirtualMemoryMgr->VirtualFree(
-		(__COMMON_OBJECT*)lpVirtualMemoryMgr,
+		(struct __COMMON_OBJECT*)lpVirtualMemoryMgr,
 		lpVirtualAddr);
 }
+*/

@@ -88,7 +88,7 @@ END_DEFINE_OBJECT()
 //
 
 #define BEGIN_DECLARE_INIT_DATA(name)            \
-	static __OBJECT_INIT_DATA name[] = \
+	static struct __OBJECT_INIT_DATA name[] = \
 	{
 
 #define OBJECT_INIT_DATA(objtype,objsize,init,uninit)    \

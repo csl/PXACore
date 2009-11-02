@@ -12,9 +12,7 @@
 //    Lines number              :
 //***********************************************************************/
 
-#ifndef __STDAFX_H__
 #include "stdafx.h"
-#endif
 
 //
 //The following array is used by Object Manager to create object.
@@ -24,22 +22,23 @@
 //
 
 BEGIN_DECLARE_INIT_DATA(ObjectInitData)
-    //OBJECT_INIT_DATA(0,0,0,0)
+        //OBJECT_INIT_DATA(0,0,0,0)
 	//OBJECT_INIT_DATA(0,0,0,0)
 	// Please add your new defined object's initialization data here.
-	OBJECT_INIT_DATA(OBJECT_TYPE_PRIORITY_QUEUE,sizeof(__PRIORITY_QUEUE),
-	PriQueueInitialize,PriQueueUninitialize)
+/*
+	OBJECT_INIT_DATA(OBJECT_TYPE_PRIORITY_QUEUE, sizeof(struct __PRIORITY_QUEUE),
+	PriQueueInitialize, PriQueueUninitialize)
 
-	OBJECT_INIT_DATA(OBJECT_TYPE_KERNEL_THREAD,sizeof(__KERNEL_THREAD_OBJECT),
-	KernelThreadInitialize,KernelThreadUninitialize)
+	OBJECT_INIT_DATA(OBJECT_TYPE_KERNEL_THREAD, sizeof(struct __KERNEL_THREAD_OBJECT),
+	KernelThreadInitialize, KernelThreadUninitialize)
 
-	OBJECT_INIT_DATA(OBJECT_TYPE_EVENT,sizeof(__EVENT),
-	EventInitialize,EventUninitialize)
+	OBJECT_INIT_DATA(OBJECT_TYPE_EVENT, sizeof(struct __EVENT),
+	EventInitialize, EventUninitialize)
 
-	OBJECT_INIT_DATA(OBJECT_TYPE_MUTEX,sizeof(__MUTEX),
-	MutexInitialize,MutexUninitialize)
+	OBJECT_INIT_DATA(OBJECT_TYPE_MUTEX, sizeof(struct __MUTEX),
+	MutexInitialize, MutexUninitialize)
 
-	OBJECT_INIT_DATA(OBJECT_TYPE_TIMER,sizeof(__TIMER_OBJECT),
+	OBJECT_INIT_DATA(OBJECT_TYPE_TIMER,sizeof(struct __TIMER_OBJECT),
 	TimerInitialize,TimerUninitialize)
 
 	OBJECT_INIT_DATA(OBJECT_TYPE_INTERRUPT,sizeof(__INTERRUPT_OBJECT),
@@ -63,29 +62,30 @@ BEGIN_DECLARE_INIT_DATA(ObjectInitData)
 	OBJECT_INIT_DATA(OBJECT_TYPE_VIRTUAL_MEMORY_MANAGER,sizeof(__VIRTUAL_MEMORY_MANAGER),
 	VmmInitialize,VmmUninitialize)
 
-	OBJECT_INIT_DATA(OBJECT_TYPE_COMMON_QUEUE,sizeof(__COMMON_QUEUE),
+	OBJECT_INIT_DATA(OBJECT_TYPE_COMMON_QUEUE,sizeof(struct __COMMON_QUEUE),
 	CommQueueInit,CommQueueUninit)
 
 	//OBJECT_INIT_DATA(OBJECT_TYPE_SEMAPHORE,sizeof(__SEMAPHORE),
 	//SemaphoreInitialize,SemaphoreUninitialize)
-
+*/
 END_DECLARE_INIT_DATA()
 
 //
 //The predefinition of ObjectManager's member functions.
 //
 
-static __COMMON_OBJECT* CreateObject(__OBJECT_MANAGER*,__COMMON_OBJECT*,DWORD);
-static __COMMON_OBJECT* GetObjectByID(__OBJECT_MANAGER*,DWORD);
-static __COMMON_OBJECT* GetFirstObjectByType(__OBJECT_MANAGER*,DWORD);
-static VOID             DestroyObject(__OBJECT_MANAGER*,__COMMON_OBJECT*);
+static struct __COMMON_OBJECT* CreateObject(struct __OBJECT_MANAGER*,struct __COMMON_OBJECT*,DWORD);
+static struct __COMMON_OBJECT* GetObjectByID(struct __OBJECT_MANAGER*,DWORD);
+static struct __COMMON_OBJECT* GetFirstObjectByType(struct __OBJECT_MANAGER*,DWORD);
+static VOID   DestroyObject(struct __OBJECT_MANAGER*,struct __COMMON_OBJECT*);
 
 //
 //The definition of the ObjectManager,the first object and the only object in Hello
 //Taiwan.
 //
 
-__OBJECT_MANAGER    ObjectManager = {
+struct __OBJECT_MANAGER    ObjectManager = 
+{
 	1,                                  //Current avaiable object ID.
 	{0},
 	CreateObject,                       //CreateObject routine.
@@ -107,11 +107,11 @@ __OBJECT_MANAGER    ObjectManager = {
 //   otherwise,returns NULL.
 //
 
-static __COMMON_OBJECT* CreateObject(__OBJECT_MANAGER* lpObjectManager,    //Object Manager.
-				     __COMMON_OBJECT*  lpObjectOwner,      //Object's owner.
+static struct __COMMON_OBJECT* CreateObject(struct __OBJECT_MANAGER* lpObjectManager,    //Object Manager.
+				     struct __COMMON_OBJECT*  lpObjectOwner,      //Object's owner.
 				     DWORD dwType)
 {
-	__COMMON_OBJECT* pObject         = NULL;
+	struct __COMMON_OBJECT* pObject         = NULL;
 	DWORD            dwLoop          = 0L;
 	BOOL             bFind           = FALSE;
 	DWORD            dwObjectSize    = 0L;
@@ -140,7 +140,7 @@ static __COMMON_OBJECT* CreateObject(__OBJECT_MANAGER* lpObjectManager,    //Obj
 	if(0 == dwObjectSize)  //Invalid object size.
 		goto __TERMINAL;
 
-	pObject = (__COMMON_OBJECT*)KMemAlloc(dwObjectSize,KMEM_SIZE_TYPE_ANY);
+	pObject = (struct __COMMON_OBJECT*)KMemAlloc(dwObjectSize,KMEM_SIZE_TYPE_ANY);
 	if(NULL == pObject)  //Can not allocate memory.
 		goto __TERMINAL;
 
@@ -156,8 +156,7 @@ static __COMMON_OBJECT* CreateObject(__OBJECT_MANAGER* lpObjectManager,    //Obj
 
 	//The following code insert the new created object into ObjectArrayList.
 	if(NULL == lpObjectManager->ObjectListHeader[dwType].lpFirstObject)  //If this is the
-		                                                                 //first object of
-																		 //this type.
+	 //first object of this type.
 	{
 		pObject->lpNextObject = NULL;
 		pObject->lpPrevObject = NULL;
@@ -197,11 +196,11 @@ __TERMINAL:
 //   The base address of the object,if failed,returns NULL.
 //
 
-static __COMMON_OBJECT* GetObjectByID(__OBJECT_MANAGER* lpObjectManager, DWORD dwObjectID)
+static struct __COMMON_OBJECT* GetObjectByID(struct __OBJECT_MANAGER* lpObjectManager, DWORD dwObjectID)
 {
-	__COMMON_OBJECT*         lpObject     = NULL;
+	struct __COMMON_OBJECT*         lpObject     = NULL;
 	DWORD                    dwLoop       = 0L;
-	__OBJECT_LIST_HEADER*    lpListHeader = NULL;
+	struct __OBJECT_LIST_HEADER*    lpListHeader = NULL;
 	BOOL                     bFind        = FALSE;
 
 	if(NULL == lpObjectManager)  //Parameters check.
@@ -247,9 +246,9 @@ __TERMINAL:
 //   Returns the base address of the first object,if failed,returns NULL.
 //
 
-static __COMMON_OBJECT* GetFirstObjectByType(__OBJECT_MANAGER* lpObjectManager, DWORD dwObjectType)
+static struct __COMMON_OBJECT* GetFirstObjectByType(struct __OBJECT_MANAGER* lpObjectManager, DWORD dwObjectType)
 {
-	__COMMON_OBJECT* lpObject = NULL;
+	struct __COMMON_OBJECT* lpObject = NULL;
 
 	if((NULL == lpObjectManager) || (dwObjectType >= MAX_OBJECT_TYPE))    //Parameter check.
 		goto __TERMINAL;
@@ -272,10 +271,10 @@ __TERMINAL:
 //   No.
 //
 
-static VOID DestroyObject(__OBJECT_MANAGER* lpObjectManager, __COMMON_OBJECT*  lpObject)
+static VOID DestroyObject(struct __OBJECT_MANAGER* lpObjectManager, struct __COMMON_OBJECT*  lpObject)
 {
-	__OBJECT_LIST_HEADER*      lpListHeader      = NULL;
-	__COMMON_OBJECT*           lpTmpObject       = NULL;
+	struct __OBJECT_LIST_HEADER*      lpListHeader      = NULL;
+	struct __COMMON_OBJECT*           lpTmpObject       = NULL;
 	DWORD                      dwMaxID           = 0L;
 	BOOL                       bFind             = FALSE;
 
