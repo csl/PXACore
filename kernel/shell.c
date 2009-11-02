@@ -11,29 +11,12 @@
 //                                2.
 //    Lines number              :
 //***********************************************************************/
-#ifndef __STDAFX_H__
 #include "stdafx.H"
-#endif
-
-#ifndef __KAPI_H__
-#include "KAPI.H"
-#endif
-
-#ifndef __IOCTRL_S_H__
-#include "IOCTRL_S.H"
-#endif
-
-#ifndef __SYSD_S_H__
-#include "SYSD_S.H"
-#endif
-
-#ifndef __RT8139_H__
-#include "RT8139.H"
-#endif
-
-#ifndef __EXTCMD_H__
-#include "..\EXTCMD.H"
-#endif
+#include "kapi.H"
+#include "ioctrl_s.h"
+#include "sysd_s.h"
+#include "rt8139.h"
+#include "extcmd.h"
 
 //
 //Global variables.
@@ -52,7 +35,7 @@ __TASK_CTRL_BLOCK  tcbShell = {0,0,0,0,0,
 __KTHREAD_CONTROL_BLOCK* g_pShellCtrlBlock   = NULL;     //The shell's kernal thread control
                                                          //block pointer.
 
-__KERNEL_THREAD_OBJECT*  g_lpShellThread     = NULL;     //The system shell's kernel thread 
+struct __KERNEL_THREAD_OBJECT*  g_lpShellThread     = NULL;     //The system shell's kernel thread 
                                                          //object.
 
 static BYTE        CmdBuffer[MAX_BUFFER_LEN] = {0};  //Command buffer.
@@ -999,10 +982,10 @@ static DWORD LazyPig(LPVOID)
 
 VOID TestHandler(LPSTR)
 {
-	__KERNEL_THREAD_OBJECT*  lpCritical1 = NULL;
-	__KERNEL_THREAD_OBJECT*  lpCritical2 = NULL;
-	__KERNEL_THREAD_OBJECT*  lpCritical3 = NULL;
-	__KERNEL_THREAD_OBJECT*  lpHigh      = NULL;
+	struct __KERNEL_THREAD_OBJECT*  lpCritical1 = NULL;
+	struct __KERNEL_THREAD_OBJECT*  lpCritical2 = NULL;
+	struct __KERNEL_THREAD_OBJECT*  lpCritical3 = NULL;
+	struct __KERNEL_THREAD_OBJECT*  lpHigh      = NULL;
 
 	lpCritical1 = KernelThreadManager.CreateKernelThread(
 		(__COMMON_OBJECT*)&KernelThreadManager,
@@ -1073,7 +1056,7 @@ VOID TestHandler(LPSTR)
 
 VOID IoCtrlApp(LPSTR)
 {
-	__KERNEL_THREAD_OBJECT*    lpIoCtrlThread    = NULL;
+	struct __KERNEL_THREAD_OBJECT*    lpIoCtrlThread    = NULL;
 
 	lpIoCtrlThread = KernelThreadManager.CreateKernelThread(
 		(__COMMON_OBJECT*)&KernelThreadManager,
@@ -1109,7 +1092,7 @@ VOID IoCtrlApp(LPSTR)
 
 VOID SysDiagApp(LPSTR)
 {
-	__KERNEL_THREAD_OBJECT*        lpSysDiagThread    = NULL;
+	struct __KERNEL_THREAD_OBJECT*        lpSysDiagThread    = NULL;
 
 	lpSysDiagThread = KernelThreadManager.CreateKernelThread(
 		(__COMMON_OBJECT*)&KernelThreadManager,
@@ -1234,10 +1217,10 @@ static DWORD ConsumerRoutine3(LPVOID)
 
 VOID UnTestHandler(LPSTR)
 {
-	__KERNEL_THREAD_OBJECT*    lpProduce;
-	__KERNEL_THREAD_OBJECT*    lpConsumer1;
-	__KERNEL_THREAD_OBJECT*    lpConsumer2;
-	__KERNEL_THREAD_OBJECT*    lpConsumer3;
+	struct __KERNEL_THREAD_OBJECT*    lpProduce;
+	struct __KERNEL_THREAD_OBJECT*    lpConsumer1;
+	struct __KERNEL_THREAD_OBJECT*    lpConsumer2;
+	struct __KERNEL_THREAD_OBJECT*    lpConsumer3;
 
 	lpMutexObj = (__MUTEX*)CreateMutex();  //Create event object.
 	if(NULL == lpMutexObj)
@@ -1482,7 +1465,7 @@ VOID  DoCommand()
 	BOOL bResult = FALSE;        //If find the correct command object,then
 	                             //This flag set to TRUE.
 	BYTE tmpBuffer[36];
-	__KERNEL_THREAD_OBJECT* hKernelThread = NULL;
+	struct __KERNEL_THREAD_OBJECT* hKernelThread = NULL;
 
 	CmdBuffer[BufferPtr] = 0x00; //Prepare the command string.
 	BufferPtr = 0;

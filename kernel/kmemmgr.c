@@ -13,9 +13,7 @@
 //    Lines number              :
 //***********************************************************************/
 
-#ifndef __STDAFX_H__
-#include "..\INCLUDE\StdAfx.h"
-#endif
+#include "stdafx.h"
 
 //KMEM_4K_START_ADDRESS = 0x00200000
 //KMEM_4K_END_ADDRESS   = 0x00BFFFFF
@@ -29,7 +27,8 @@
 //
 //4K block pool controller.
 //
-static __4KSIZE_BLOCK g_4kBlockPool[] = {
+static __4KSIZE_BLOCK g_4kBlockPool[] = 
+{
 	{(LPVOID)(KMEM_4K_START_ADDRESS + 0x00000000),0x00100000,0x00000000},  //First 1M pool.
 	{(LPVOID)(KMEM_4K_START_ADDRESS + 0x00100000),0x00100000,0x00000000},  //Second 1M pool.
 	{(LPVOID)(KMEM_4K_START_ADDRESS + 0x00200000),0x00100000,0x00000000},
@@ -45,7 +44,8 @@ static __4KSIZE_BLOCK g_4kBlockPool[] = {
 	{0x00000000,0x00000000,0x00000000},
 	{0x00000000,0x00000000,0x00000000},
 	{0x00000000,0x00000000,0x00000000},
-	{0x00000000,0x00000000,0x00000000}};
+	{0x00000000,0x00000000,0x00000000}
+};
 
 static __BUFFER_CONTROL_BLOCK  AnySizeBuffer = {0};
 

@@ -14,9 +14,7 @@
 //    Lines number              :
 //***********************************************************************/
 
-#ifndef __KAPI_H__
-#include "..\INCLUDE\KAPI.H"
-#endif
+#include "kapi.h"
 
 HANDLE CreateKernelThread(DWORD dwStackSize,
 						  DWORD dwInitStatus,

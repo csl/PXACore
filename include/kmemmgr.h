@@ -120,7 +120,8 @@
 	__tag1K_BLOCK* pNext;
 }__1KSIZE_BLOCK;                        //1K size memory block.*/
 
-struct __4KSIZE_BLOCK{
+struct __4KSIZE_BLOCK
+{
 	LPVOID         pStartAddress;
 	DWORD          dwMaxBlockSize;      //Max block size can be allocated in 
 	                                    //current block pool.

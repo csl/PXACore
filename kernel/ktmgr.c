@@ -106,7 +106,7 @@ VOID KernelThreadUninitialize(struct __COMMON_OBJECT* lpThis)
 {
 	struct __KERNEL_THREAD_OBJECT*   lpKernelThread = NULL;
 	struct __PRIORITY_QUEUE*         lpWaitingQueue = NULL;
-	__EVENT*                  lpMsgEvent     = NULL;
+	struct __EVENT*                  lpMsgEvent     = NULL;
 
 	if(NULL == lpThis)    //Parameter check.
 		return;
@@ -255,7 +255,7 @@ static struct __KERNEL_THREAD_OBJECT* CreateKernelThread(struct __COMMON_OBJECT*
 						  LPSTR lpszName)
 {
 	struct __KERNEL_THREAD_OBJECT* lpKernelThread = NULL;
-	__KERNEL_THREAD_MANAGER* lpMgr = NULL;
+	struct __KERNEL_THREAD_MANAGER* lpMgr = NULL;
 	LPVOID lpStack = NULL;
 	BOOL bSuccess = FALSE;
 	DWORD* lpStackPtr = NULL;
@@ -268,7 +268,7 @@ static struct __KERNEL_THREAD_OBJECT* CreateKernelThread(struct __COMMON_OBJECT*
 					(KERNEL_THREAD_STATUS_SUSPENDED != dwStatus))
 		goto __TERMINAL;
 
-	lpMgr = (__KERNEL_THREAD_MANAGER*)lpThis;
+	lpMgr = (struct __KERNEL_THREAD_MANAGER*)lpThis;
 
 	lpKernelThread = (struct __KERNEL_THREAD_OBJECT*)ObjectManager.CreateObject(&ObjectManager,
 		NULL,
@@ -386,7 +386,7 @@ __TERMINAL:
 static VOID DestroyKernelThread(struct __COMMON_OBJECT* lpThis,struct __COMMON_OBJECT* lpKernel)
 {
 	struct __KERNEL_THREAD_OBJECT*     lpKernelThread   = NULL;
-	__KERNEL_THREAD_MANAGER*    lpMgr            = NULL;
+	struct __KERNEL_THREAD_MANAGER*    lpMgr            = NULL;
 	struct __PRIORITY_QUEUE*           lpTerminalQueue  = NULL;
 	LPVOID                      lpStack          = NULL;
 
@@ -394,7 +394,7 @@ static VOID DestroyKernelThread(struct __COMMON_OBJECT* lpThis,struct __COMMON_O
 		return;
 
 	lpKernelThread = (struct __KERNEL_THREAD_OBJECT*)lpKernel;
-	lpMgr          = (__KERNEL_THREAD_MANAGER*)lpThis;
+	lpMgr          = (struct __KERNEL_THREAD_MANAGER*)lpThis;
 
 	if(KERNEL_THREAD_STATUS_TERMINAL != lpKernelThread->dwThreadStatus)
 		return;
@@ -915,14 +915,14 @@ static BOOL MgrGetMessage(struct __COMMON_OBJECT* lpThread,__KERNEL_THREAD_MESSA
 
 static BOOL LockKernelThread(struct __COMMON_OBJECT* lpThis,struct __COMMON_OBJECT* lpThread)
 {
-	__KERNEL_THREAD_MANAGER*                   lpManager        = NULL;
+	struct __KERNEL_THREAD_MANAGER*                   lpManager        = NULL;
 	struct __KERNEL_THREAD_OBJECT*                    lpKernelThread   = NULL;
 	DWORD                                      dwFlags          = 0L;
 
 	if(NULL == lpThis)    //Parameter check.
 		return FALSE;
 
-	lpManager = (__KERNEL_THREAD_MANAGER*)lpThis;
+	lpManager = (struct __KERNEL_THREAD_MANAGER*)lpThis;
 
 	//ENTER_CRITICAL_SECTION();
 	__ENTER_CRITICAL_SECTION(NULL,dwFlags)
@@ -951,14 +951,14 @@ static BOOL LockKernelThread(struct __COMMON_OBJECT* lpThis,struct __COMMON_OBJE
 
 static VOID UnlockKernelThread(struct __COMMON_OBJECT* lpThis,struct __COMMON_OBJECT* lpThread)
 {
-	__KERNEL_THREAD_MANAGER*               lpManager       = NULL;
+	struct __KERNEL_THREAD_MANAGER*               lpManager       = NULL;
 	struct __KERNEL_THREAD_OBJECT*                lpKernelThread  = NULL;
 	DWORD                                  dwFlags         = 0L;
 
 	if(NULL == lpThis)    //Parameter check.
 		return;
 
-	lpManager = (__KERNEL_THREAD_MANAGER*)lpThis;
+	lpManager = (struct __KERNEL_THREAD_MANAGER*)lpThis;
 
 	//ENTER_CRITICAL_SECTION();
 	__ENTER_CRITICAL_SECTION(NULL,dwFlags)
@@ -984,7 +984,7 @@ static VOID UnlockKernelThread(struct __COMMON_OBJECT* lpThis,struct __COMMON_OB
 //The definition of Kernel Thread Manager.
 //
 
-__KERNEL_THREAD_MANAGER KernelThreadManager = {
+struct __KERNEL_THREAD_MANAGER KernelThreadManager = {
 	0L,                                              //dwCurrentIRQL.
 	NULL,                                            //CurrentKernelThread.
 
@@ -1007,7 +1007,7 @@ __KERNEL_THREAD_MANAGER KernelThreadManager = {
 
 	GetScheduleKernelThread,                         //GetScheduleKernelThread.
 	AddReadyKernelThread,                            //AddReadyKernelThread.
-	KernelThreadMgrInit,                             //Initialize routine.
+	//KernelThreadMgrInit,                             //Initialize routine.
 
 	CreateKernelThread,                              //CreateKernelThread routine.
 	DestroyKernelThread,                             //DestroyKernelThread routine.
@@ -1054,7 +1054,7 @@ __KERNEL_THREAD_MANAGER KernelThreadManager = {
 //Dispatch a message to an message(event) handler.
 //
 
-DWORD DispatchMessage(__KERNEL_THREAD_MESSAGE* lpMsg,__KERNEL_THREAD_MESSAGE_HANDLER lpHandler)
+DWORD DispatchMessage(struct __KERNEL_THREAD_MESSAGE* lpMsg,__KERNEL_THREAD_MESSAGE_HANDLER lpHandler)
 {
 	return lpHandler(lpMsg->wCommand,lpMsg->wParam,lpMsg->dwParam);
 }

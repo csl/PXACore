@@ -15,6 +15,7 @@
 #include "commobj.h"
 #include "ktmgr.h"
 #include "objqueue.h"
+#include "kmemmgr.h"
 
 /*
 #ifndef __STRING__

@@ -181,7 +181,7 @@ END_DEFINE_OBJECT()
 #define PRIORITY_LEVEL_LOWEST           PRIORITY_LEVEL_IDLE
 //#define PRIORITY_LEVEL_INVALID          0x00000000
 
-//#define DEFAULT_STACK_SIZE              0x00004000  //Default stack size,if the dwStackSize
+#define DEFAULT_STACK_SIZE              0x00004000  //Default stack size,if the dwStackSize
 								                    //parameter of CreateKernelThread is 0,
 													//then the CreateKernelThread will allocate
 													//DEFAULT_STACK_SIZE bytes to be used as

@@ -17,7 +17,7 @@
 #ifndef __KAPI_H__
 #define __KAPI_H__
 #endif
-
+/*
 #ifndef __I386
 #define __I386
 #endif
@@ -25,62 +25,21 @@
 #ifndef __HELLO_TAIWAN__
 #include "hellocn.h"
 #endif
-
-#ifndef __TYPES_H__
+*/
 #include "TYPES.H"
-#endif
-
-#ifndef __COMMOBJ_H__
 #include "COMMOBJ.H"
-#endif
-
-#ifndef __SYN_MECH_H__
 #include "SYN_MECH.H"
-#endif
-
-#ifndef __COMQUEUE_H__
 #include "COMQUEUE.H"
-#endif
-
-#ifndef __OBJQUEUE_H__
 #include "objqueue.h"
-#endif
-
-#ifndef __KTMGR_H__
 #include "ktmgr.h"
-#endif
-
-#ifndef __PERF_H__
 #include "PERF.H"
-#endif
-
-#ifndef __SYSTEM_H__
 #include "SYSTEM.H"
-#endif
-
-#ifndef __DIM_H__
 #include "dim.h"
-#endif
-
-#ifndef __MEMMGR_H__
 #include "memmgr.h"
-#endif
-
-#ifndef __PAGEIDX_H__
 #include "PAGEIDX.H"
-#endif
-
-#ifndef __VMM_H__
-#include "VMM.H"
-#endif
-
-#ifndef __KMEMMGR__
+//#include "VMM.H"
 #include "kmemmgr.h"
-#endif
-
-#ifndef __ARCHSTD_H__
 #include "ARCHSTD.H"
-#endif
 
 typedef __COMMON_OBJECT* HANDLE;  //Use handle to refer any kernel object.
 typedef __KERNEL_THREAD_MESSAGE MSG;
