@@ -272,9 +272,8 @@ static struct __KERNEL_THREAD_OBJECT* CreateKernelThread(struct __COMMON_OBJECT*
 
 	lpMgr = (struct __KERNEL_THREAD_MANAGER*)lpThis;
 
-	lpKernelThread = (struct __KERNEL_THREAD_OBJECT*)ObjectManager.CreateObject(&ObjectManager,
-		NULL,
-		OBJECT_TYPE_KERNEL_THREAD);
+	lpKernelThread = (struct __KERNEL_THREAD_OBJECT*)
+		ObjectManager.CreateObject(&ObjectManager, NULL, OBJECT_TYPE_KERNEL_THREAD);
 
 	if(NULL == lpKernelThread)    //If failed to create the kernel thread object.
 		goto __TERMINAL;
@@ -296,7 +295,8 @@ static struct __KERNEL_THREAD_OBJECT* CreateKernelThread(struct __COMMON_OBJECT*
 		}
 	}
 
-	lpStack = KMemAlloc(dwStackSize,KMEM_SIZE_TYPE_ANY);
+	lpStack = KMemAlloc(dwStackSize, KMEM_SIZE_TYPE_ANY);
+
 	if(NULL == lpStack)    //Failed to create kernel thread stack.
 	{
 		goto __TERMINAL;
@@ -313,7 +313,9 @@ static struct __KERNEL_THREAD_OBJECT* CreateKernelThread(struct __COMMON_OBJECT*
 
 	lpKernelThread->bUsedMath             = FALSE;      //May be updated in the future.
 	lpKernelThread->dwStackSize           = dwStackSize ? dwStackSize : DEFAULT_STACK_SIZE;
+
 	lpKernelThread->lpInitStackPointer    = (LPVOID)((DWORD)lpStack + dwStackSize);
+
 	lpKernelThread->KernelThreadRoutine   = lpStartRoutine;       //Will be updated.
 	lpKernelThread->lpRoutineParam        = lpRoutineParam;
 
@@ -333,9 +335,10 @@ static struct __KERNEL_THREAD_OBJECT* CreateKernelThread(struct __COMMON_OBJECT*
 			{
 				break;
 			}
-		lpKernelThread->KernelThreadName[i] = lpszName[i];
+			lpKernelThread->KernelThreadName[i] = lpszName[i];
 		}
 	}
+
 	lpKernelThread->KernelThreadName[i] = 0;  //Set string's terminator.
 
 	//
@@ -344,6 +347,7 @@ static struct __KERNEL_THREAD_OBJECT* CreateKernelThread(struct __COMMON_OBJECT*
 	//It's implementation depends on the hardware platform,so
 	//this routine is implemented in ARCH directory.
 	//
+
 	//Depend on ARCH
 	//InitKernelThreadContext(lpKernelThread, KernelThreadWrapper);
 
@@ -353,8 +357,7 @@ static struct __KERNEL_THREAD_OBJECT* CreateKernelThread(struct __COMMON_OBJECT*
 	}
 	else                                               //Add into Suspended Queue.
 	{
-	if(!lpMgr->lpSuspendedQueue->InsertIntoQueue((struct __COMMON_OBJECT*)lpMgr->lpSuspendedQueue,
-			(struct __COMMON_OBJECT*)lpKernelThread,dwPriority))
+	if(!lpMgr->lpSuspendedQueue->InsertIntoQueue((struct __COMMON_OBJECT*)lpMgr->lpSuspendedQueue, (struct __COMMON_OBJECT*)lpKernelThread,dwPriority))
 			goto __TERMINAL;
 	}
 

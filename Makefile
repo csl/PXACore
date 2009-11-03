@@ -43,6 +43,7 @@ KERNEL_SRC = \
 	./kernel/ktmgr2.c \
 	./kernel/objmgr.c \
 	./kernel/kmemmgr.c \
+	./kernel/buffmgr.c \
 #	./kernel/main.c \
 #	./kernel/comqueue.c \
 #	./kernel/dim.c \

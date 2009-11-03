@@ -304,26 +304,28 @@ VOID _4kFree(LPVOID pStartAddress,DWORD dwSize)
 //
 //System interface call.
 //
-LPVOID KMemAlloc(DWORD dwSize,DWORD dwSizeType)
+LPVOID KMemAlloc(DWORD dwSize, DWORD dwSizeType)
 {
 	LPVOID pMemAddress = NULL;
-	static BOOL bFirst = TRUE;  //If first to call this routine with parameter KMEM_SIZE_TYPE_ANY,
-	                            //then first initialize the buffer manager.
+	static BOOL bFirst = TRUE;  
+	//If first to call this routine with parameter KMEM_SIZE_TYPE_ANY,
+	//then first initialize the buffer manager.
 
-	if(0 == dwSize)
-		return pMemAddress;               //Parameter check.
+	if(0 == dwSize) return pMemAddress;               //Parameter check.
 
 	switch(dwSizeType)
 	{
 	case KMEM_SIZE_TYPE_ANY:
 		if(bFirst)
 		{
-			bFirst = FALSE;
-			//InitBufferMgr(&AnySizeBuffer);  //Initialize the buffer manager.
-			AnySizeBuffer.BufferOperations.lpCreateBuffer2(&AnySizeBuffer, //Init buffer pool.
+		bFirst = FALSE;
+		//InitBufferMgr(&AnySizeBuffer);  //Initialize the buffer manager.
+		//Init buffer pool.
+		AnySizeBuffer.BufferOperations.lpCreateBuffer2(&AnySizeBuffer, 
 			              (LPVOID)KMEM_ANYSIZE_START_ADDRESS,
-			              (DWORD)(KMEM_ANYSIZE_END_ADDRESS - KMEM_ANYSIZE_START_ADDRESS + 1));
+		(DWORD)(KMEM_ANYSIZE_END_ADDRESS - KMEM_ANYSIZE_START_ADDRESS + 1));
 		}
+
         pMemAddress = AnySizeBuffer.BufferOperations.lpAllocate(&AnySizeBuffer,
 			dwSize);
 		break;

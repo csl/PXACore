@@ -45,7 +45,8 @@ typedef VOID     (*__DESTROY_BUFFER)(struct __BUFFER_CONTROL_BLOCK*);
 
 //Buffer operation function.
 
-struct __BUFFER_OPERATIONS{
+struct __BUFFER_OPERATIONS
+{
 	__CREATE_BUFFER_1                 lpCreateBuffer1;
 	__CREATE_BUFFER_2                 lpCreateBuffer2;
 	__ALLOCATE                        lpAllocate;
@@ -76,8 +77,8 @@ struct __BUFFER_CONTROL_BLOCK
 	DWORD                         dwPoolSize;
 	DWORD                         dwFreeSize;
 	DWORD                         (*GetControlBlockFlag)(struct __BUFFER_CONTROL_BLOCK*);
-	struct __FREE_BUFFER_HEADER*         lpFreeBufferHeader;
-	struct __BUFFER_OPERATIONS           BufferOperations;
+	struct __FREE_BUFFER_HEADER*  lpFreeBufferHeader;
+	struct __BUFFER_OPERATIONS    BufferOperations;
 };
 
 //
