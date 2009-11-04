@@ -21,6 +21,7 @@
 
 #define __LEAVE_CRITICAL_SECTION(lpObj,dwFlags)
 
+/*
 #ifdef __I386
 
 	#define __ENTER_CRITICAL_SECTION(lpObj,dwFlags) \
@@ -36,7 +37,7 @@
 	    __asm push dwFlags \
 	    __asm popfd                         
 #endif
-
+*/
 #define _ENTER_CRITICAL_SECTION(lpObj)    \
     //
     //SpinLock code here.
@@ -52,14 +53,16 @@
 //
 //This macros is used to flush cache's content to memory.
 //
+/*
 #ifdef __I386
 	#define FLUSH_CACHE()  \
 		__asm wbinvd
 	#else
 	#define FLUSH_CACHE
 #endif
+*/
 
-#define SYNCHRONIZE_MEMORY() FLUSH_CACHE()
+//#define SYNCHRONIZE_MEMORY() FLUSH_CACHE()
 
 //
 //This macros is used as a barrier.

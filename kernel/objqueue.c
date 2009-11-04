@@ -12,9 +12,7 @@
 //    Lines number              :
 //***********************************************************************/
 
-#ifndef __STDAFX_H__
-#include "..\INCLUDE\StdAfx.h"
-#endif
+#include "stdafx.h"
 
 //
 //Insert an element into Priority Queue.
@@ -22,21 +20,21 @@
 //determined by the object's priority(dwPriority parameter).
 //
 
-static BOOL InsertIntoQueue(__COMMON_OBJECT* lpThis,__COMMON_OBJECT* lpObject,DWORD dwPriority)
+static BOOL InsertIntoQueue(struct __COMMON_OBJECT* lpThis,struct __COMMON_OBJECT* lpObject,DWORD dwPriority)
 {
     if((NULL == lpThis) || (NULL == lpObject)) //Invalid parameters.
     {
         return FALSE;
     }
 
-    __PRIORITY_QUEUE_ELEMENT* lpElement = NULL;
-    __PRIORITY_QUEUE_ELEMENT* lpTmpElement = NULL;
-    __PRIORITY_QUEUE*         lpQueue   = (__PRIORITY_QUEUE*)lpThis;
+    struct __PRIORITY_QUEUE_ELEMENT* lpElement = NULL;
+    struct __PRIORITY_QUEUE_ELEMENT* lpTmpElement = NULL;
+    struct __PRIORITY_QUEUE*         lpQueue   = (struct __PRIORITY_QUEUE*)lpThis;
     DWORD                     dwFlags   = 0L;
     
     //Allocate a queue element,and initialize it.
-    lpElement = (__PRIORITY_QUEUE_ELEMENT*)
-		KMemAlloc(sizeof(__PRIORITY_QUEUE_ELEMENT),KMEM_SIZE_TYPE_ANY);
+    lpElement = (struct __PRIORITY_QUEUE_ELEMENT*)
+		KMemAlloc(sizeof(struct __PRIORITY_QUEUE_ELEMENT),KMEM_SIZE_TYPE_ANY);
     if(NULL == lpElement)  //Can not allocate the memory.
     {
         return FALSE;
@@ -78,15 +76,15 @@ static BOOL InsertIntoQueue(__COMMON_OBJECT* lpThis,__COMMON_OBJECT* lpObject,DW
 //operation only deletes one time.
 //
 
-static BOOL DeleteFromQueue(__COMMON_OBJECT* lpThis,__COMMON_OBJECT* lpObject)
+static BOOL DeleteFromQueue(struct __COMMON_OBJECT* lpThis,struct __COMMON_OBJECT* lpObject)
 {
     if((NULL == lpThis) || (NULL == lpObject))  //Invalid parameters.
     {
         return FALSE;
     }
 
-    __PRIORITY_QUEUE*         lpQueue = (__PRIORITY_QUEUE*)lpThis;
-    __PRIORITY_QUEUE_ELEMENT* lpElement = NULL;
+    struct __PRIORITY_QUEUE*         lpQueue = (struct __PRIORITY_QUEUE*)lpThis;
+    struct __PRIORITY_QUEUE_ELEMENT* lpElement = NULL;
     DWORD                     dwFlags;
 
     __ENTER_CRITICAL_SECTION(NULL,dwFlags);
@@ -118,16 +116,16 @@ static BOOL DeleteFromQueue(__COMMON_OBJECT* lpThis,__COMMON_OBJECT* lpObject)
 //and release the memory this element occupies.
 //
 
-static __COMMON_OBJECT* GetHeaderElement(__COMMON_OBJECT* lpThis,DWORD* lpdwPriority)
+static struct __COMMON_OBJECT* GetHeaderElement(struct __COMMON_OBJECT* lpThis,DWORD* lpdwPriority)
 {
 	if(NULL == lpThis)
     {
         return FALSE;
     }
 
-    __PRIORITY_QUEUE*          lpQueue = (__PRIORITY_QUEUE*)lpThis;
-    __PRIORITY_QUEUE_ELEMENT*  lpElement = NULL;
-    __COMMON_OBJECT*           lpCommObject = NULL;
+    struct __PRIORITY_QUEUE*          lpQueue = (struct __PRIORITY_QUEUE*)lpThis;
+    struct __PRIORITY_QUEUE_ELEMENT*  lpElement = NULL;
+    struct __COMMON_OBJECT*           lpCommObject = NULL;
     DWORD                      dwFlags;
 
     __ENTER_CRITICAL_SECTION(NULL,dwFlags);
@@ -158,9 +156,9 @@ static __COMMON_OBJECT* GetHeaderElement(__COMMON_OBJECT* lpThis,DWORD* lpdwPrio
 }
 
 //Initialize routine of the Priority Queue.
-BOOL PriQueueInitialize(__COMMON_OBJECT* lpThis)
+BOOL PriQueueInitialize(struct __COMMON_OBJECT* lpThis)
 {
-	__PRIORITY_QUEUE*                lpPriorityQueue     = NULL;
+	struct __PRIORITY_QUEUE*                lpPriorityQueue     = NULL;
 
 	if(NULL == lpThis)           //Parameter check.
 	{
@@ -168,7 +166,7 @@ BOOL PriQueueInitialize(__COMMON_OBJECT* lpThis)
 	}
 
 	//Initialize the Priority Queue.
-	lpPriorityQueue = (__PRIORITY_QUEUE*)lpThis;
+	lpPriorityQueue = (struct __PRIORITY_QUEUE*)lpThis;
 	lpPriorityQueue->ElementHeader.lpObject = NULL;
 	lpPriorityQueue->ElementHeader.dwPriority = 0L;
 	lpPriorityQueue->ElementHeader.lpNextElement = &lpPriorityQueue->ElementHeader;
@@ -186,18 +184,18 @@ BOOL PriQueueInitialize(__COMMON_OBJECT* lpThis)
 //This routine frees all memory this priority queue occupies.
 //
 
-VOID PriQueueUninitialize(__COMMON_OBJECT* lpThis)
+VOID PriQueueUninitialize(struct __COMMON_OBJECT* lpThis)
 {
-	__PRIORITY_QUEUE_ELEMENT*    lpElement    = NULL;
-	__PRIORITY_QUEUE_ELEMENT*    lpTmpElement   = NULL;
-	__PRIORITY_QUEUE*            lpPriorityQueue   = NULL;
+	struct __PRIORITY_QUEUE_ELEMENT*    lpElement    = NULL;
+	struct __PRIORITY_QUEUE_ELEMENT*    lpTmpElement   = NULL;
+	struct __PRIORITY_QUEUE*            lpPriorityQueue   = NULL;
 
 	if(NULL == lpThis)
 	{
 		return;
 	}
 
-	lpPriorityQueue = (__PRIORITY_QUEUE*)lpThis;
+	lpPriorityQueue = (struct __PRIORITY_QUEUE*)lpThis;
 	lpElement = lpPriorityQueue->ElementHeader.lpNextElement;
 	//Delete all queue element(s).
 	while(lpElement != &lpPriorityQueue->ElementHeader)

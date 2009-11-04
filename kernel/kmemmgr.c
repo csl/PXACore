@@ -318,21 +318,24 @@ LPVOID KMemAlloc(DWORD dwSize, DWORD dwSizeType)
 	case KMEM_SIZE_TYPE_ANY:
 		if(bFirst)
 		{
-		bFirst = FALSE;
-		//InitBufferMgr(&AnySizeBuffer);  //Initialize the buffer manager.
-		//Init buffer pool.
-		AnySizeBuffer.BufferOperations.lpCreateBuffer2(&AnySizeBuffer, 
-			              (LPVOID)KMEM_ANYSIZE_START_ADDRESS,
-		(DWORD)(KMEM_ANYSIZE_END_ADDRESS - KMEM_ANYSIZE_START_ADDRESS + 1));
+			bFirst = FALSE;
+			InitBufferMgr(&AnySizeBuffer);  //Initialize the buffer manager.
+			//Init buffer pool.
+			AnySizeBuffer.BufferOperations.lpCreateBuffer2(&AnySizeBuffer, 
+			              (LPVOID) KMEM_ANYSIZE_START_ADDRESS,
+			(DWORD)(KMEM_ANYSIZE_END_ADDRESS - KMEM_ANYSIZE_START_ADDRESS + 1));
 		}
 
-        pMemAddress = AnySizeBuffer.BufferOperations.lpAllocate(&AnySizeBuffer,
+        	pMemAddress = AnySizeBuffer.BufferOperations.lpAllocate(&AnySizeBuffer,
 			dwSize);
+
 		break;
+	/*
 	case KMEM_SIZE_TYPE_4K:
 		RoundTo4k(dwSize);                //Round the dwSize to 4k times.
 		pMemAddress = _4kAllocate(dwSize);
 		break;
+	*/
 	default:
 		break;
 	}

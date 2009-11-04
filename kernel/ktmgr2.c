@@ -132,9 +132,8 @@ __THREAD_HOOK_ROUTINE SetThreadHook(DWORD dwHookType,
 //CallThreadHook,this routine calls proper hook routine according
 //to the dwHookType value.
 //
-VOID CallThreadHook(DWORD dwHookType,
-					struct __KERNEL_THREAD_OBJECT* lpPrev,
-					struct __KERNEL_THREAD_OBJECT* lpNext)
+VOID CallThreadHook(DWORD dwHookType, struct __KERNEL_THREAD_OBJECT* lpPrev,
+				      struct __KERNEL_THREAD_OBJECT* lpNext)
 {
 	if(dwHookType & THREAD_HOOK_TYPE_CREATE)  //Should call create hook.
 	{

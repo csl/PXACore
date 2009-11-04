@@ -25,7 +25,7 @@
 //
 #define SYSTEM_TIME_SLICE  10    //***** debug *****
 #define MAX_THREAD_NAME    32    //Maximal kernel thread name's length.
-#define MIN_STACK_SIZE	   255
+#define MIN_STACK_SIZE	   128
 
 DECLARE_PREDEFINED_OBJECT(__KERNEL_FILE)
 DECLARE_PREDEFINED_OBJECT(__EVENT)

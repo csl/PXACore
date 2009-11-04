@@ -51,7 +51,7 @@ DWORD SystemIdle(LPVOID lpData)
 		if(GLOBAL_COUNTER == *lpdwCounter)
 		{
 			(*lpdwCounter) = 0;
-			//PrintLine("System idle thread is sheduled,I-I-I-I-I-I-I-I-I-I-I.");
+			printf("System idle thread is sheduled,I-I-I-I-I-I-I-I-I-I-I.");
 		}
 	}
 
@@ -116,24 +116,28 @@ int main()
 	//initizal serial device
 	SerialInit();
 
-	printf("%s\n\n",pszStartMsg1);
+	//printf("%s\n\n",pszStartMsg1);
 	printf("%s\n",pszWelcome);
 
 	//Initialize Kernel Thread Manager.
 	if(!KernelThreadManager.Initialize((struct __COMMON_OBJECT*) &KernelThreadManager))
 		goto __TERMINAL; 
 
+	printf("KernelThreadManager.Initialize Scuessed\n");
+
 	lpIdleThread = KernelThreadManager.CreateKernelThread(    //Create system idle thread.
 		(struct __COMMON_OBJECT*)&KernelThreadManager,
 		0L,
 		KERNEL_THREAD_STATUS_READY,
-		PRIORITY_LEVEL_LOWEST,                                //Lowest priority level.
+		PRIORITY_LEVEL_LOWEST,         //Lowest priority level.
 		SystemIdle,
 		(LPVOID)(&dwIdleCounter),
 		NULL,
 		"IDLE");
 
+	printf("KernelThreadManager.CreateKernelThrea IDLE Scuessed\n");
 
+	//printf("fuck\n");
 	//init_interrupt_control();
 	
 	DeadLoop();
@@ -352,6 +356,6 @@ __TERMINAL:
 	//GotoHome();
 	//PrintStr("STOP : An error occured,please power off your computer and restart it.");
 	//__ERROR_HANDLER(ERROR_LEVEL_FATAL,0L,"Initializing process failed!");
-    
-	//DeadLoop();
+    	printf("pxacore Dead\n");
+	DeadLoop();
 }

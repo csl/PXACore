@@ -69,7 +69,7 @@
 //
 //
 
-#define KMEM_MAX_BLOCK_SIZE       0x00100000   //Max memory block size can be
+#define KMEM_MAX_BLOCK_SIZE       0x00010000   //Max memory block size can be
                                                //allocated one time.
                                                //This restrict only apply to 4k
                                                //memory pool.
@@ -77,8 +77,8 @@
 #define KMEM_4K_START_ADDRESS     0x00200000   //The start address of 4k memory pool.
 #define KMEM_4K_END_ADDRESS       0x00BFFFFF   //The end address of 4k memory pool.
 
-#define KMEM_ANYSIZE_START_ADDRESS 0x00C00000  //The start address of any size memory pool.
-#define KMEM_ANYSIZE_END_ADDRESS   0x013EFFFF  //The end address of any size memory pool.
+#define KMEM_ANYSIZE_START_ADDRESS 0xA2000000  //The start address of any size memory pool.
+#define KMEM_ANYSIZE_END_ADDRESS   0xA200FFFF  //The end address of any size memory pool.
                                                //NOTICE: In fact,the any size pool's length
                                                //is less than 8M,it's actually size is:
                                                //0x013EFFFF - 0x00C00000 + 1 = 127*64K.
@@ -129,7 +129,7 @@ struct __4KSIZE_BLOCK
 	                                    //block,if this bit is 1,this 4k block
 	                                    //is occupied,otherwise,this 4k block
 	                                    //is free.
-};                                      //4K size memory block.
+};                                          //4K size memory block.
 
 
 //

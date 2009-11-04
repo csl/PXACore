@@ -9,11 +9,12 @@ MACH_CFLAGS = -march=armv5te -mtune=xscale -Wa,-mcpu=xscale \
 	      -mno-thumb-interwork
 
 CFLAGS = \
+	-DDEBUG \
 	-I./include/arch/arm/mach-pxa \
 	-I./include \
 	#-Wall -Werror \
 	-fno-builtin \
-	-O0 -g $(MACH_CFLAGS)
+	-O0 -g $(MACH_CFLAGS) 
 
 LDSCRIPT := ld-script.lds
 LDFLAGS = \
@@ -30,9 +31,9 @@ SHELL_SRC = ./kernel/kernel.c
 
 HW_DEP_ASM_SRC = \
 	./arch/arm/mach-pxa/start.S \
-#	./arch/arm/mach-pxa/asm_port.S \
 
 HW_DEP_C_SRC = \
+	./arch/arm/mach-pxa/arch_pxa.c \
 	./drivers/serial.c \
 	./lib/l_stdio.c \
 #	./arch/arm/mach-pxa/port.c \
@@ -44,6 +45,8 @@ KERNEL_SRC = \
 	./kernel/objmgr.c \
 	./kernel/kmemmgr.c \
 	./kernel/buffmgr.c \
+	./kernel/objqueue.c \
+
 #	./kernel/main.c \
 #	./kernel/comqueue.c \
 #	./kernel/dim.c \

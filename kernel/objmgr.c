@@ -25,13 +25,16 @@ BEGIN_DECLARE_INIT_DATA(ObjectInitData)
         //OBJECT_INIT_DATA(0,0,0,0)
 	//OBJECT_INIT_DATA(0,0,0,0)
 	// Please add your new defined object's initialization data here.
-/*
+
 	OBJECT_INIT_DATA(OBJECT_TYPE_PRIORITY_QUEUE, sizeof(struct __PRIORITY_QUEUE),
 	PriQueueInitialize, PriQueueUninitialize)
 
 	OBJECT_INIT_DATA(OBJECT_TYPE_KERNEL_THREAD, sizeof(struct __KERNEL_THREAD_OBJECT),
 	KernelThreadInitialize, KernelThreadUninitialize)
 
+        OBJECT_INIT_DATA(0,0,0,0)
+
+/*
 	OBJECT_INIT_DATA(OBJECT_TYPE_EVENT, sizeof(struct __EVENT),
 	EventInitialize, EventUninitialize)
 
@@ -41,33 +44,32 @@ BEGIN_DECLARE_INIT_DATA(ObjectInitData)
 	OBJECT_INIT_DATA(OBJECT_TYPE_TIMER,sizeof(struct __TIMER_OBJECT),
 	TimerInitialize,TimerUninitialize)
 
-	OBJECT_INIT_DATA(OBJECT_TYPE_INTERRUPT,sizeof(__INTERRUPT_OBJECT),
+	OBJECT_INIT_DATA(OBJECT_TYPE_INTERRUPT,sizeof(struct __INTERRUPT_OBJECT),
 	InterruptInitialize,InterruptUninitialize)
 
-	OBJECT_INIT_DATA(OBJECT_TYPE_DRIVER,sizeof(__DRIVER_OBJECT),
+	OBJECT_INIT_DATA(OBJECT_TYPE_DRIVER,sizeof(struct __DRIVER_OBJECT),
 	DrvObjInitialize,DrvObjUninitialize)
 
-	OBJECT_INIT_DATA(OBJECT_TYPE_DEVICE,sizeof(__DEVICE_OBJECT),
+	OBJECT_INIT_DATA(OBJECT_TYPE_DEVICE,sizeof(struct __DEVICE_OBJECT),
 	DevObjInitialize,DevObjUninitialize)
 
-	OBJECT_INIT_DATA(OBJECT_TYPE_DRCB,sizeof(__DRCB),
+	OBJECT_INIT_DATA(OBJECT_TYPE_DRCB,sizeof(struct __DRCB),
 	DrcbInitialize,DrcbUninitialize)
 
-	OBJECT_INIT_DATA(OBJECT_TYPE_MAILBOX,sizeof(__MAILBOX),
+	OBJECT_INIT_DATA(OBJECT_TYPE_MAILBOX,sizeof(struct __MAILBOX),
 	MailBoxInitialize,MailBoxUninitialize)
 
-	OBJECT_INIT_DATA(OBJECT_TYPE_PAGE_INDEX_MANAGER,sizeof(__PAGE_INDEX_MANAGER),
+	OBJECT_INIT_DATA(OBJECT_TYPE_PAGE_INDEX_MANAGER,sizeof(struct __PAGE_INDEX_MANAGER),
 	PageInitialize,PageUninitialize)
 
-	OBJECT_INIT_DATA(OBJECT_TYPE_VIRTUAL_MEMORY_MANAGER,sizeof(__VIRTUAL_MEMORY_MANAGER),
+	OBJECT_INIT_DATA(OBJECT_TYPE_VIRTUAL_MEMORY_MANAGER,sizeof(struct __VIRTUAL_MEMORY_MANAGER),
 	VmmInitialize,VmmUninitialize)
 
 	OBJECT_INIT_DATA(OBJECT_TYPE_COMMON_QUEUE,sizeof(struct __COMMON_QUEUE),
 	CommQueueInit,CommQueueUninit)
-
+*/
 	//OBJECT_INIT_DATA(OBJECT_TYPE_SEMAPHORE,sizeof(__SEMAPHORE),
 	//SemaphoreInitialize,SemaphoreUninitialize)
-*/
 END_DECLARE_INIT_DATA()
 
 //
@@ -107,7 +109,8 @@ struct __OBJECT_MANAGER    ObjectManager =
 //   otherwise,returns NULL.
 //
 
-static struct __COMMON_OBJECT* CreateObject(struct __OBJECT_MANAGER* lpObjectManager,    //Object Manager.
+static struct __COMMON_OBJECT* CreateObject(struct __OBJECT_MANAGER* lpObjectManager,    
+										//Object Manager.
 				     struct __COMMON_OBJECT*  lpObjectOwner,      //Object's owner.
 				     DWORD dwType)
 {
@@ -132,7 +135,7 @@ static struct __COMMON_OBJECT* CreateObject(struct __OBJECT_MANAGER* lpObjectMan
 		}
 		dwLoop ++;
 	}
-	
+
 	if(FALSE == bFind)    //If can not find the corrent initialize data.
 		goto __TERMINAL;
 
@@ -140,7 +143,8 @@ static struct __COMMON_OBJECT* CreateObject(struct __OBJECT_MANAGER* lpObjectMan
 	if(0 == dwObjectSize)  //Invalid object size.
 		goto __TERMINAL;
 
-	pObject = (struct __COMMON_OBJECT*)KMemAlloc(dwObjectSize,KMEM_SIZE_TYPE_ANY);
+	pObject = (struct __COMMON_OBJECT*) KMemAlloc(dwObjectSize, KMEM_SIZE_TYPE_ANY);
+
 	if(NULL == pObject)  //Can not allocate memory.
 		goto __TERMINAL;
 

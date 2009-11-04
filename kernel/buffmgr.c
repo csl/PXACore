@@ -65,6 +65,7 @@ static BOOL CreateBuffer2(struct __BUFFER_CONTROL_BLOCK* pControlBlock,
 {
 	BOOL bResult      = FALSE;
 	DWORD dwSize       = 0L;
+	DWORD headerSize   = 0L;
 	struct __FREE_BUFFER_HEADER*    pFreeHdr     = NULL;
 
 	dwSize = dwPoolSize;
@@ -74,13 +75,18 @@ static BOOL CreateBuffer2(struct __BUFFER_CONTROL_BLOCK* pControlBlock,
 	pControlBlock->dwFlags           |= POOL_INITIALIZED;  //Set the pool initialized bit.
 	pControlBlock->lpPoolStartAddress = lpBufferPool;
 
-	pFreeHdr = (struct __FREE_BUFFER_HEADER*)lpBufferPool;
+	//Pointer to KMEM_ANYSIZE_START_ADDRESS
+	pFreeHdr = (struct __FREE_BUFFER_HEADER*) lpBufferPool;
+
 	pControlBlock->lpFreeBufferHeader = pFreeHdr;
 	pFreeHdr->dwFlags = BUFFER_STATUS_FREE;
 	pFreeHdr->lpNextBlock = NULL;
 	pFreeHdr->lpPrevBlock = NULL; /*pControlBlock->lpFreeBufferHeader;*/
-	pFreeHdr->dwBlockSize = dwSize - sizeof(struct __FREE_BUFFER_HEADER);
+	headerSize = sizeof(struct __FREE_BUFFER_HEADER);
+	pFreeHdr->dwBlockSize = dwSize - headerSize;
 	pControlBlock->dwFreeSize = pFreeHdr->dwBlockSize;
+
+	printf("pControlBlock->dwFreeSizee = %d\n", pControlBlock->dwFreeSize);
 
 	bResult = TRUE;
 
@@ -224,28 +230,38 @@ __BEGIN:
 	__ENTER_CRITICAL_SECTION(NULL,dwFlags);
 
 	lpFreeHeader = pControlBlock->lpFreeBufferHeader;
+
 	while(lpFreeHeader)
 	{
+		#ifdef	DEBUG
+		printf("dwSize = %d, dwBlockSize = %d\n", dwSize, lpFreeHeader->dwBlockSize);
+		#endif
+
 		if(lpFreeHeader->dwBlockSize < dwSize)   //The current block is not fitable.
 		{
 			lpFreeHeader = lpFreeHeader->lpNextBlock;
 			continue;
 		}
 
-		bFind = TRUE;        //Found one block fit the request.
+		//Found one block fit the request.
+		bFind = TRUE;
 
-		if(lpFreeHeader->dwBlockSize <= dwBoundrySize)  //Allocate the whole free block.
+		//Allocate the whole free block.
+		if(lpFreeHeader->dwBlockSize <= dwBoundrySize)  
 		{
-			if(NULL == lpFreeHeader->lpPrevBlock)  //This block is the first free block.
+			//This block is the first free block.
+			if(NULL == lpFreeHeader->lpPrevBlock)
 			{
-				if(NULL == lpFreeHeader->lpNextBlock)  //This is the last free block.
+				//This is the last free block.
+				if(NULL == lpFreeHeader->lpNextBlock)  
 				{
 					pControlBlock->lpFreeBufferHeader = NULL;
 				}
-				else    //This is not the last free block.
+				 //This is not the last free block.
+				else
 				{
-					lpFreeHeader->lpNextBlock->lpPrevBlock = NULL;
-					pControlBlock->lpFreeBufferHeader = lpFreeHeader->lpNextBlock;
+				lpFreeHeader->lpNextBlock->lpPrevBlock = NULL;
+				pControlBlock->lpFreeBufferHeader = lpFreeHeader->lpNextBlock;
 				}
 			}
 			else        //This block is not the first free block.
@@ -256,23 +272,24 @@ __BEGIN:
 				}
 				else    //This is not the last free block.
 				{
-					lpFreeHeader->lpNextBlock->lpPrevBlock = lpFreeHeader->lpPrevBlock;
-					lpFreeHeader->lpPrevBlock->lpNextBlock = lpFreeHeader->lpNextBlock;
+				lpFreeHeader->lpNextBlock->lpPrevBlock = lpFreeHeader->lpPrevBlock;
+				lpFreeHeader->lpPrevBlock->lpNextBlock = lpFreeHeader->lpNextBlock;
 				}
 			}
-			lpUsedHeader = (struct __USED_BUFFER_HEADER*)lpFreeHeader;
+			lpUsedHeader = (struct __USED_BUFFER_HEADER*) lpFreeHeader;
 			lpUsedHeader->dwFlags &= ~BUFFER_STATUS_FREE;  //Clear the free bit.
 			lpUsedHeader->dwFlags |= BUFFER_STATUS_USED;   //Set the used bit.
 			                                               //The used block's size
 			                                               //is the same as when the
 			                                               //block is free.
 
-            lpBuffer = (LPVOID)((UCHAR*)lpUsedHeader + sizeof(struct __USED_BUFFER_HEADER));
+            lpBuffer = (LPVOID)((UCHAR*) lpUsedHeader + sizeof(struct __USED_BUFFER_HEADER));
 			break;
 		}
-		else      //Can not allocate the whole free block,because it's size is enough to
-			      //separate into two blocks,one block is allocated to client,and another
-				  //is reserved free.
+		else      
+		//Can not allocate the whole free block,because it's size is enough to
+		//separate into two blocks,one block is allocated to client,and another
+		//is reserved free.
 		{
 			//The lpTmpHeader will be the header pointer of new separated free block.
             lpTmpHeader = (struct __FREE_BUFFER_HEADER*)((DWORD)lpFreeHeader + sizeof(struct __FREE_BUFFER_HEADER) + dwSize);
@@ -322,7 +339,7 @@ __BEGIN:
 	__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
 
 	if(!bFind)    //If can not find the proper free block,then do a combine action,and
-		          //refind again.
+		      //refind again.
 	{
 		bFind = TRUE;
 		CombineFreeBlock(pControlBlock,NULL);
