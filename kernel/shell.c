@@ -11,28 +11,32 @@
 //                                2.
 //    Lines number              :
 //***********************************************************************/
-#include "stdafx.H"
-#include "kapi.H"
+#include "stdafx.h"
+/*
+#include "kapi.h"
 #include "ioctrl_s.h"
 #include "sysd_s.h"
 #include "rt8139.h"
-#include "extcmd.h"
 
+#include "extcmd.h"
+*/
 //
 //Global variables.
 //
+
 #define MAX_HOSTNAME_LEN  16
-#define VERSION_INFO "Hello Taiwan [Version 1.500]"
+#define VERSION_INFO "PXACore [Version 0.1]"
 
 BYTE               HostName[MAX_HOSTNAME_LEN] = {0};          //Host name.
+/*
 __TASK_CTRL_BLOCK  tcbShell = {0,0,0,0,0,
-                   0,0,0,0,0,0,0,0,0,0,0,
+                   		   0,0,0,0,0,0,0,0,0,0,0,
 				   0,0,0,0,0,0,0,0,0,0,0,
 				   0,0,0,0,0,0,0,0,0,0,0,
 				   0,0,0,0,0,0,0,0,0,0xffffffff};        //The shell's task control block.
 				   
-
-__KTHREAD_CONTROL_BLOCK* g_pShellCtrlBlock   = NULL;     //The shell's kernal thread control
+*/
+struct __KTHREAD_CONTROL_BLOCK* g_pShellCtrlBlock   = NULL;     //The shell's kernal thread control
                                                          //block pointer.
 
 struct __KERNEL_THREAD_OBJECT*  g_lpShellThread     = NULL;     //The system shell's kernel thread 
@@ -50,19 +54,19 @@ static WORD        BufferPtr = 0;         //Buffer pointer,points to the first
 //The following function form the command parameter object link from the command
 //line string.
 //
-
-__CMD_PARA_OBJ* FormParameterObj(LPSTR pszCmd)
+/*
+struct __CMD_PARA_OBJ* FormParameterObj(LPSTR pszCmd)
 {
-	__CMD_PARA_OBJ*     pObjBuffer = NULL;    //Local variables.
-	__CMD_PARA_OBJ*     pBasePtr   = NULL;
-	__CMD_PARA_OBJ*     pTmpObj    = NULL;
+	struct __CMD_PARA_OBJ*     pObjBuffer = NULL;    //Local variables.
+	struct __CMD_PARA_OBJ*     pBasePtr   = NULL;
+	struct __CMD_PARA_OBJ*     pTmpObj    = NULL;
 	DWORD               dwCounter  = 0x0000;
 	DWORD               index      = 0x0000;
 
 	if(NULL == pszCmd)    //Parameter check.
 		return NULL;
 
-	pObjBuffer = (__CMD_PARA_OBJ*)KMemAlloc(4096,KMEM_SIZE_TYPE_4K);
+	pObjBuffer = (struct __CMD_PARA_OBJ*)KMemAlloc(4096,KMEM_SIZE_TYPE_4K);
 	if(NULL == pObjBuffer)
 		goto __TERMINAL;
 
@@ -86,6 +90,7 @@ __CMD_PARA_OBJ* FormParameterObj(LPSTR pszCmd)
 		}
 		else
 		{
+/*
 			/*while((' ' != *pszCmd) && *pszCmd)  //To find the first parameter.
 			{
 				pszCmd ++;
@@ -97,7 +102,7 @@ __CMD_PARA_OBJ* FormParameterObj(LPSTR pszCmd)
 
 			if(!*pszCmd)
 				break;*/
-			index = 0x0000;
+/*			index = 0x0000;
 			while(('-' != *pszCmd) && ('/' != *pszCmd) && *pszCmd)
 			{
 				while((' ' != *pszCmd) && (*pszCmd) && (dwCounter <= CMD_PARAMETER_LEN))
@@ -120,7 +125,7 @@ __CMD_PARA_OBJ* FormParameterObj(LPSTR pszCmd)
 			}
 
 			pTmpObj = pObjBuffer;       //Update the current parameter object.
-			pObjBuffer = (__CMD_PARA_OBJ*)NextParaAddr(pTmpObj,index);
+			pObjBuffer = (struct __CMD_PARA_OBJ*)NextParaAddr(pTmpObj,index);
 			pTmpObj->byParameterNum = LOBYTE(LOWORD(index));
 			if(!*pszCmd)
 				break;
@@ -131,12 +136,12 @@ __CMD_PARA_OBJ* FormParameterObj(LPSTR pszCmd)
 __TERMINAL:
 	return pBasePtr;
 }
-
+*/
 //
 //The following routine releases the parameter object created by FormParameterObj routine.
 //
-
-VOID ReleaseParameterObj(__CMD_PARA_OBJ* lpParamObj)
+/*
+VOID ReleaseParameterObj(struct __CMD_PARA_OBJ* lpParamObj)
 {
 	if(NULL == lpParamObj)  //Parameter check.
 		return;
@@ -144,6 +149,7 @@ VOID ReleaseParameterObj(__CMD_PARA_OBJ* lpParamObj)
 	KMemFree((LPVOID)lpParamObj,KMEM_SIZE_TYPE_4K,4096);  //Release the memory.
 	return;
 }
+*/
 
 //
 //Command handler predefinitions.
@@ -170,11 +176,11 @@ VOID SysDiagApp(LPSTR);
 
 #define CMD_OBJ_NUM  18
 
-__CMD_OBJ  CmdObj[CMD_OBJ_NUM] = {
+struct __CMD_OBJ  CmdObj[CMD_OBJ_NUM] = {
 	{"version"  ,    VerHandler},
 	{"memory"   ,    MemHandler},
 	{"sysinfo"  ,    SysInfoHandler},
-	{"sysname"  ,    SysNameHandler},
+	//{"sysname"  ,    SysNameHandler},
 	{"help"     ,    HlpHandler},
 	{"date"     ,    DateHandler},
 	{"time"     ,    TimeHandler},
@@ -214,22 +220,22 @@ VOID HlpHandler(LPSTR)           //Command 'help' 's handler.
 	LPSTR strSysDiagApp  = "    sysdiag      : System or hardware diag application.";
 	LPSTR strCls         = "    cls          : Clear the whole display buffer.";
 
-	PrintLine(strHelpTitle);              //Print out the help information line by line.
-	PrintLine(strHelpVer);
-	PrintLine(strHelpMem);
-	PrintLine(strHelpSysInfo);
-	PrintLine(strSysName);
-	PrintLine(strHelpHelp);
-	PrintLine(strDate);
-	PrintLine(strTime);
-	PrintLine(strSupport);
-	PrintLine(strRunTime);
-	PrintLine(strMemView);
-	PrintLine(strSendMsg);
-	PrintLine(strKtView);
-	PrintLine(strIoCtrlApp);
-	PrintLine(strSysDiagApp);
-	PrintLine(strCls);
+	printf("%s\n",strHelpTitle);              //Print out the help information line by line.
+	printf("%s\n",strHelpVer);
+	printf("%s\n",strHelpMem);
+	printf("%s\n",strHelpSysInfo);
+	printf("%s\n",strSysName);
+	printf("%s\n",strHelpHelp);
+	printf("%s\n",strDate);
+	printf("%s\n",strTime);
+	printf("%s\n",strSupport);
+	printf("%s\n",strRunTime);
+	printf("%s\n",strMemView);
+	printf("%s\n",strSendMsg);
+	printf("%s\n",strKtView);
+	printf("%s\n",strIoCtrlApp);
+	printf("%s\n",strSysDiagApp);
+	printf("%s\n",strCls);
 }
 
 //
@@ -240,26 +246,26 @@ VOID HlpHandler(LPSTR)           //Command 'help' 's handler.
 static VOID SaveSysName(LPSTR)
 {
 }
-
+/*
 VOID SysNameHandler(LPSTR pszSysName)
 {
-	__CMD_PARA_OBJ*    pCmdObj = NULL;
+	struct __CMD_PARA_OBJ*    pCmdObj = NULL;
 
 	pCmdObj = FormParameterObj(pszSysName);
 	if(NULL == pCmdObj)
 	{
-		PrintLine("Not enough system resource to interpret the command.");
+		printf("Not enough system resource to interpret the command.");
 		goto __TERMINAL;
 	}
 	if((0 == pCmdObj->byParameterNum) || (0 == pCmdObj->Parameter[0][0]))
 	{
-		PrintLine("Invalid command parameter.");
+		printf("Invalid command parameter.");
 		goto __TERMINAL;
 	}
 
 	if(StrLen(pCmdObj->Parameter[0]) >= MAX_HOSTNAME_LEN)
 	{
-		PrintLine("System name must not exceed 16 bytes.");
+		printf("System name must not exceed 16 bytes.");
 		goto __TERMINAL;
 	}
 
@@ -270,7 +276,7 @@ __TERMINAL:
 		KMemFree((LPVOID)pCmdObj,KMEM_SIZE_TYPE_4K,4096);
 	return;
 }
-
+*/
 //
 //Local helper function.
 //The function print out all of the kernal threads' information.
@@ -290,7 +296,8 @@ static LPSTR                      pszStartAddr  = "    Start Address : ";
 static LPSTR                      pszStackSize  = "    Stack Size    : ";
 static LPSTR                      pszCurrMsgNum = "    Message num   : ";
 
-static VOID PrintAllKt(__KTHREAD_CONTROL_BLOCK** ppControlBlock)
+/*
+static VOID PrintAllKt(struct __KTHREAD_CONTROL_BLOCK** ppControlBlock)
 {
 	BYTE                       Buffer[32];
 
@@ -298,83 +305,85 @@ static VOID PrintAllKt(__KTHREAD_CONTROL_BLOCK** ppControlBlock)
 	{
 		if(NULL == ppControlBlock[i])
 			continue;
-		PrintLine(pszThreadID);
+		printf("%s\n",pszThreadID);
 		Int2Str(ppControlBlock[i]->dwKThreadID,Buffer);
 		PrintStr(Buffer);
 
-		PrintLine(pszContext);
-		PrintLine(pszEax);
+		printf("%s\n",pszContext);
+		printf("%s\n",pszEax);
 		Hex2Str(ppControlBlock[i]->dwEAX,Buffer);
 		PrintStr(Buffer);
 
-		PrintLine(pszEbx);
+		printf("%s\n",pszEbx);
 		Hex2Str(ppControlBlock[i]->dwEBX,Buffer);
 		PrintStr(Buffer);
 
-		PrintLine(pszEcx);
+		printf(pszEcx);
 		Hex2Str(ppControlBlock[i]->dwECX,Buffer);
 		PrintStr(Buffer);
 
-		PrintLine(pszEdx);
+		printf(pszEdx);
 		Hex2Str(ppControlBlock[i]->dwEDX,Buffer);
 		PrintStr(Buffer);
 
-		PrintLine(pszEsi);
+		printf(pszEsi);
 		Hex2Str(ppControlBlock[i]->dwESI,Buffer);
 		PrintStr(Buffer);
 
-		PrintLine(pszEdi);
+		printf(pszEdi);
 		Hex2Str(ppControlBlock[i]->dwEDI,Buffer);
 		PrintStr(Buffer);
 
-		PrintLine(pszEbp);
+		printf(pszEbp);
 		Hex2Str(ppControlBlock[i]->dwEBP,Buffer);
 		PrintStr(Buffer);
 
-		PrintLine(pszEsp);
+		printf(pszEsp);
 		Hex2Str(ppControlBlock[i]->dwESP,Buffer);
 		PrintStr(Buffer);
 
-		PrintLine(pszEFlags);
+		printf(pszEFlags);
 		Hex2Str(ppControlBlock[i]->dwEFlags,Buffer);
 		PrintStr(Buffer);
 
-		PrintLine(pszStartAddr);
+		printf(pszStartAddr);
 		Hex2Str((DWORD)ppControlBlock[i]->pKThreadRoutine,Buffer);
 		PrintStr(Buffer);
 
-		PrintLine(pszStackSize);
+		printf(pszStackSize);
 		Hex2Str(ppControlBlock[i]->dwStackSize,Buffer);
 		PrintStr(Buffer);
 
-		PrintLine(pszCurrMsgNum);
+		printf(pszCurrMsgNum);
 		Hex2Str(ppControlBlock[i]->wCurrentMsgNum,Buffer);
 		PrintStr(Buffer);
 
-		ChangeLine();
-		GotoHome();
+		printf("\n");
+		//GotoHome();
 	}
 }
+*/
 
 static VOID KtViewUsage()
 {
-	PrintLine("    Usage :");
-	PrintLine("    ktview -i [-?] kthread_id");
-	PrintLine("    Where :");
-	PrintLine("        -i         : View the kernal thread's information.");
-	PrintLine("        kthread_id : Kernal thread's ID");
-	PrintLine("        -?         : Print out the help information of the command.");
+	printf("    Usage :");
+	printf("    ktview -i [-?] kthread_id");
+	printf("    Where :");
+	printf("        -i         : View the kernal thread's information.");
+	printf("        kthread_id : Kernal thread's ID");
+	printf("        -?         : Print out the help information of the command.");
 }
 
+/*
 static VOID PrintKtByID(DWORD dwKThreadID)
 {
-	__KTHREAD_CONTROL_BLOCK* pControlBlock = NULL;
-	DWORD dwIndex                          = 0L;
+	struct __KTHREAD_CONTROL_BLOCK* pControlBlock = NULL;
+	DWORD dwIndex  = 0L;
 	BYTE  Buffer[12];
 
 	if((dwKThreadID < 1) || (dwKThreadID > MAX_KTHREAD_NUM))
 	{
-		PrintLine("Invalid kernal thread ID");
+		printf("Invalid kernal thread ID");
 		return;
 	}
 
@@ -382,69 +391,71 @@ static VOID PrintKtByID(DWORD dwKThreadID)
 	pControlBlock = g_pKThreadQueue[dwIndex];
 	if(NULL == pControlBlock)
 	{
-		PrintLine("The kernal thread is not exist.");
+		printf("The kernal thread is not exist.\n");
 		return;
 	}
-	PrintLine(pszThreadID);
+	printf(pszThreadID);
 	Int2Str(pControlBlock->dwKThreadID,Buffer);
 	PrintStr(Buffer);
 
-	PrintLine(pszContext);
-	PrintLine(pszEax);
+	printf(pszContext);
+	printf(pszEax);
 	Hex2Str(pControlBlock->dwEAX,Buffer);
 	PrintStr(Buffer);
 
-	PrintLine(pszEbx);
+	printf(pszEbx);
 	Hex2Str(pControlBlock->dwEBX,Buffer);
 	PrintStr(Buffer);
 
-	PrintLine(pszEcx);
+	printf(pszEcx);
 	Hex2Str(pControlBlock->dwECX,Buffer);
 	PrintStr(Buffer);
 
-	PrintLine(pszEdx);
+	printf(pszEdx);
 	Hex2Str(pControlBlock->dwEDX,Buffer);
 	PrintStr(Buffer);
 
-	PrintLine(pszEsi);
+	printf(pszEsi);
 	Hex2Str(pControlBlock->dwESI,Buffer);
 	PrintStr(Buffer);
 
-	PrintLine(pszEdi);
+	printf(pszEdi);
 	Hex2Str(pControlBlock->dwEDI,Buffer);
 	PrintStr(Buffer);
 
-	PrintLine(pszEbp);
+	printf(pszEbp);
 	Hex2Str(pControlBlock->dwEBP,Buffer);
 	PrintStr(Buffer);
 
-	PrintLine(pszEsp);
+	printf(pszEsp);
 	Hex2Str(pControlBlock->dwESP,Buffer);
 	PrintStr(Buffer);
 
-	PrintLine(pszEFlags);
+	printf(pszEFlags);
 	Hex2Str(pControlBlock->dwEFlags,Buffer);
 	PrintStr(Buffer);
 
-	PrintLine(pszStartAddr);
+	printf(pszStartAddr);
 	Hex2Str((DWORD)pControlBlock->pKThreadRoutine,Buffer);
 	PrintStr(Buffer);
 
-	PrintLine(pszStackSize);
+	printf(pszStackSize);
 	Hex2Str(pControlBlock->dwStackSize,Buffer);
 	PrintStr(Buffer);
 
-	PrintLine(pszCurrMsgNum);
+	printf(pszCurrMsgNum);
 	Hex2Str(pControlBlock->wCurrentMsgNum,Buffer);
 	PrintStr(Buffer);
 
-	ChangeLine();
-	GotoHome();
+	printf("\n");
+	//GotoHome();
 }
+*/
 
+/*
 VOID KtViewHandler(LPSTR pszPara)
 {
-	__CMD_PARA_OBJ*  pCmdObj = NULL;
+	struct __CMD_PARA_OBJ*  pCmdObj = NULL;
 	DWORD            dwID    = 0L;
 	BOOL             bResult = FALSE;
 	
@@ -457,7 +468,7 @@ VOID KtViewHandler(LPSTR pszPara)
 	pCmdObj = FormParameterObj(pszPara);
 	if(NULL == pCmdObj)
 	{
-		PrintLine("Can not allocate the resource to interpret the command.");
+		printf("Can not allocate the resource to interpret the command.");
 		goto __TERMINAL;
 	}
 
@@ -468,7 +479,7 @@ VOID KtViewHandler(LPSTR pszPara)
 		bResult = Str2Hex(pCmdObj->Parameter[0],&dwID);
 		if(FALSE == bResult)
 		{
-			PrintLine("Can not interpret the command's parameter.");
+			printf("Can not interpret the command's parameter.");
 			goto __TERMINAL;
 		}
 		PrintKtByID(dwID);
@@ -484,30 +495,31 @@ __TERMINAL:
 		KMemFree((LPVOID)pCmdObj,KMEM_SIZE_TYPE_4K,4096);
 	return;
 }
-
+*/
 //
 //The helper functions,print out the usage information.
 //
 
 static VOID SendMsgUsage()
 {
-	PrintLine("    Usage :");
-	PrintLine("      sendmsg kthread_id command [parameter1] [parameter2]");
-	PrintLine("    Where :");
-	PrintLine("      kthread_id  : Kernal thread ID.");
-	PrintLine("      command     : Command number.");
-	PrintLine("      parameter1  : The first parameter(optional).");
-	PrintLine("      parameter2  : The second parameter(optional).");
+	printf("    Usage :");
+	printf("      sendmsg kthread_id command [parameter1] [parameter2]");
+	printf("    Where :");
+	printf("      kthread_id  : Kernal thread ID.");
+	printf("      command     : Command number.");
+	printf("      parameter1  : The first parameter(optional).");
+	printf("      parameter2  : The second parameter(optional).");
 }
 
+/*
 VOID SendMsgHandler(LPSTR pszPara)
 {
-	__CMD_PARA_OBJ*          pCmdObj       = NULL;
+	struct __CMD_PARA_OBJ*          pCmdObj       = NULL;
 	DWORD                    dwID          = 0L;
-	__KTHREAD_MSG            msg;
+	struct __KTHREAD_MSG            msg;
 	BOOL                     bResult       = FALSE;
 	DWORD                    dwCommand     = 0L;
-	__KTHREAD_CONTROL_BLOCK* pControlBlock = NULL;
+	struct __KTHREAD_CONTROL_BLOCK* pControlBlock = NULL;
 
 	if((NULL == pszPara) || (0 == *pszPara))
 	{
@@ -518,13 +530,13 @@ VOID SendMsgHandler(LPSTR pszPara)
 	pCmdObj = FormParameterObj(pszPara);
 	if(NULL == pCmdObj)
 	{
-		PrintLine("Can not allocate resource to interpret the command.");
+		printf("Can not allocate resource to interpret the command.");
 		goto __TERMINAL;
 	}
 
 	if(pCmdObj->byParameterNum < 2)
 	{
-		PrintLine("Miss command code.");
+		printf("Miss command code.");
 		goto __TERMINAL;
 	}
 
@@ -533,21 +545,21 @@ VOID SendMsgHandler(LPSTR pszPara)
 		|| (dwID < 1)
 		|| (dwID > MAX_KTHREAD_NUM))
 	{
-		PrintLine("Invalid kernal thread ID.");
+		printf("Invalid kernal thread ID.");
 		goto __TERMINAL;
 	}
 
 	pControlBlock = GetKThreadControlBlock(dwID);
 	if(NULL == pControlBlock)
 	{
-		PrintLine("The kernal thread is not exist.");
+		printf("The kernal thread is not exist.");
 		goto __TERMINAL;
 	}
 
 	bResult = Str2Hex(pCmdObj->Parameter[1],&dwCommand);
 	if(FALSE == bResult)
 	{
-		PrintLine("Invalid command code.");
+		printf("Invalid command code.");
 		goto __TERMINAL;
 	}
 
@@ -564,7 +576,7 @@ VOID SendMsgHandler(LPSTR pszPara)
 		bResult        = Str2Hex(pCmdObj->Parameter[2],&msg.dwParam_01);
 		if(FALSE == bResult)
 		{
-			PrintLine("Invalid parameter.");
+			printf("Invalid parameter.");
 			break;
 		}
 		msg.dwParam_02 = 0L;
@@ -576,13 +588,13 @@ VOID SendMsgHandler(LPSTR pszPara)
 		bResult        = Str2Hex(pCmdObj->Parameter[2],&msg.dwParam_01);
 		if(FALSE == bResult)
 		{
-			PrintLine("Invalid parameter.");
+			printf("Invalid parameter.");
 			break;
 		}
 		bResult        = Str2Hex(pCmdObj->Parameter[3],&msg.dwParam_02);
 		if(FALSE == bResult)
 		{
-			PrintLine("Invalid parameter.");
+			printf("Invalid parameter.");
 			break;
 		}
 		KtSendMessage(pControlBlock,&msg);
@@ -593,13 +605,15 @@ __TERMINAL:
 		KMemFree((LPVOID)pCmdObj,KMEM_SIZE_TYPE_4K,4096);
 	return;
 }
+*/
 
 //
 //Memview handler.
 //
+/*
 VOID MemViewHandler(LPSTR pszCmd)
 {
-	__CMD_PARA_OBJ* pParaObj   = NULL;
+	struct __CMD_PARA_OBJ* pParaObj   = NULL;
 	DWORD dwIndex              = 0x00000000;
 	DWORD dwStartAddress       = 0x00000000;  //Local variables defination.
 	DWORD bResult              = FALSE;
@@ -609,15 +623,16 @@ VOID MemViewHandler(LPSTR pszCmd)
 
 	if(0 == *pszCmd)
 	{
+
 __PRINT_USAGE:
-		PrintLine("    Usage : View a block memory's content.");
-		PrintLine("    memview -k[u] [process_id] start_mem_addr number");
-		PrintLine("    Where :");
-		PrintLine("      -k : View the kernal mode memory content.");
-		PrintLine("      -u : View the user mode memory content.");
-		PrintLine("      process_id : The process to be viewed.");
-		PrintLine("      start_mem_addr : The start address of the memory be viewed.");
-		PrintLine("      number : How many double word's memory to be viewed.");
+		printf("    Usage : View a block memory's content.");
+		printf("    memview -k[u] [process_id] start_mem_addr number");
+		printf("    Where :");
+		printf("      -k : View the kernal mode memory content.");
+		printf("      -u : View the user mode memory content.");
+		printf("      process_id : The process to be viewed.");
+		printf("      start_mem_addr : The start address of the memory be viewed.");
+		printf("      number : How many double word's memory to be viewed.");
 		goto __TERMINAL;
 	}
 
@@ -634,26 +649,26 @@ __PRINT_USAGE:
 		                                                            //from string to hex number.
 		if(FALSE == bResult)
 		{
-			PrintLine("Can not convert the first parameter to hex number.");
+			printf("Can not convert the first parameter to hex number.");
 			break;
 		}
 		bResult = Str2Hex(pParaObj->Parameter[1],&dwNumber);  //Convert the second parameter
 		                                                      //from string to hex number.
 		if(FALSE == bResult)
 		{
-			PrintLine("Can not convert the second parameter to hex number.");
+			printf("Can not convert the second parameter to hex number.");
 			break;
 		}
 
 		if(dwStartAddress + dwNumber * 4 > 16 * 1024 * 1024)
 		{
-			PrintLine("The memory block you want to view is exceed the kernal space.");
+			printf("The memory block you want to view is exceed the kernal space.");
 			break;
 		}
 
-		PrintLine("    ---------- ** Mem Content ** ----------    ");
-		ChangeLine();
-		GotoHome();
+		printf("    ---------- ** Mem Content ** ----------    ");
+		printf("\n");
+		//GotoHome();
 		for(i = 0;i < dwNumber;i ++)
 		{
 			PrintStr("        0x");
@@ -662,46 +677,49 @@ __PRINT_USAGE:
 			PrintStr("      0x");
 			Hex2Str(*(DWORD*)dwStartAddress,memBuffer);
 			PrintStr(memBuffer);
-			ChangeLine();
-			GotoHome();
+			printf("\n");
+			//GotoHome();
 			dwStartAddress += 4;
 		}
 		break;
 	case 'u':
-		PrintLine("Does not support now.");
+		printf("Does not support now.");
 		break;
 	default:
 		goto __PRINT_USAGE;
 		break;
 	}
+*/
 	/*while(pParaObj)
 	{
 		for(dwIndex = 0;dwIndex < (DWORD)pParaObj->byParameterNum;dwIndex ++)
 		{
 			ConvertToUper(pParaObj->Parameter[dwIndex]);
-			PrintLine(pParaObj->Parameter[dwIndex]);
+			printf(pParaObj->Parameter[dwIndex]);
 		}
 		pParaObj = pParaObj->pNext;
 	}*/
-
+/*
 __TERMINAL:
 	if(NULL != pParaObj)
 		KMemFree((LPVOID)pParaObj,KMEM_SIZE_TYPE_4K,4096);
 	return;
 }
+*/
 
 //LPSTR g_pszTest = "Hello,Taiwan!!";
 
+/*
 #define KMSG_USER_SUM 0x00FF
 #define KMSG_USER_ACC 0x00FE
 
-static __KTHREAD_CONTROL_BLOCK* g_pThread1ControlBlock = NULL;
+static struct __KTHREAD_CONTROL_BLOCK* g_pThread1ControlBlock = NULL;
 
 VOID ShellThread1(LPVOID)
 {
 	static DWORD dwSum = 0L;
-	__KTHREAD_CONTROL_BLOCK* pControlBlock = g_pThread1ControlBlock;
-	__KTHREAD_MSG            msg;
+	struct __KTHREAD_CONTROL_BLOCK* pControlBlock = g_pThread1ControlBlock;
+	struct __KTHREAD_MSG            msg;
 	DWORD                    dwTmp1        = 0L;
 	DWORD                    dwTmp2        = 0L;
 	BYTE                     Buffer[32];
@@ -717,7 +735,7 @@ VOID ShellThread1(LPVOID)
 				dwTmp2 = msg.dwParam_02;
 				dwSum  = dwTmp1 + dwTmp2;
 				Int2Str(dwSum,Buffer);
-				PrintLine("The sum is : ");
+				printf("The sum is : ");
 				PrintStr(Buffer);
 				break;
 			case KMSG_USER_ACC:
@@ -727,7 +745,7 @@ VOID ShellThread1(LPVOID)
 				{
 					dwSum += dwTmp2 + 1;
 				}
-				PrintLine("The accumulated result is : ");
+				printf("The accumulated result is : ");
 				Int2Str(dwSum,Buffer);
 				PrintStr(Buffer);
 				break;
@@ -746,7 +764,7 @@ VOID ShellThread2(LPVOID)
 		dwThread2Counter ++;
 		if(0 == dwThread2Counter % 0x00FFFFFF)
 		{
-			PrintLine("Kernal thread is running : kernal-thread-2.");
+			printf("Kernal thread is running : kernal-thread-2.");
 			dwThread2Counter = 0;
 		}
 	}
@@ -758,22 +776,22 @@ DWORD ShellThread3(LPVOID)
 	while(dwCounter < 10)
 	{
 		dwCounter ++;
-		PrintLine("Thread 3 is running,increment the dwCounter.");
+		printf("Thread 3 is running,increment the dwCounter.");
 	}
 	return 0L;
 }
 
-__EVENT* lpWriteEvent  = NULL;
-__EVENT* lpReadEvent   = NULL;
+struct __EVENT* lpWriteEvent  = NULL;
+struct __EVENT* lpReadEvent   = NULL;
 
 DWORD ReadThread(LPVOID)
 {
 	while(TRUE)
 	{
-		lpReadEvent->WaitForThisObject((__COMMON_OBJECT*)lpReadEvent);
-		PrintLine("Read resource from shared pool.");
-		lpReadEvent->ResetEvent((__COMMON_OBJECT*)lpReadEvent);
-		lpWriteEvent->SetEvent((__COMMON_OBJECT*)lpWriteEvent);
+		lpReadEvent->WaitForThisObject((struct __COMMON_OBJECT*)lpReadEvent);
+		printf("Read resource from shared pool.");
+		lpReadEvent->ResetEvent((struct __COMMON_OBJECT*)lpReadEvent);
+		lpWriteEvent->SetEvent((struct __COMMON_OBJECT*)lpWriteEvent);
 	}
 	return 0L;
 }
@@ -782,10 +800,10 @@ DWORD WriteThread(LPVOID)
 {
 	while(TRUE)
 	{
-		lpWriteEvent->WaitForThisObject((__COMMON_OBJECT*)lpWriteEvent);
-		PrintLine("Write resource to shared pool.");
-		lpWriteEvent->ResetEvent((__COMMON_OBJECT*)lpWriteEvent);
-		lpReadEvent->SetEvent((__COMMON_OBJECT*)lpReadEvent);
+		lpWriteEvent->WaitForThisObject((struct __COMMON_OBJECT*)lpWriteEvent);
+		printf("Write resource to shared pool.");
+		lpWriteEvent->ResetEvent((struct __COMMON_OBJECT*)lpWriteEvent);
+		lpReadEvent->SetEvent((struct __COMMON_OBJECT*)lpReadEvent);
 	}
 	return 0L;
 }
@@ -796,8 +814,8 @@ DWORD SleepThread(LPVOID)
 
 	while(dwSleepCount)
 	{
-		PrintLine("I am sleeping thread.");
-		KernelThreadManager.Sleep((__COMMON_OBJECT*)&KernelThreadManager,500);
+		printf("I am sleeping thread.");
+		KernelThreadManager.Sleep((struct __COMMON_OBJECT*)&KernelThreadManager,500);
 		dwSleepCount --;
 	}
 	return 0L;
@@ -805,7 +823,7 @@ DWORD SleepThread(LPVOID)
 
 DWORD EchoRoutine(LPVOID)
 {
-	__KERNEL_THREAD_MESSAGE Msg;
+	struct __KERNEL_THREAD_MESSAGE Msg;
 	BYTE                    bt;
 	WORD                    wr = 0x0700;
 	while(TRUE)
@@ -827,13 +845,13 @@ __TERMINAL:
 	return 0L;
 }
 
-__MUTEX*    lpMutex   = NULL;
-__MAILBOX*  lpMailBox = NULL;
-__EVENT*    lpEvent   = NULL;
+struct __MUTEX*    lpMutex   = NULL;
+struct __MAILBOX*  lpMailBox = NULL;
+struct __EVENT*    lpEvent   = NULL;
 
 static DWORD SynThread1(LPVOID)
 {
-	__KERNEL_THREAD_MESSAGE Msg;
+	struct __KERNEL_THREAD_MESSAGE Msg;
 	BYTE                    bt;
 
 	while(TRUE)
@@ -842,8 +860,8 @@ static DWORD SynThread1(LPVOID)
 		{
 			if(Msg.wCommand == MSG_KEY_DOWN)
 			{
-				PrintLine("Set event object.");
-				lpEvent->SetEvent((__COMMON_OBJECT*)lpEvent);
+				printf("Set event object.");
+				lpEvent->SetEvent((struct __COMMON_OBJECT*)lpEvent);
 				bt = LOBYTE(LOWORD(Msg.dwParam));
 				if('q' == bt)
 					return 0L;
@@ -859,16 +877,16 @@ static DWORD SynThread2(LPVOID)
 
 	while(TRUE)
 	{
-		dwRetVal = lpEvent->WaitForThisObjectEx((__COMMON_OBJECT*)lpEvent,
+		dwRetVal = lpEvent->WaitForThisObjectEx((struct __COMMON_OBJECT*)lpEvent,
 			300);
 		switch(dwRetVal)
 		{
 		case OBJECT_WAIT_RESOURCE:
-			PrintLine("I am first thread,wait a resource.");
-			lpEvent->ResetEvent((__COMMON_OBJECT*)lpEvent);
+			printf("I am first thread,wait a resource.");
+			lpEvent->ResetEvent((struct __COMMON_OBJECT*)lpEvent);
 			break;
 		case OBJECT_WAIT_TIMEOUT:
-			PrintLine("I am first thread,wait time out...");
+			printf("I am first thread,wait time out...");
 			break;
 		}
 	}
@@ -881,16 +899,16 @@ static DWORD SynThread3(LPVOID)
 
 	while(TRUE)
 	{
-		dwRetVal = lpEvent->WaitForThisObjectEx((__COMMON_OBJECT*)lpEvent,
+		dwRetVal = lpEvent->WaitForThisObjectEx((struct __COMMON_OBJECT*)lpEvent,
 			600);
 		switch(dwRetVal)
 		{
 		case OBJECT_WAIT_RESOURCE:
-			PrintLine("I am second thread,wait a resource.");
-			lpEvent->ResetEvent((__COMMON_OBJECT*)lpEvent);
+			printf("I am second thread,wait a resource.");
+			lpEvent->ResetEvent((struct __COMMON_OBJECT*)lpEvent);
 			break;
 		case OBJECT_WAIT_TIMEOUT:
-			PrintLine("I am second thread,wait time out...");
+			printf("I am second thread,wait time out...");
 			break;
 		}
 	}
@@ -905,7 +923,7 @@ static DWORD CriticalThread1(LPVOID)
 		dwCounter ++;
 		if(0xFFFFFFFF == dwCounter)
 		{
-			//PrintLine("I am critical kernel thread 1.");
+			//printf("I am critical kernel thread 1.");
 			dwCounter = 0;
 			//break;
 		}
@@ -921,7 +939,7 @@ static DWORD CriticalThread2(LPVOID)
 		dwCounter ++;
 		if(0xFFFFFFFF == dwCounter)
 		{
-			//PrintLine("I am critical kernel thread 2.");
+			//printf("I am critical kernel thread 2.");
 			dwCounter = 0;
 			//break;
 		}
@@ -937,7 +955,7 @@ static DWORD CriticalThread3(LPVOID)
 		dwCounter ++;
 		if(0xFFFFFFFF == dwCounter)
 		{
-			//PrintLine("I am critical kernel thread 3.");
+			//printf("I am critical kernel thread 3.");
 			dwCounter = 0;
 			//break;
 		}
@@ -953,7 +971,7 @@ static DWORD HighThread(LPVOID)
 		dwCounter ++;
 		if(0xFFFFFFFF == dwCounter)
 		{
-			//PrintLine("I am high priority kernel thread.");
+			//printf("I am high priority kernel thread.");
 			dwCounter = 0;
 			//break;
 		}
@@ -975,10 +993,11 @@ static DWORD LazyPig(LPVOID)
 				break;
 			}
 		}
-		KernelThreadManager.Sleep((__COMMON_OBJECT*)&KernelThreadManager,1000);  //Sleep 1s.
+		KernelThreadManager.Sleep((struct __COMMON_OBJECT*)&KernelThreadManager,1000);  //Sleep 1s.
 	}
 	return 0L;
 }
+*/
 
 VOID TestHandler(LPSTR)
 {
@@ -988,7 +1007,7 @@ VOID TestHandler(LPSTR)
 	struct __KERNEL_THREAD_OBJECT*  lpHigh      = NULL;
 
 	lpCritical1 = KernelThreadManager.CreateKernelThread(
-		(__COMMON_OBJECT*)&KernelThreadManager,
+		(struct __COMMON_OBJECT*)&KernelThreadManager,
 		0L,
 		KERNEL_THREAD_STATUS_READY,
 		PRIORITY_LEVEL_LOW,
@@ -998,7 +1017,7 @@ VOID TestHandler(LPSTR)
 		"Test thread1");
 
 	lpCritical2 = KernelThreadManager.CreateKernelThread(
-		(__COMMON_OBJECT*)&KernelThreadManager,
+		(struct __COMMON_OBJECT*)&KernelThreadManager,
 		0L,
 		KERNEL_THREAD_STATUS_READY,
 		PRIORITY_LEVEL_LOW,
@@ -1008,7 +1027,7 @@ VOID TestHandler(LPSTR)
 		"Test thread2");
 
 	lpCritical3 = KernelThreadManager.CreateKernelThread(
-		(__COMMON_OBJECT*)&KernelThreadManager,
+		(struct __COMMON_OBJECT*)&KernelThreadManager,
 		0L,
 		KERNEL_THREAD_STATUS_READY,
 		PRIORITY_LEVEL_LOW,
@@ -1018,7 +1037,7 @@ VOID TestHandler(LPSTR)
 		"Test thread3");
 
 	lpHigh = KernelThreadManager.CreateKernelThread(
-		(__COMMON_OBJECT*)&KernelThreadManager,
+		(struct __COMMON_OBJECT*)&KernelThreadManager,
 		0L,
 		KERNEL_THREAD_STATUS_READY,
 		PRIORITY_LEVEL_LOW,
@@ -1028,7 +1047,7 @@ VOID TestHandler(LPSTR)
 		"Test thread4");
 
 	KernelThreadManager.CreateKernelThread(
-		(__COMMON_OBJECT*)&KernelThreadManager,
+		(struct __COMMON_OBJECT*)&KernelThreadManager,
 		0L,
 		KERNEL_THREAD_STATUS_READY,
 		PRIORITY_LEVEL_NORMAL,
@@ -1038,19 +1057,19 @@ VOID TestHandler(LPSTR)
 		"Lazy pig");
 
 	/*
-	lpCritical1->WaitForThisObject((__COMMON_OBJECT*)lpCritical1);
-	lpCritical2->WaitForThisObject((__COMMON_OBJECT*)lpCritical2);
-	lpCritical3->WaitForThisObject((__COMMON_OBJECT*)lpCritical3);
-	lpHigh->WaitForThisObject((__COMMON_OBJECT*)lpHigh);
+	lpCritical1->WaitForThisObject((struct __COMMON_OBJECT*)lpCritical1);
+	lpCritical2->WaitForThisObject((struct __COMMON_OBJECT*)lpCritical2);
+	lpCritical3->WaitForThisObject((struct __COMMON_OBJECT*)lpCritical3);
+	lpHigh->WaitForThisObject((struct __COMMON_OBJECT*)lpHigh);
 
-	KernelThreadManager.DestroyKernelThread((__COMMON_OBJECT*)&KernelThreadManager,
-		(__COMMON_OBJECT*)lpCritical1);
-	KernelThreadManager.DestroyKernelThread((__COMMON_OBJECT*)&KernelThreadManager,
-		(__COMMON_OBJECT*)lpCritical2);
-	KernelThreadManager.DestroyKernelThread((__COMMON_OBJECT*)&KernelThreadManager,
-		(__COMMON_OBJECT*)lpCritical3);
-	KernelThreadManager.DestroyKernelThread((__COMMON_OBJECT*)&KernelThreadManager,
-		(__COMMON_OBJECT*)lpHigh);
+	KernelThreadManager.DestroyKernelThread((struct __COMMON_OBJECT*)&KernelThreadManager,
+		(struct __COMMON_OBJECT*)lpCritical1);
+	KernelThreadManager.DestroyKernelThread((struct __COMMON_OBJECT*)&KernelThreadManager,
+		(struct __COMMON_OBJECT*)lpCritical2);
+	KernelThreadManager.DestroyKernelThread((struct __COMMON_OBJECT*)&KernelThreadManager,
+		(struct __COMMON_OBJECT*)lpCritical3);
+	KernelThreadManager.DestroyKernelThread((struct __COMMON_OBJECT*)&KernelThreadManager,
+		(struct __COMMON_OBJECT*)lpHigh);
 		*/
 }
 
@@ -1059,7 +1078,7 @@ VOID IoCtrlApp(LPSTR)
 	struct __KERNEL_THREAD_OBJECT*    lpIoCtrlThread    = NULL;
 
 	lpIoCtrlThread = KernelThreadManager.CreateKernelThread(
-		(__COMMON_OBJECT*)&KernelThreadManager,
+		(struct __COMMON_OBJECT*)&KernelThreadManager,
 		0L,
 		KERNEL_THREAD_STATUS_READY,
 		PRIORITY_LEVEL_NORMAL,
@@ -1069,20 +1088,20 @@ VOID IoCtrlApp(LPSTR)
 		"IO CTRL");
 	if(NULL == lpIoCtrlThread)    //Can not create the IO control thread.
 	{
-		PrintLine("Can not create IO control thread.");
+		printf("Can not create IO control thread.");
 		return;
 	}
 
-	DeviceInputManager.SetFocusThread((__COMMON_OBJECT*)&DeviceInputManager,
-		(__COMMON_OBJECT*)lpIoCtrlThread);    //Set the current focus to IO control
+	DeviceInputManager.SetFocusThread((struct __COMMON_OBJECT*)&DeviceInputManager,
+		(struct __COMMON_OBJECT*)lpIoCtrlThread);    //Set the current focus to IO control
 	                                          //application.
 
-	lpIoCtrlThread->WaitForThisObject((__COMMON_OBJECT*)lpIoCtrlThread);  //Block the shell
+	lpIoCtrlThread->WaitForThisObject((struct __COMMON_OBJECT*)lpIoCtrlThread);  //Block the shell
 	                                                                      //thread until
 	                                                                      //the IO control
 	                                                                      //application end.
-	KernelThreadManager.DestroyKernelThread((__COMMON_OBJECT*)&KernelThreadManager,
-		(__COMMON_OBJECT*)lpIoCtrlThread);  //Destroy the thread object.
+	KernelThreadManager.DestroyKernelThread((struct __COMMON_OBJECT*)&KernelThreadManager,
+		(struct __COMMON_OBJECT*)lpIoCtrlThread);  //Destroy the thread object.
 
 }
 
@@ -1095,7 +1114,7 @@ VOID SysDiagApp(LPSTR)
 	struct __KERNEL_THREAD_OBJECT*        lpSysDiagThread    = NULL;
 
 	lpSysDiagThread = KernelThreadManager.CreateKernelThread(
-		(__COMMON_OBJECT*)&KernelThreadManager,
+		(struct __COMMON_OBJECT*)&KernelThreadManager,
 		0L,
 		KERNEL_THREAD_STATUS_READY,
 		PRIORITY_LEVEL_NORMAL,
@@ -1105,35 +1124,35 @@ VOID SysDiagApp(LPSTR)
 		"SYS DIAG");
 	if(NULL == lpSysDiagThread)    //Can not create the kernel thread.
 	{
-		PrintLine("Can not start system diag application,please retry again.");
+		printf("Can not start system diag application,please retry again.");
 		return;
 	}
 
-	DeviceInputManager.SetFocusThread((__COMMON_OBJECT*)&DeviceInputManager,
-		(__COMMON_OBJECT*)lpSysDiagThread);
+	DeviceInputManager.SetFocusThread((struct __COMMON_OBJECT*)&DeviceInputManager,
+		(struct __COMMON_OBJECT*)lpSysDiagThread);
 
-	lpSysDiagThread->WaitForThisObject((__COMMON_OBJECT*)lpSysDiagThread);
-	KernelThreadManager.DestroyKernelThread((__COMMON_OBJECT*)&KernelThreadManager,
-		(__COMMON_OBJECT*)lpSysDiagThread);  //Destroy the kernel thread object.
+	lpSysDiagThread->WaitForThisObject((struct __COMMON_OBJECT*)lpSysDiagThread);
+	KernelThreadManager.DestroyKernelThread((struct __COMMON_OBJECT*)&KernelThreadManager,
+		(struct __COMMON_OBJECT*)lpSysDiagThread);  //Destroy the kernel thread object.
 }
 
-static __MUTEX*  lpMutexObj = NULL;
+static struct __MUTEX*  lpMutexObj = NULL;
 static DWORD ProduceRoutine(LPVOID)
 {
 	DWORD dwCounter = 2;
 	while(TRUE)
 	{
-		KernelThreadManager.Sleep((__COMMON_OBJECT*)&KernelThreadManager,
+		KernelThreadManager.Sleep((struct __COMMON_OBJECT*)&KernelThreadManager,
 			2000);
-		lpMutexObj->ReleaseMutex((__COMMON_OBJECT*)lpMutexObj);
+		lpMutexObj->ReleaseMutex((struct __COMMON_OBJECT*)lpMutexObj);
 		dwCounter --;
 		if(dwCounter == 0)
 		{
 			break;
 		}
 	}
-	PrintLine("Produce kernel thread run over.");
-	DestroyMutex((__COMMON_OBJECT*)lpMutexObj);  //DestroyMutex.
+	printf("Produce kernel thread run over.");
+	DestroyMutex((struct __COMMON_OBJECT*)lpMutexObj);  //DestroyMutex.
 	return 0L;
 }
 
@@ -1142,23 +1161,23 @@ static DWORD ConsumerRoutine1(LPVOID)
 	DWORD dwResult;
 	while(TRUE)
 	{
-		dwResult = lpMutexObj->WaitForThisObjectEx((__COMMON_OBJECT*)lpMutexObj,
+		dwResult = lpMutexObj->WaitForThisObjectEx((struct __COMMON_OBJECT*)lpMutexObj,
 			500);
 		switch(dwResult)
 		{
 		case OBJECT_WAIT_RESOURCE:
-			PrintLine("Consumer1 --> OK,resource is available.");
+			printf("Consumer1 --> OK,resource is available.");
 			break;
 		case OBJECT_WAIT_TIMEOUT:
-			PrintLine("Consumer1 --> Waiting time out...");
+			printf("Consumer1 --> Waiting time out...");
 			break;
 		case OBJECT_WAIT_DELETED:
-			PrintLine("Consumer1 --> Produce kernel thread is over,exit.");
+			printf("Consumer1 --> Produce kernel thread is over,exit.");
 			return 0L;
 		default:
 			BUG();
 		}
-		//lpEventObj->ResetEvent((__COMMON_OBJECT*)lpEventObj);  //Reset event.
+		//lpEventObj->ResetEvent((struct __COMMON_OBJECT*)lpEventObj);  //Reset event.
 	}
 	return 0L;
 }
@@ -1168,23 +1187,23 @@ static DWORD ConsumerRoutine2(LPVOID)
 	DWORD dwResult;
 	while(TRUE)
 	{
-		dwResult = lpMutexObj->WaitForThisObjectEx((__COMMON_OBJECT*)lpMutexObj,
+		dwResult = lpMutexObj->WaitForThisObjectEx((struct __COMMON_OBJECT*)lpMutexObj,
 			800);
 		switch(dwResult)
 		{
 		case OBJECT_WAIT_RESOURCE:
-			PrintLine("Consumer2 --> OK,resource is available.");
+			printf("Consumer2 --> OK,resource is available.");
 			break;
 		case OBJECT_WAIT_TIMEOUT:
-			PrintLine("Consumer2 --> Waiting time out...");
+			printf("Consumer2 --> Waiting time out...");
 			break;
 		case OBJECT_WAIT_DELETED:
-			PrintLine("Consumer2 --> Produce kernel thread is over,exit.");
+			printf("Consumer2 --> Produce kernel thread is over,exit.");
 			return 0L;
 		default:
 			BUG();
 		}
-		//lpEventObj->ResetEvent((__COMMON_OBJECT*)lpEventObj);  //Reset event.
+		//lpEventObj->ResetEvent((struct __COMMON_OBJECT*)lpEventObj);  //Reset event.
 	}
 	return 0L;
 }
@@ -1194,23 +1213,23 @@ static DWORD ConsumerRoutine3(LPVOID)
 	DWORD dwResult;
 	while(TRUE)
 	{
-		dwResult = lpMutexObj->WaitForThisObjectEx((__COMMON_OBJECT*)lpMutexObj,
+		dwResult = lpMutexObj->WaitForThisObjectEx((struct __COMMON_OBJECT*)lpMutexObj,
 			1000);
 		switch(dwResult)
 		{
 		case OBJECT_WAIT_RESOURCE:
-			PrintLine("Consumer3 --> OK,resource is available.");
+			printf("Consumer3 --> OK,resource is available.");
 			break;
 		case OBJECT_WAIT_TIMEOUT:
-			PrintLine("Consumer3 --> Waiting time out...");
+			printf("Consumer3 --> Waiting time out...");
 			break;
 		case OBJECT_WAIT_DELETED:
-			PrintLine("Consumer3 --> Produce kernel thread is over,exit.");
+			printf("Consumer3 --> Produce kernel thread is over,exit.");
 			return 0L;
 		default:
 			BUG();
 		}
-		//lpEventObj->ResetEvent((__COMMON_OBJECT*)lpEventObj);  //Reset event.
+		//lpEventObj->ResetEvent((struct __COMMON_OBJECT*)lpEventObj);  //Reset event.
 	}
 	return 0L;
 }
@@ -1222,14 +1241,14 @@ VOID UnTestHandler(LPSTR)
 	struct __KERNEL_THREAD_OBJECT*    lpConsumer2;
 	struct __KERNEL_THREAD_OBJECT*    lpConsumer3;
 
-	lpMutexObj = (__MUTEX*)CreateMutex();  //Create event object.
+	lpMutexObj = (struct __MUTEX*)CreateMutex();  //Create event object.
 	if(NULL == lpMutexObj)
 	{
-		PrintLine("Can not create Mutex object.");
+		printf("Can not create Mutex object.");
 		return;
 	}
 	
-	lpProduce = KernelThreadManager.CreateKernelThread((__COMMON_OBJECT*)&KernelThreadManager,
+	lpProduce = KernelThreadManager.CreateKernelThread((struct __COMMON_OBJECT*)&KernelThreadManager,
 		0L,
 		KERNEL_THREAD_STATUS_READY,
 		PRIORITY_LEVEL_NORMAL,
@@ -1239,11 +1258,11 @@ VOID UnTestHandler(LPSTR)
 		"Produce");
 	if(NULL == lpProduce)
 	{
-		PrintLine("Can not create produce kernel thread.");
+		printf("Can not create produce kernel thread.");
 		return;
 	}
 
-	lpConsumer1 = KernelThreadManager.CreateKernelThread((__COMMON_OBJECT*)&KernelThreadManager,
+	lpConsumer1 = KernelThreadManager.CreateKernelThread((struct __COMMON_OBJECT*)&KernelThreadManager,
 		0L,
 		KERNEL_THREAD_STATUS_READY,
 		PRIORITY_LEVEL_NORMAL,
@@ -1253,11 +1272,11 @@ VOID UnTestHandler(LPSTR)
 		"CONS1");
 	if(NULL == lpConsumer1)
 	{
-		PrintLine("Can not create consumer1 kernel thread.");
+		printf("Can not create consumer1 kernel thread.");
 		return;
 	}
 
-	lpConsumer2 = KernelThreadManager.CreateKernelThread((__COMMON_OBJECT*)&KernelThreadManager,
+	lpConsumer2 = KernelThreadManager.CreateKernelThread((struct __COMMON_OBJECT*)&KernelThreadManager,
 		0L,
 		KERNEL_THREAD_STATUS_READY,
 		PRIORITY_LEVEL_NORMAL,
@@ -1267,11 +1286,11 @@ VOID UnTestHandler(LPSTR)
 		"CONS2");
 	if(NULL == lpConsumer2)
 	{
-		PrintLine("Can not create consumer2 kernel thread.");
+		printf("Can not create consumer2 kernel thread.");
 		return;
 	}
 
-	lpConsumer3 = KernelThreadManager.CreateKernelThread((__COMMON_OBJECT*)&KernelThreadManager,
+	lpConsumer3 = KernelThreadManager.CreateKernelThread((struct __COMMON_OBJECT*)&KernelThreadManager,
 		0L,
 		KERNEL_THREAD_STATUS_READY,
 		PRIORITY_LEVEL_NORMAL,
@@ -1281,22 +1300,22 @@ VOID UnTestHandler(LPSTR)
 		"CONS3");
 	if(NULL == lpConsumer3)
 	{
-		PrintLine("Can not create consumer3 kernel thread.");
+		printf("Can not create consumer3 kernel thread.");
 		return;
 	}
 
-	lpProduce->WaitForThisObject((__COMMON_OBJECT*)lpProduce);
-	lpConsumer1->WaitForThisObject((__COMMON_OBJECT*)lpConsumer1);
-	lpConsumer2->WaitForThisObject((__COMMON_OBJECT*)lpConsumer2);
-	lpConsumer3->WaitForThisObject((__COMMON_OBJECT*)lpConsumer3);
+	lpProduce->WaitForThisObject((struct __COMMON_OBJECT*)lpProduce);
+	lpConsumer1->WaitForThisObject((struct __COMMON_OBJECT*)lpConsumer1);
+	lpConsumer2->WaitForThisObject((struct __COMMON_OBJECT*)lpConsumer2);
+	lpConsumer3->WaitForThisObject((struct __COMMON_OBJECT*)lpConsumer3);
 }
 
 VOID RunTimeHandler(LPSTR)
 {
-	DWORD dwTime = System.GetClockTickCounter((__COMMON_OBJECT*)&System);
+	DWORD dwTime = System.GetClockTickCounter((struct __COMMON_OBJECT*)&System);
 	BYTE  Buffer[12];
 	dwTime /= SYSTEM_TIME_SLICE;
-	PrintLine("The system has running ");
+	printf("The system has running ");
 	Int2Str(dwTime,Buffer);
 	PrintStr(Buffer);
 	PrintStr(" second(s).");
@@ -1304,23 +1323,23 @@ VOID RunTimeHandler(LPSTR)
 
 VOID ClsHandler(LPSTR)
 {
-	ClearScreen();
+	//ClearScreen();
 }
 
 VOID VerHandler(LPSTR)
 {
-	GotoHome();
-	ChangeLine();
+	//GotoHome();
+	printf("\n");
 	PrintStr(VERSION_INFO);
 }
 
 VOID MemHandler(LPSTR)
 {
-	PrintLine("------------------ ** memory layout ** ------------------");
-	PrintLine("    0x00000000 - 0x000FFFFF        Hardware buffer       ");
-	PrintLine("    0x00100000 - 0x0010FFFF        Mini-kernal           ");
-	PrintLine("    0x00110000 - 0x013FFFFF        Master(OS Kernal)     ");
-	PrintLine("    0x01400000 - 0xFFFFFFFF        User Space            ");
+	printf("------------------ ** memory layout ** ------------------");
+	printf("    0x00000000 - 0x000FFFFF        Hardware buffer       ");
+	printf("    0x00100000 - 0x0010FFFF        Mini-kernal           ");
+	printf("    0x00110000 - 0x013FFFFF        Master(OS Kernal)     ");
+	printf("    0x01400000 - 0xFFFFFFFF        User Space            ");
 }
 
 
@@ -1341,7 +1360,7 @@ LPSTR strHdr[] = {               //I have put the defination of this strings
 	"    ES-SS :   0x"};
 
 static BYTE Buffer[] = {"Hello,Taiwan!"};
-
+/*
 VOID SysInfoHandler(LPSTR)
 {
 	DWORD sysContext[11];
@@ -1388,19 +1407,19 @@ VOID SysInfoHandler(LPSTR)
 		popad                    //Restore the stack frame.
 	}
 #else                            //If not an I386 or above platform.
-	GotoHome();
-	ChangeLine();
+	//GotoHome();
+	printf("\n");
 	PrintStr("    This operation can not supported on no-I386 platform.");
 	return;
 #endif                           //Now,we got the general registers and segment
 	                             //registers' value,print them out.
-	GotoHome();
-	ChangeLine();
+	//GotoHome();
+	printf("\n");
 	PrintStr("    System context information(general registers and segment registers):");
 	for(DWORD bt = 0;bt < 11;bt ++)
 	{
-		GotoHome();
-		ChangeLine();
+		//GotoHome();
+		printf("\n");
 		PrintStr(strHdr[bt]);
 		Hex2Str(sysContext[bt],Buffer);
 		//Buffer[8] = 0x00;
@@ -1408,25 +1427,26 @@ VOID SysInfoHandler(LPSTR)
 	}
 	return;
 }
+*/
 
 VOID DateHandler(LPSTR)
 {
-	GotoHome();
-	ChangeLine();
+	//GotoHome();
+	printf("\n");
 	PrintStr("DateHandler called.");
 }
 
 VOID TimeHandler(LPSTR)
 {
-	GotoHome();
-	ChangeLine();
+	//GotoHome();
+	printf("\n");
 	PrintStr("Time Handler called.");
 }
 
 VOID CpuHandler(LPSTR)
 {
-	GotoHome();
-	ChangeLine();
+	//GotoHome();
+	printf("\n");
 	PrintStr("Cpu Handler called.");
 }
 
@@ -1435,11 +1455,11 @@ VOID SptHandler(LPSTR)           //Command 'support' handler.
 	LPSTR strSupportInfo1 = "    For any technical support,send E-Mail to:";
 	LPSTR strSupportInfo2 = "    garryxin@yahoo.com.cn.";
 	
-	GotoHome();
-	ChangeLine();
+	//GotoHome();
+	printf("\n");
 	PrintStr(strSupportInfo1);
-	GotoHome();
-	ChangeLine();
+	//GotoHome();
+	printf("\n");
 	PrintStr(strSupportInfo2);
 	return;
 }
@@ -1447,8 +1467,8 @@ VOID SptHandler(LPSTR)           //Command 'support' handler.
 VOID  DefaultHandler(LPSTR)      //Default command handler.
 {
 	LPSTR strPrompt = "You entered incorrect command name.";
-	ChangeLine();
-	GotoHome();
+	printf("\n");
+	//GotoHome();
 	PrintStr(strPrompt);
 	return;
 }
@@ -1461,8 +1481,9 @@ VOID  DefaultHandler(LPSTR)      //Default command handler.
                                             //want to fuck bill gates again!!!
 VOID  DoCommand()
 {
+	DWORD dwIndex;
 	DWORD wIndex = 0x0000;
-	BOOL bResult = FALSE;        //If find the correct command object,then
+	BOOL bResult = FALSE;     //If find the correct command object,then
 	                             //This flag set to TRUE.
 	BYTE tmpBuffer[36];
 	struct __KERNEL_THREAD_OBJECT* hKernelThread = NULL;
@@ -1477,7 +1498,7 @@ VOID  DoCommand()
 	}
 	tmpBuffer[wIndex] = 0;
 
-	for(DWORD dwIndex = 0;dwIndex < CMD_OBJ_NUM;dwIndex ++)
+	for(dwIndex = 0;dwIndex < CMD_OBJ_NUM;dwIndex ++)
 	{
 		if(StrCmp(&tmpBuffer[0],CmdObj[dwIndex].CmdStr))
 		{
@@ -1496,7 +1517,7 @@ VOID  DoCommand()
 		if(StrCmp(&tmpBuffer[0],ExtCmdArray[dwIndex].lpszCmdName))  //Found.
 		{
 			hKernelThread = KernelThreadManager.CreateKernelThread(
-				(__COMMON_OBJECT*)&KernelThreadManager,
+				(struct __COMMON_OBJECT*)&KernelThreadManager,
 				0L,
 				KERNEL_THREAD_STATUS_READY,
 				PRIORITY_LEVEL_NORMAL,
@@ -1506,10 +1527,10 @@ VOID  DoCommand()
 				NULL);
 			if(!ExtCmdArray[dwIndex].bBackground)  //Should wait.
 			{
-				hKernelThread->WaitForThisObject((__COMMON_OBJECT*)hKernelThread);
+				hKernelThread->WaitForThisObject((struct __COMMON_OBJECT*)hKernelThread);
 				KernelThreadManager.DestroyKernelThread(
-					(__COMMON_OBJECT*)&KernelThreadManager,
-					(__COMMON_OBJECT*)hKernelThread);  //Destroy it.
+					(struct __COMMON_OBJECT*)&KernelThreadManager,
+					(struct __COMMON_OBJECT*)hKernelThread);  //Destroy it.
 			}
 			bResult = TRUE;
 			goto __END;
@@ -1531,19 +1552,19 @@ VOID  PrintPrompt()
 	LPSTR pszSysName = "[system-view]";
 	if(HostName[0])
 	{
-		PrintLine(&HostName[0]);
+		printf(&HostName[0]);
 	}
 	else
 	{
-		ChangeLine();
-	    GotoHome();
-	    PrintStr(pszSysName);
+	    printf("\n");
+	    //GotoHome();
+	    printf("%s ",pszSysName);
 	}
 	return;
 }
 
 
-BOOL EventHandler(WORD wCommand,WORD wParam,DWORD dwParam)
+BOOL EventHandler(WORD wCommand, WORD wParam, DWORD dwParam)
 {
 	WORD wr = 0x0700;
 	BYTE bt = 0x00;
@@ -1551,6 +1572,7 @@ BOOL EventHandler(WORD wCommand,WORD wParam,DWORD dwParam)
 
 	switch(wCommand)
 	{
+
 	case MSG_KEY_DOWN:
 		bt = LOBYTE(LOWORD(dwParam));
 		if(VK_RETURN == bt)
@@ -1580,35 +1602,36 @@ BOOL EventHandler(WORD wCommand,WORD wParam,DWORD dwParam)
 			}
 		}
 		break;
+
 	case KERNEL_MESSAGE_TIMER:
 		switch(dwParam){
 		case 100:
-			GotoHome();
-			ChangeLine();
+			//GotoHome();
+			printf("\n");
 			PrintStr("Timer ID = 100,please handle it.");
 			Int2Str(100,Buffer);
 			PrintStr(Buffer);
 			break;
 		case 200:
-			GotoHome();
-			ChangeLine();
+			//GotoHome();
+			printf("\n");
 			PrintStr("Timer ID = 200,please handle it.");
 			Int2Str(200,Buffer);
 			PrintStr(Buffer);
 			break;
 		case 300:
-			GotoHome();
-			ChangeLine();
+			//GotoHome();
+			printf("\n");
 			PrintStr("Timer ID = 300,please handle it.");
 			break;
 		case 400:
-			GotoHome();
-			ChangeLine();
+			//GotoHome();
+			printf("\n");
 			PrintStr("Timer ID = 400,please handle it.");
 			break;
 		case 500:
-			GotoHome();
-			ChangeLine();
+			//GotoHome();
+			printf("\n");
 			PrintStr("Timer ID = 500,please handle it.");
 			break;
 		default:
@@ -1623,10 +1646,11 @@ BOOL EventHandler(WORD wCommand,WORD wParam,DWORD dwParam)
 //
 //Entry point.
 //
-DWORD EntryPoint()
+
+DWORD shell_execute()
 {
-	//__KTHREAD_MSG Msg;
-	__KERNEL_THREAD_MESSAGE KernelThreadMessage;
+	//struct __KTHREAD_MSG Msg;
+	struct __KERNEL_THREAD_MESSAGE KernelThreadMessage;
 
 	PrintPrompt();
 
@@ -1636,7 +1660,7 @@ DWORD EntryPoint()
 		{
 			if(KTMSG_THREAD_TERMINAL == KernelThreadMessage.wCommand)
 				goto __TERMINAL;
-			DispatchMessage(&KernelThreadMessage,EventHandler);
+			DispatchMessage(&KernelThreadMessage, EventHandler);
 		}
 	}
 

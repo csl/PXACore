@@ -841,6 +841,7 @@ static BOOL MsgQueueFull(struct __COMMON_OBJECT* lpThread)
 
 	return MAX_KTHREAD_MSG_NUM == lpKernelThread->ucCurrentMsgNum ? TRUE : FALSE;
 }
+*/
 
 //MsgQueueEmpty.
 static BOOL MsgQueueEmpty(struct __COMMON_OBJECT* lpThread)
@@ -850,12 +851,12 @@ static BOOL MsgQueueEmpty(struct __COMMON_OBJECT* lpThread)
 	if(NULL == lpThread)   //Parameter check.
 		return FALSE;
 
-	lpKernelThread = (struct __KERNEL_THREAD_OBJECT*)lpThread;
+	lpKernelThread = (struct __KERNEL_THREAD_OBJECT*)  lpThread;
 
 	return 0 == lpKernelThread->ucCurrentMsgNum ? TRUE : FALSE;
 }
 
-
+/*
 //SendMessage.
 static BOOL MgrSendMessage(struct __COMMON_OBJECT* lpThread,__KERNEL_THREAD_MESSAGE* lpMsg)
 {
@@ -907,6 +908,7 @@ static BOOL MgrSendMessage(struct __COMMON_OBJECT* lpThread,__KERNEL_THREAD_MESS
 	bResult = TRUE;
 	return bResult;
 }
+*/
 
 //GetMessage.
 static BOOL MgrGetMessage(struct __COMMON_OBJECT* lpThread,__KERNEL_THREAD_MESSAGE* lpMsg)
@@ -914,9 +916,10 @@ static BOOL MgrGetMessage(struct __COMMON_OBJECT* lpThread,__KERNEL_THREAD_MESSA
 	struct __KERNEL_THREAD_OBJECT*     lpKernelThread  = NULL;
 	DWORD                       dwFlags         = 0L;
 
-	if((NULL == lpThread) || (NULL == lpMsg)) //Parameters check.
+	if((NULL == lpThread) || (NULL == lpMsg))   //Parameters check.
 		return FALSE;
-	lpKernelThread = (struct __KERNEL_THREAD_OBJECT*)lpThread;
+
+	lpKernelThread = (struct __KERNEL_THREAD_OBJECT*) lpThread;
 
 	__ENTER_CRITICAL_SECTION(NULL,dwFlags);
 	if(MsgQueueEmpty(lpThread))  //Current message queue is empty,should waiting.
@@ -924,9 +927,9 @@ static BOOL MgrGetMessage(struct __COMMON_OBJECT* lpThread,__KERNEL_THREAD_MESSA
 		lpKernelThread->dwThreadStatus = KERNEL_THREAD_STATUS_BLOCKED;
 		lpKernelThread->lpMsgWaitingQueue->InsertIntoQueue(
 			(struct __COMMON_OBJECT*)lpKernelThread->lpMsgWaitingQueue,
-			(struct __COMMON_OBJECT*)lpKernelThread,
-			0L);
+			(struct __COMMON_OBJECT*)lpKernelThread, 0L);
 		__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
+
 		KernelThreadManager.ScheduleFromProc(NULL);  //Re-schedule.
 		//lpKernelThread->lpMsgEvent->WaitForThisObject(
 		//	(struct __COMMON_OBJECT*)(lpKernelThread->lpMsgEvent));  //Block the current thread.
@@ -949,7 +952,7 @@ static BOOL MgrGetMessage(struct __COMMON_OBJECT* lpThread,__KERNEL_THREAD_MESSA
 	__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
 	return TRUE;
 }
-*/
+
 //
 //The following routine is used to lock a kernel thread,especially the current kernel thread.
 //When a kernel thread is locked,it can not be interrupted,even a kernel thread with high priority

@@ -2,9 +2,7 @@
 #include "stdafx.h"
 #include "l_stdio.h"
 
-
 //#include "port.h"
-
 //#include "statcpu.h"
 //#include "stat_s.h"
 
@@ -60,11 +58,11 @@ DWORD SystemIdle(LPVOID lpData)
 //System shell thread.
 //This kernel thread is a shell.
 //
-/*
-DWORD SystemShell(LPVOID)
+
+DWORD SystemShell(void)
 {
-	EntryPoint();
-*/
+	shell_execute();
+
 	/*DWORD dwCounter = 0L;
 	while(TRUE)
 	{
@@ -75,10 +73,10 @@ DWORD SystemShell(LPVOID)
 			PrintLine("System shell thread is scheduled.");
 		}
 	}*/
-/*
+
 	return 0L;
 }
-*/
+
 //
 //System keeper kernel thread.
 //
@@ -101,17 +99,19 @@ DWORD SystemKeeper(LPVOID)
 //The following function as a kernal thread function's wraper.
 //The kernal thread's start routine's type is VOID KThreadRoutine(LPVOID).
 //
+
 /*
 VOID ShellThreadWrap(LPVOID)
 {
 	EntryPoint();
 }
 */
+
 int main()
 {
 	struct __KERNEL_THREAD_OBJECT*       lpIdleThread     = NULL;
-	//__KERNEL_THREAD_OBJECT*       lpShellThread    = NULL;
-	//__KERNEL_THREAD_OBJECT*       lpKeeperThread   = NULL;
+	struct __KERNEL_THREAD_OBJECT*       lpShellThread    = NULL;
+	//struct __KERNEL_THREAD_OBJECT*       lpKeeperThread   = NULL;
 
 	//initizal serial device
 	SerialInit();
@@ -135,11 +135,31 @@ int main()
 		NULL,
 		"IDLE");
 
-	printf("KernelThreadManager.CreateKernelThrea IDLE Scuessed\n");
+	if(NULL == lpIdleThread)
+	{
+		printf("Can not create idle kernel thread,please restart the system.\n");
+		//__ERROR_HANDLER(ERROR_LEVEL_FATAL,0L,NULL);
+		goto __TERMINAL;
+	}
 
-	//printf("fuck\n");
+	lpShellThread = KernelThreadManager.CreateKernelThread(   //Create shell thread.
+		(struct __COMMON_OBJECT*)&KernelThreadManager,
+		0L,
+		KERNEL_THREAD_STATUS_READY,
+		PRIORITY_LEVEL_NORMAL,
+		SystemShell,
+		NULL,
+		NULL,
+		"SHELL");
+
+	if(NULL == lpShellThread)
+	{
+		printf("Can not create system shell thread,please restart the system.");
+		//__ERROR_HANDLER(ERROR_LEVEL_FATAL,0L,NULL);
+		goto __TERMINAL;
+	}
+
 	//init_interrupt_control();
-	
 	DeadLoop();
 	return 0;
 /*

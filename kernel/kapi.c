@@ -71,13 +71,12 @@ BOOL GetMessage(MSG* lpMsg)
 	__KERNEL_THREAD_OBJECT*  lpKernelThread = NULL;
 
 	lpKernelThread = KernelThreadManager.lpCurrentKernelThread;
-	return KernelThreadManager.GetMessage((struct __COMMON_OBJECT*)lpKernelThread,lpMsg);
+	return KernelThreadManager.GetMessage((struct __COMMON_OBJECT*) lpKernelThread, lpMsg);
 }
 
 BOOL SendMessage(HANDLE hThread,MSG* lpMsg)
 {
-	return KernelThreadManager.SendMessage(
-		hThread,lpMsg);
+	return KernelThreadManager.SendMessage(hThread,lpMsg);
 }
 
 BOOL Sleep(DWORD dwMillionSecond)

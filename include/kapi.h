@@ -41,8 +41,8 @@
 #include "kmemmgr.h"
 //#include "ARCHSTD.H"
 
-typedef __COMMON_OBJECT* HANDLE;  //Use handle to refer any kernel object.
-typedef __KERNEL_THREAD_MESSAGE MSG;
+typedef struct __COMMON_OBJECT* HANDLE;  //Use handle to refer any kernel object.
+typedef struct __KERNEL_THREAD_MESSAGE MSG;
 
 HANDLE CreateKernelThread(DWORD dwStackSize,
 			  DWORD dwStatus,

@@ -156,23 +156,24 @@ VOID __SaveAndSwitch(struct __KERNEL_THREAD_OBJECT* lpPrev, struct __KERNEL_THRE
 		"mrs r4, SPSR\n\t"
 		"stmfd sp!, {r4}\n\t"
 	
-		"ldr r4, =%0\n\t"
-		"str sp, [r4]\n\t"		// current_thread->stack_ptr = sp
+		//"ldr r4, =%0\n\t"
+		"str sp, [%0]\n\t"		// current_thread->stack_ptr = sp
 /*	
 		"ldr r4, =lpPrev\n\t"		// current_thread = next_thread
 		"ldr r6, =lpNex\n\t"
 		"ldr r6, [r6]\n\t"
 		"str r6, [r4]\n\t"
 */
-		"ldr r4, =%1\n\t"
-		"ldr sp, [r4]\n\t"		// sp = next_thread->sp
+//		"ldr r4, =%1\n\t"
+		"ldr sp, [%1]\n\t"		// sp = next_thread->sp
 		
 		"ldmfd sp!, {r4}\n\t"		// restore next thread's context
 		"msr SPSR_cxsf, r4\n\t"
 		"ldmfd sp!, {r0-r12, lr, pc}^\n\t"
 
-		: "=r" (lpPrev->lpInitStackPointer)
-		: "r" (lpNex->lpInitStackPointer)		
+		: 
+		: "r" (lpPrev->lpInitStackPointer),
+		  "r" (lpNex->lpInitStackPointer)
 	);
 }
 

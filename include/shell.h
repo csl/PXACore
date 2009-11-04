@@ -24,14 +24,14 @@
 //
 BOOL EventHandler(WORD wCommand,DWORD dwParam,DWORD dwParam2);
 
-
 //
 //Shell data structures.
 //
 
 typedef VOID (*__CMD_HANDLER)(LPSTR);  //Command handler.
 
-struct __CMD_OBJ{
+struct __CMD_OBJ
+{
 	LPSTR          CmdStr;               //Command text.
 	//__tagCMD_OBJ*  pPrev;                //Point to the previous command object.
 	//__tagCMD_OBJ*  pNext;                //Point to the next.
@@ -47,7 +47,8 @@ struct __CMD_OBJ{
 //command.
 //
 
-struct __CMD_PARA_OBJ{
+struct __CMD_PARA_OBJ
+{
 	BYTE               byFunctionLabel;        //The function label.
 	BYTE               byParameterNum;         //How many parameters  followed.
 	WORD               wReserved;
@@ -63,11 +64,11 @@ struct __CMD_PARA_OBJ{
 //
 //Form the parameter objects link from a command line string.
 //
-__CMD_PARA_OBJ* FormParameterObj(LPSTR);
+struct __CMD_PARA_OBJ* FormParameterObj(LPSTR);
 
 //
 //Release the command line object created by FormParameterObj routine.
 //
-VOID ReleaseParameterObj(__CMD_PARA_OBJ* lpParamObj);
+VOID ReleaseParameterObj(struct __CMD_PARA_OBJ* lpParamObj);
 
 #endif //shell.h

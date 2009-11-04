@@ -12,7 +12,7 @@ VOID _KeyHandler(DWORD dwParam)
 {
 	//__KTHREAD_MSG Msg;
 	//__KERNEL_THREAD_MESSAGE Msg;
-	__DEVICE_MESSAGE Msg;
+	struct __DEVICE_MESSAGE Msg;
 
 	//Mark in interrupt context.
 	System.ucIntNestLevel += 1;
@@ -22,9 +22,7 @@ VOID _KeyHandler(DWORD dwParam)
 	Msg.wDevMsgType   = KeyUpEvent(dwParam) ? KTMSG_KEY_UP : KTMSG_KEY_DOWN;
 	Msg.dwDevMsgParam = dwParam;
 
-	DeviceInputManager.SendDeviceMessage((__COMMON_OBJECT*)&DeviceInputManager,
-		&Msg,
-		NULL);
+	DeviceInputManager.SendDeviceMessage((__COMMON_OBJECT*)&DeviceInputManager, &Msg, NULL);
 	//SendMessage((__COMMON_OBJECT*)g_lpShellThread,&Msg);
 	System.ucIntNestLevel -= 1;
 	return;

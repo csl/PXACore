@@ -33,7 +33,8 @@
 //Fuck you Bill Gates! So poor compiler!!
 //
 
-struct __MSG{
+struct __MSG
+{
 	WORD     wCommand;           //Message type,such as WM_KEYDOWN,WM_KEYUP,etc.
 	WORD     wReserved;
 	DWORD    dwParam;            //Parameter assigned with the command.
@@ -57,7 +58,8 @@ struct __MSG{
 //Task control block defination,the first part of this structure is TSS,
 //and the following part of the TCB is operating system defined fields.
 //
-typedef struct __TCB{
+typedef struct __TCB
+{
 	WORD     wPrevTSS;
 	WORD     wReserved1;         //Reserved part.
 
