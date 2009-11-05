@@ -111,6 +111,8 @@ $(KERNEL_OBJ) : %.o : %.c
 clean:
 	rm -f ./arch/arm/mach-pxa/*.o \
 	      ./kernel/*.o \
+	      ./drivers/*.o \
+	      ./kthread/*.o \
 	      ./lib/*.o \
 	      ./*.o \
 	      $(PXACORE_IMAGE).bin $(PXACORE_IMAGE).elf \
