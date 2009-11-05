@@ -42,7 +42,7 @@ END_DEFINE_OBJECT()
 //common synchronization object.
 //
 #define INHERIT_FROM_COMMON_SYNCHRONIZATION_OBJECT \
-	DWORD                (*WaitForThisObject)(__COMMON_OBJECT*);
+	DWORD                (*WaitForThisObject)(struct __COMMON_OBJECT*);
 
 //
 //Event object's definition.
@@ -53,10 +53,10 @@ BEGIN_DEFINE_OBJECT(__EVENT)
     INHERIT_FROM_COMMON_OBJECT
 	INHERIT_FROM_COMMON_SYNCHRONIZATION_OBJECT
 	DWORD                 dwEventStatus;
-    __PRIORITY_QUEUE*     lpWaitingQueue;
-	DWORD                 (*SetEvent)(__COMMON_OBJECT*);
-	DWORD                 (*ResetEvent)(__COMMON_OBJECT*);
-	DWORD                 (*WaitForThisObjectEx)(__COMMON_OBJECT*,
+    	struct __PRIORITY_QUEUE*     lpWaitingQueue;
+	DWORD                 (*SetEvent)(struct __COMMON_OBJECT*);
+	DWORD                 (*ResetEvent)(struct __COMMON_OBJECT*);
+	DWORD                 (*WaitForThisObjectEx)(struct __COMMON_OBJECT*,
 		                                         DWORD);    //Time out waiting operation.
 END_DEFINE_OBJECT()
 
@@ -70,15 +70,15 @@ END_DEFINE_OBJECT()
 #define EVENT_WAIT_RESOURCE          0x00000001
 #define EVENT_WAIT_TIMEOUT           0x00000002
 
-BOOL EventInitialize(__COMMON_OBJECT*);            //The event object's initializing routine
-VOID EventUninitialize(__COMMON_OBJECT*);          //and uninitializing routine.
+BOOL EventInitialize(struct __COMMON_OBJECT*);            //The event object's initializing routine
+VOID EventUninitialize(struct __COMMON_OBJECT*);          //and uninitializing routine.
 
 //
 //The following routines are used by kernel thread to create event or destroy event.
 //
 
-__COMMON_OBJECT*    CreateEvent(BOOL bInitialState,LPVOID lpReserved);
-VOID                DestroyEvent(__COMMON_OBJECT* lpEvent);
+struct __COMMON_OBJECT*    CreateEvent(BOOL bInitialState,LPVOID lpReserved);
+VOID  DestroyEvent(struct __COMMON_OBJECT* lpEvent);
 
 //--------------------------------------------------------------------------------------
 //
@@ -91,10 +91,10 @@ VOID                DestroyEvent(__COMMON_OBJECT* lpEvent);
 //
 
 BEGIN_DEFINE_OBJECT(__MUTEX)
-    INHERIT_FROM_COMMON_OBJECT                  //Inherit from __COMMON_OBJECT.
-	INHERIT_FROM_COMMON_SYNCHRONIZATION_OBJECT  //Inherit from common synchronization object.
-	DWORD             dwMutexStatus;
-    DWORD             (*ReleaseMutex)(__COMMON_OBJECT* lpThis);
+    INHERIT_FROM_COMMON_OBJECT                  //Inherit from struct __COMMON_OBJECT.
+    INHERIT_FROM_COMMON_SYNCHRONIZATION_OBJECT  //Inherit from common synchronization object.
+    DWORD             dwMutexStatus;
+    DWORD             (*ReleaseMutex)(struct __COMMON_OBJECT* lpThis);
 END_DEFINE_OBJECT()
 
 #define MUTEX_STATUS_FREE      0x00000001
@@ -104,16 +104,16 @@ END_DEFINE_OBJECT()
 //The initializing routine of MUTEX object and uninitializing routine.
 //
 
-BOOL MutexInitialize(__COMMON_OBJECT* lpThis);
-VOID MutexUninitialize(__COMMON_OBJECT* lpThis);
+BOOL MutexInitialize(struct __COMMON_OBJECT* lpThis);
+VOID MutexUninitialize(struct __COMMON_OBJECT* lpThis);
 
 //
 //The following global routines are used to operate mutex object,including create a mutex
 //and destroy a mutex object.
 //
 
-__COMMON_OBJECT*    CreateMutex(LPVOID lpReserved);
-VOID                DestroyMutex(__COMMON_OBJECT* lpMutexObject);
+struct __COMMON_OBJECT*    CreateMutex(LPVOID lpReserved);
+VOID                DestroyMutex(struct __COMMON_OBJECT* lpMutexObject);
 
 
 //-----------------------------------------------------------------------------------

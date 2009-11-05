@@ -26,13 +26,13 @@
 BEGIN_DEFINE_OBJECT(__MAILBOX)
     INHERIT_FROM_COMMON_OBJECT
 	INHERIT_FROM_COMMON_SYNCHRONIZATION_OBJECT
-	DWORD                     (*SendMail)(__COMMON_OBJECT* lpThis,LPVOID lpMsg);
-    DWORD                     (*GetMail)(__COMMON_OBJECT* lpThis,LPVOID* llpMsg,DWORD dwTimeOut);
-	BOOL                      (*CancelWaiting)(__COMMON_OBJECT* lpThis,__COMMON_OBJECT* lpKernelThread);
+	DWORD                     (*SendMail)(struct __COMMON_OBJECT* lpThis,LPVOID lpMsg);
+    	DWORD                     (*GetMail)(struct __COMMON_OBJECT* lpThis,LPVOID* llpMsg,DWORD dwTimeOut);
+	BOOL                      (*CancelWaiting)(struct __COMMON_OBJECT* lpThis,struct __COMMON_OBJECT* lpKernelThread);
 
 	LPVOID                    MsgArray[MAILBOX_MSG_NUM];
 	DWORD                     dwMsgNum;
-	__PRIORITY_QUEUE*         lpWaitingQueue;
+	struct __PRIORITY_QUEUE*         lpWaitingQueue;
 END_DEFINE_OBJECT()    //End of the mailbox's definition.
 
 #define MAILBOX_SUCCESS    0x00000001
@@ -45,8 +45,8 @@ END_DEFINE_OBJECT()    //End of the mailbox's definition.
 //
 
 BEGIN_DEFINE_OBJECT(__TIMER_HANDLER_PARAM)
-    __MAILBOX*                lpMailBox;          //Mailbox.
-	__KERNEL_THREAD_OBJECT*   lpKernelThread;     //Kernel thread object.
+    	struct __MAILBOX*                lpMailBox;          //Mailbox.
+	struct __KERNEL_THREAD_OBJECT*   lpKernelThread;     //Kernel thread object.
 	BOOL                      bCanceled;          //Canceled flags.Once a kernel thread submit 
 	                                              //a get message operation with timeout,but before
 	                                              //timeout,there is a message availiable,then
@@ -65,13 +65,13 @@ END_DEFINE_OBJECT()
 //Mailbox's initializing routine.
 //
 
-BOOL MailboxInitialize(__COMMON_OBJECT* lpThis);
+BOOL MailboxInitialize(struct __COMMON_OBJECT* lpThis);
 
 //
 //Mailbox's Uninitialize routine.
 //
 
-VOID MailboxUninitialize(__COMMON_OBJECT* lpThis);
+VOID MailboxUninitialize(struct __COMMON_OBJECT* lpThis);
 
 
 //
@@ -82,20 +82,20 @@ BEGIN_DEFINE_OBJECT(__SEMAPHORE)
     INHERIT_FROM_COMMON_OBJECT
 	INHERIT_FROM_COMMON_SYNCHRONIZATION_OBJECT
 	DWORD                 dwSemaphoreNum;          //Semaphore number.
-    __PRIORITY_QUEUE*     lpWaitingQueue;          //Kernel thread queue.
-	VOID                  ReleaseSemaphore(__COMMON_OBJECT* lpThis);
-	DWORD                 GetSemaphore(__COMMON_OBJECT* lpThis,DWORD dwTimeOut);
+    	struct __PRIORITY_QUEUE*     lpWaitingQueue;          //Kernel thread queue.
+	VOID                  ReleaseSemaphore(struct __COMMON_OBJECT* lpThis);
+	DWORD                 GetSemaphore(struct __COMMON_OBJECT* lpThis,DWORD dwTimeOut);
 END_DEFINE_OBJECT()
 
 //
 //The definition of Initialize routine.
 //
 
-BOOL SemaphoreInitialize(__COMMON_OBJECT* lpThis);
+BOOL SemaphoreInitialize(struct __COMMON_OBJECT* lpThis);
 
 //
 //The definition of Uninitialize routine.
 //
 
-VOID SemaphoreUninitialize(__COMMON_OBJECT* lpThis);
+VOID SemaphoreUninitialize(struct __COMMON_OBJECT* lpThis);
 

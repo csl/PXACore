@@ -110,11 +110,11 @@ typedef struct __TCB
 
 	DWORD    dwTaskID;           //Task ID.
 
-	__TCB*   Prev;               //Point to the next TCB.
-	__TCB*   Next;
-	__TCB*   Parent;
+	struct __TCB*   Prev;               //Point to the next TCB.
+	struct __TCB*   Next;
+	struct __TCB*   Parent;
 
-    __MSG    MsgQueue[MAX_MESSAGE_NUM];  //The current task's message queue.
+    	struct __MSG    MsgQueue[MAX_MESSAGE_NUM];  //The current task's message queue.
 	WORD     wHeader;                    //Message queue's header.
 	WORD     wTrial;                     //Message queue's trial.
 	WORD     wCurrentMsgCounter;         //Message queue's length.
@@ -134,14 +134,14 @@ typedef struct __TCB
 #define TASK_STATUS_BLOCKING   0x0003
 #define TASK_STATUS_TERMINAL   0x0004
 
-BOOL SendMessage(__TASK_CTRL_BLOCK*,WORD,DWORD); //Add a message to the task's msg
+BOOL SendMessage(struct __TASK_CTRL_BLOCK*, WORD, DWORD); //Add a message to the task's msg
                                             //queue.
-BOOL GetMessage(__TASK_CTRL_BLOCK*,__MSG*); //Get a message from the task
+BOOL GetMessage(struct __TASK_CTRL_BLOCK*, struct __MSG*); //Get a message from the task
                                             //identified by __TASK_CTRL_BLOCK
-BOOL MsgQueueFull(__TASK_CTRL_BLOCK*);
-BOOL MsgQueueEmpty(__TASK_CTRL_BLOCK*);
+BOOL MsgQueueFull(struct __TASK_CTRL_BLOCK*);
+BOOL MsgQueueEmpty(struct __TASK_CTRL_BLOCK*);
 
-typedef DWORD (*_EVENT_HANDLER)(WORD,DWORD,DWORD);  //Message handler type.
+typedef DWORD (*_EVENT_HANDLER)(WORD, DWORD, DWORD);  //Message handler type.
 
 //BOOL DispatchMessage(__MSG*,_EVENT_HANDLER);
 

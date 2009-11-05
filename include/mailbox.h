@@ -5,11 +5,11 @@
 BEGIN_DEFINE_OBJECT(__MAILBOX)
     INHERIT_FROM_COMMON_OBJECT
 	INHERIT_FROM_COMMON_SYNCHRONIZATION_OBJECT
-	__PRIORITY_QUEUE*                  lpGettingQueue;
-    __PRIORITY_QUEUE*                  lpSendingQueue;
-    LPVOID                             lpMsg;
-	DWORD                              (*GetMail)(__COMMON_OBJECT*,LPVOID*,DWORD);
-	DWORD                              (*SendMail)(__COMMON_OBJECT*,LPVOID,DWORD);
+	struct __PRIORITY_QUEUE*                  lpGettingQueue;
+    	struct __PRIORITY_QUEUE*                  lpSendingQueue;
+    	LPVOID                             lpMsg;
+	DWORD                              (*GetMail)(struct __COMMON_OBJECT*,LPVOID*,DWORD);
+	DWORD                              (*SendMail)(struct __COMMON_OBJECT*,LPVOID,DWORD);
 END_DEFINE_OBJECT()
 
 #define MAILBOX_SUCCESS         0xFFFFFFFF
@@ -18,5 +18,5 @@ END_DEFINE_OBJECT()
 #define MAILBOX_TIMEOUT         0x00000002
 #define MAILBOX_NO_RESOURCE     0x00000003
 
-BOOL MailBoxInitialize(__COMMON_OBJECT*);
-VOID MailBoxUninitialize(__COMMON_OBJECT*);
+BOOL MailBoxInitialize(struct __COMMON_OBJECT*);
+VOID MailBoxUninitialize(struct __COMMON_OBJECT*);

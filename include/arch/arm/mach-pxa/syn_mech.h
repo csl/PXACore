@@ -38,6 +38,7 @@
 	    __asm popfd                         
 #endif
 */
+
 #define _ENTER_CRITICAL_SECTION(lpObj)    \
     //
     //SpinLock code here.
@@ -77,13 +78,14 @@
 //0xCFFFFFFF and 0xCFFFFFFC are device mapped control port,in order to commit the
 //writing operations into device immediately,the following macro must be called.
 //
+/*
 #ifdef __I386
 	#define BARRIER() \
 		__asm LOCK add dword ptr [esp],0
 	#else
 	#define BARRIER()
 #endif
-
+*/
 
 /*#define ENTER_CRITICAL_SECTION() \
     DWORD       dwFlags = 0L;    \

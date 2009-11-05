@@ -21,9 +21,9 @@
 //The definition of common queue element.
 //
 BEGIN_DEFINE_OBJECT(__COMMON_QUEUE_ELEMENT)
-    __COMMON_QUEUE_ELEMENT*        lpNext;
-    __COMMON_QUEUE_ELEMENT*        lpPrev;
-	LPVOID                         lpObject;
+    struct __COMMON_QUEUE_ELEMENT*        lpNext;
+    struct __COMMON_QUEUE_ELEMENT*        lpPrev;
+    LPVOID                         lpObject;
 END_DEFINE_OBJECT()
 
 //
@@ -39,7 +39,7 @@ END_DEFINE_OBJECT()
 //queue element.
 //
 #define ALLOCATE_QUEUE_ELEMENT() \
-	(__COMMON_QUEUE_ELEMENT*)KMemAlloc(sizeof(__COMMON_QUEUE_ELEMENT), \
+	(struct __COMMON_QUEUE_ELEMENT*)KMemAlloc(sizeof(struct __COMMON_QUEUE_ELEMENT), \
 	KMEM_SIZE_TYPE_ANY);
 
 #define FREE_QUEUE_ELEMENT(eleptr) \
@@ -51,19 +51,19 @@ END_DEFINE_OBJECT()
 //
 BEGIN_DEFINE_OBJECT(__COMMON_QUEUE)
     INHERIT_FROM_COMMON_OBJECT
-	__COMMON_QUEUE_ELEMENT             QueueHdr;          //Queue's header.
+	struct __COMMON_QUEUE_ELEMENT             QueueHdr;          //Queue's header.
 	DWORD                              dwQueueLen;        //Queue length.
 	DWORD                              dwCurrentLen;      //Current length.
 
-	BOOL                               (*InsertIntoQueue)(__COMMON_OBJECT* lpThis,
-		                                                  LPVOID           lpObject);
-	LPVOID                             (*GetFromQueue)(__COMMON_OBJECT* lpThis);
-	BOOL                               (*QueueEmpty)(__COMMON_OBJECT* lpThis);
-	BOOL                               (*QueueFull)(__COMMON_OBJECT* lpThis);
-	DWORD                              (*SetQueueLength)(__COMMON_OBJECT* lpThis,
-		                                              DWORD            dwNewLen);
-	DWORD                              (*GetQueueLength)(__COMMON_OBJECT* lpThis);
-	DWORD                              (*GetCurrLength)(__COMMON_OBJECT* lpThis);
+	BOOL                               (*InsertIntoQueue)(struct __COMMON_OBJECT* lpThis,
+		                                                  LPVOID lpObject);
+	LPVOID                             (*GetFromQueue)(struct __COMMON_OBJECT* lpThis);
+	BOOL                               (*QueueEmpty)(struct __COMMON_OBJECT* lpThis);
+	BOOL                               (*QueueFull)(struct __COMMON_OBJECT* lpThis);
+	DWORD                              (*SetQueueLength)(struct __COMMON_OBJECT* lpThis,
+		                                              DWORD dwNewLen);
+	DWORD                              (*GetQueueLength)(struct __COMMON_OBJECT* lpThis);
+	DWORD                              (*GetCurrLength)(struct __COMMON_OBJECT* lpThis);
 END_DEFINE_OBJECT()
 
 #define DEFAULT_COMMON_QUEUE_LEN  32   //The default length of a common queue object.
@@ -72,12 +72,12 @@ END_DEFINE_OBJECT()
 //The definition of CommQueueInitialize routine.
 //This routine is used to initialize common queue object.
 //
-BOOL CommQueueInit(__COMMON_OBJECT* lpThis);
+BOOL CommQueueInit(struct __COMMON_OBJECT* lpThis);
 
 //
 //The definition of CommQueueUninitialize routine.
 //
-VOID CommQueueUninit(__COMMON_OBJECT* lpThis);
+VOID CommQueueUninit(struct __COMMON_OBJECT* lpThis);
 
 #endif  //End of COMQUEUE.H
 

@@ -159,9 +159,6 @@ int main()
 		goto __TERMINAL;
 	}
 
-	//init_interrupt_control();
-	DeadLoop();
-	return 0;
 /*
 	DWORD                         dwKThreadID      = 0;
 	DWORD                         dwIndex          = 0;
@@ -336,9 +333,9 @@ int main()
 #endif
 */
 
-/*
+
 	//g_intHandler = SetTimerHandler(TimerHandler);  //Set the timer interrupt handler.
-	SetTimerHandler(GeneralIntHandler);
+	//SetTimerHandler(GeneralIntHandler);
 
 	//g_pCurrentTask = &tcbShell;  //Will be deleted
 
@@ -350,7 +347,7 @@ int main()
 	//The following kernal thread is created,and it is the
 	//first kernal thread,as a operating system shell.
 	//
-*/
+
 
 /*	dwKThreadID = CreateKThread(16384,
 		KTHREAD_STATUS_READY,
@@ -365,7 +362,7 @@ int main()
 	                                                          //control block.*/
 	//EnableInterrupt();
 
-	//DeadLoop();
+	DeadLoop();
 	//EntryPoint();
 	//ScheduleKThread();            //Schedule the kernal thread.
 

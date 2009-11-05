@@ -29,16 +29,17 @@
 //When a time interrupt occured,system decrease dwTimeSpan of all the objects
 //in the time slot,and if the dwTimeSpan's value equal to zero,send a message
 //to the task identified by pTCB.
-typedef struct __TSO{
+typedef struct __TSO
+{
 	DWORD              dwTimeSpan;   //Time span
-	__TASK_CTRL_BLOCK* pTCB;         //Task control block.
+	struct __TASK_CTRL_BLOCK* pTCB;         //Task control block.
 	WORD               wTimerID;
 }__TIME_SLOT_OBJECT;
 
 //Time handle procedures.
 VOID TimerHandler(DWORD);
 
-BOOL SetTimer(__TASK_CTRL_BLOCK*,DWORD,WORD);
+BOOL SetTimer(struct __TASK_CTRL_BLOCK*,DWORD,WORD);
 
 DWORD GetRunTime();
 

@@ -23,15 +23,15 @@
 //    Lines number              :
 //***********************************************************************/
 
-#ifndef __STDAFX_H__
-#include "..\INCLUDE\StdAfx.h"
-#endif
+#include "stdafx.h"
 
-__PERF_RECORDER  TimerIntPr = {
+__PERF_RECORDER  TimerIntPr = 
+{
 	U64_ZERO,
 	U64_ZERO,
 	U64_ZERO,
-	U64_ZERO};                  //Performance recorder object used to mesure
+	U64_ZERO
+};                  //Performance recorder object used to mesure
                                 //the performance of timer interrupt.
 
 //
@@ -46,11 +46,11 @@ __PERF_RECORDER  TimerIntPr = {
 static BOOL TimerInterruptHandler(LPVOID lpEsp,LPVOID)
 {
 	DWORD                     dwPriority        = 0L;
-	__TIMER_OBJECT*           lpTimerObject     = 0L;
-	__KERNEL_THREAD_MESSAGE   Msg                   ;
-	__PRIORITY_QUEUE*         lpTimerQueue      = NULL;
-	__PRIORITY_QUEUE*         lpSleepingQueue   = NULL;
-	__KERNEL_THREAD_OBJECT*   lpKernelThread    = NULL;
+	struct __TIMER_OBJECT*    lpTimerObject     = 0L;
+	__KERNEL_THREAD_MESSAGE   Msg;
+	struct __PRIORITY_QUEUE*         lpTimerQueue      = NULL;
+	struct __PRIORITY_QUEUE*         lpSleepingQueue   = NULL;
+	struct __KERNEL_THREAD_OBJECT*   lpKernelThread    = NULL;
 	DWORD                     dwFlags           = 0L;
 
 	if(NULL == lpEsp)    //Parameter check.
@@ -59,28 +59,28 @@ static BOOL TimerInterruptHandler(LPVOID lpEsp,LPVOID)
 	if(System.dwClockTickCounter == System.dwNextTimerTick)     //Should schedule timer.
 	{
 		lpTimerQueue = System.lpTimerQueue;
-		lpTimerObject = (__TIMER_OBJECT*)lpTimerQueue->GetHeaderElement(
-			(__COMMON_OBJECT*)lpTimerQueue,
-			&dwPriority);
-		if(NULL == lpTimerObject)
-			goto __CONTINUE_1;
+		lpTimerObject = (struct __TIMER_OBJECT*)lpTimerQueue->GetHeaderElement(
+				(struct __COMMON_OBJECT*)lpTimerQueue,
+				&dwPriority);
+		if(NULL == lpTimerObject) goto __CONTINUE_1;
+
 		dwPriority = MAX_DWORD_VALUE - dwPriority;
 		while(dwPriority <= System.dwNextTimerTick)    //Strictly speaking,the dwPriority
-			                                           //variable must EQUAL System.dw-
-													   //NextTimerTick,but in the implement-
-													   //ing of the current version,there
-													   //may be some error exists,so we assume
-													   //dwPriority equal or less than dwNext-
-													   //TimerTic.
+			                                       //variable must EQUAL System.dw-
+							       //NextTimerTick,but in the implement-
+							      //ing of the current version,there
+							      //may be some error exists,so we assume
+							      //dwPriority equal or less than dwNext-
+							      //TimerTic.
 		{
 			if(NULL == lpTimerObject->DirectTimerHandler)  //Send a message to the kernel thread.
 			{
 				Msg.wCommand = KERNEL_MESSAGE_TIMER;
 				Msg.dwParam  = lpTimerObject->dwTimerID;
 				KernelThreadManager.SendMessage(
-					(__COMMON_OBJECT*)lpTimerObject->lpKernelThread,
+					(struct __COMMON_OBJECT*)lpTimerObject->lpKernelThread,
 					&Msg);
-				//PrintLine("Send a timer message to kernel thread.");
+				//printf("Send a timer message to kernel thread.");
 			}
 			else
 			{
@@ -92,26 +92,28 @@ static BOOL TimerInterruptHandler(LPVOID lpEsp,LPVOID)
 			{
 			case TIMER_FLAGS_ONCE:        //Delete the timer object processed just now.
 				ObjectManager.DestroyObject(&ObjectManager,
-					(__COMMON_OBJECT*)lpTimerObject);
+					(struct __COMMON_OBJECT*)lpTimerObject);
 				break;
 			case TIMER_FLAGS_ALWAYS:    //Re-insert the timer object into timer queue.
 				dwPriority  = lpTimerObject->dwTimeSpan;
 				dwPriority /= SYSTEM_TIME_SLICE;
 				dwPriority += System.dwClockTickCounter;
 				dwPriority  = MAX_DWORD_VALUE - dwPriority;
-				lpTimerQueue->InsertIntoQueue((__COMMON_OBJECT*)lpTimerQueue,
-					(__COMMON_OBJECT*)lpTimerObject,
+				lpTimerQueue->InsertIntoQueue((struct __COMMON_OBJECT*)lpTimerQueue,
+					(struct __COMMON_OBJECT*)lpTimerObject,
 					dwPriority);
 				break;
 			default:
 				break;
 			}
 
-			lpTimerObject = (__TIMER_OBJECT*)lpTimerQueue->GetHeaderElement(
-				(__COMMON_OBJECT*)lpTimerQueue,
+			lpTimerObject = (struct __TIMER_OBJECT*)lpTimerQueue->GetHeaderElement(
+				(struct __COMMON_OBJECT*)lpTimerQueue,
 				&dwPriority);    //Check another timer object.
+
 			if(NULL == lpTimerObject)
 				break;
+
 			dwPriority = MAX_DWORD_VALUE - dwPriority;
 		}
 
@@ -127,8 +129,8 @@ static BOOL TimerInterruptHandler(LPVOID lpEsp,LPVOID)
 			System.dwNextTimerTick = dwPriority;    //Update the next timer tick counter.
 			__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
 			dwPriority = MAX_DWORD_VALUE - dwPriority;
-			lpTimerQueue->InsertIntoQueue((__COMMON_OBJECT*)lpTimerQueue,
-				(__COMMON_OBJECT*)lpTimerObject,
+			lpTimerQueue->InsertIntoQueue((struct __COMMON_OBJECT*)lpTimerQueue,
+				(struct __COMMON_OBJECT*)lpTimerObject,
 				dwPriority);
 		}
 	}
@@ -140,12 +142,11 @@ __CONTINUE_1:
 	//the time it(then) set is out.
 	//
 	if(System.dwClockTickCounter == KernelThreadManager.dwNextWakeupTick)  //There must existes
-		                                                                   //kernel thread(s) to
-																		   //be wake up.
+	 //kernel thread(s) to up.
 	{
 		lpSleepingQueue = KernelThreadManager.lpSleepingQueue;
-		lpKernelThread  = (__KERNEL_THREAD_OBJECT*)lpSleepingQueue->GetHeaderElement(
-			(__COMMON_OBJECT*)lpSleepingQueue,
+		lpKernelThread  = (struct __KERNEL_THREAD_OBJECT*)lpSleepingQueue->GetHeaderElement(
+			(struct __COMMON_OBJECT*)lpSleepingQueue,
 			&dwPriority);
 		while(lpKernelThread)
 		{
@@ -155,11 +156,11 @@ __CONTINUE_1:
 				break;    //This kernel thread should not be wake up.
 			lpKernelThread->dwThreadStatus = KERNEL_THREAD_STATUS_READY;
 			KernelThreadManager.AddReadyKernelThread(
-				(__COMMON_OBJECT*)&KernelThreadManager,
+				(struct __COMMON_OBJECT*)&KernelThreadManager,
 				lpKernelThread);  //Insert the waked up kernel thread into ready queue.
 
-			lpKernelThread = (__KERNEL_THREAD_OBJECT*)lpSleepingQueue->GetHeaderElement(
-				(__COMMON_OBJECT*)lpSleepingQueue,
+			lpKernelThread = (struct __KERNEL_THREAD_OBJECT*)lpSleepingQueue->GetHeaderElement(
+				(struct __COMMON_OBJECT*)lpSleepingQueue,
 				&dwPriority);  //Check next kernel thread in sleeping queue.
 		}
 		if(NULL == lpKernelThread)
@@ -174,8 +175,8 @@ __CONTINUE_1:
 			KernelThreadManager.dwNextWakeupTick = dwPriority;
 			__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
 			dwPriority = MAX_DWORD_VALUE - dwPriority;
-			lpSleepingQueue->InsertIntoQueue((__COMMON_OBJECT*)lpSleepingQueue,
-				(__COMMON_OBJECT*)lpKernelThread,
+			lpSleepingQueue->InsertIntoQueue((struct __COMMON_OBJECT*)lpSleepingQueue,
+				(struct __COMMON_OBJECT*)lpKernelThread,
 				dwPriority);
 		}
 	}
@@ -187,7 +188,7 @@ __TERMINAL:
 	System.dwClockTickCounter ++;    //Update the system clock interrupt counter.
 	__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
 
-	//KernelThreadManager.ScheduleFromInt((__COMMON_OBJECT*)&KernelThreadManager,
+	//KernelThreadManager.ScheduleFromInt((struct __COMMON_OBJECT*)&KernelThreadManager,
 	//	lpEsp);
 
 	return TRUE;
@@ -201,7 +202,7 @@ __TERMINAL:
 // 2. Set the object's data members correctly.
 //
 
-__COMMON_OBJECT* BOOL ConnectInterrupt(__COMMON_OBJECT*     lpThis,
+struct __COMMON_OBJECT* BOOL ConnectInterrupt(struct __COMMON_OBJECT*     lpThis,
 							 __INTERRUPT_HANDLER  lpInterruptHandler,
 							 LPVOID               lpHandlerParam,
 							 UCHAR                ucVector,
@@ -213,7 +214,7 @@ __COMMON_OBJECT* BOOL ConnectInterrupt(__COMMON_OBJECT*     lpThis,
 {
 	__INTERRUPT_OBJECT*      lpInterrupt          = NULL;
 	__INTERRUPT_OBJECT*      lpObjectRoot         = NULL;
-	__SYSTEM*                lpSystem             = NULL;
+	struct __SYSTEM*                lpSystem             = NULL;
 	DWORD                    dwFlags              = 0L;
 
 	if((NULL == lpThis) || (NULL == lpInterruptHandler))    //Parameters valid check.
@@ -226,7 +227,7 @@ __COMMON_OBJECT* BOOL ConnectInterrupt(__COMMON_OBJECT*     lpThis,
 		ObjectManager.CreateObject(&ObjectManager,NULL,OBJECT_TYPE_INTERRUPT);
 	if(NULL == lpInterrupt)    //Failed to create interrupt object.
 		return FALSE;
-	if(!lpInterrupt->Initialize((__COMMON_OBJECT*)lpInterrupt))  //Failed to initialize.
+	if(!lpInterrupt->Initialize((struct __COMMON_OBJECT*)lpInterrupt))  //Failed to initialize.
 		return FALSE;
 
 	lpInterrupt->lpPrevInterruptObject = NULL;
@@ -250,25 +251,25 @@ __COMMON_OBJECT* BOOL ConnectInterrupt(__COMMON_OBJECT*     lpThis,
 	//LEAVE_CRITICAL_SECTION();
 	__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
 
-	return (__COMMON_OBJECT*)lpInterrupt;
+	return (struct __COMMON_OBJECT*)lpInterrupt;
 }
 
 //
 //The implementation of DisconnectInterrupt.
 //
 
-static VOID DisconnectInterrupt(__COMMON_OBJECT* lpThis,
-								__COMMON_OBJECT* lpInterrupt)
+static VOID DisconnectInterrupt(struct __COMMON_OBJECT* lpThis,
+								struct __COMMON_OBJECT* lpInterrupt)
 {
 	__INTERRUPT_OBJECT*   lpIntObject    = NULL;
-	__SYSTEM*             lpSystem       = NULL;
+	struct __SYSTEM*             lpSystem       = NULL;
 	UCHAR                 ucVector       = NULL;
 	DWORD                 dwFlags        = 0L;
 
 	if((NULL == lpThis) || (NULL == lpInterrupt)) //Parameters check.
 		return;
 
-	lpSystem = (__SYSTEM*)lpThis;
+	lpSystem = (struct __SYSTEM*)lpThis;
 	lpIntObject = (__INTERRUPT_OBJECT*)lpInterrupt;
 	ucVector    = lpIntObject->ucVector;
 
@@ -299,7 +300,7 @@ static VOID DisconnectInterrupt(__COMMON_OBJECT* lpThis,
 //The implementation of Initialize routine of interrupt object.
 //
 
-BOOL InterruptInitialize(__COMMON_OBJECT* lpThis)
+BOOL InterruptInitialize(struct __COMMON_OBJECT* lpThis)
 {
 	__INTERRUPT_OBJECT*    lpInterrupt = NULL;
 
@@ -320,7 +321,7 @@ BOOL InterruptInitialize(__COMMON_OBJECT* lpThis)
 //This routine does nothing.
 //
 
-VOID InterruptUninitialize(__COMMON_OBJECT* lpThis)
+VOID InterruptUninitialize(struct __COMMON_OBJECT* lpThis)
 {
 	return;
 }
@@ -330,14 +331,14 @@ VOID InterruptUninitialize(__COMMON_OBJECT* lpThis)
 //The implementation of timer object.
 //
 
-BOOL TimerInitialize(__COMMON_OBJECT* lpThis)    //Initializing routine of timer object.
+BOOL TimerInitialize(struct __COMMON_OBJECT* lpThis)    //Initializing routine of timer object.
 {
-	__TIMER_OBJECT*     lpTimer  = NULL;
+	struct __TIMER_OBJECT*     lpTimer  = NULL;
 	
 	if(NULL == lpThis)
 		return FALSE;
 
-	lpTimer = (__TIMER_OBJECT*)lpThis;
+	lpTimer = (struct __TIMER_OBJECT*)lpThis;
 	lpTimer->dwTimerID    = 0L;
 	lpTimer->dwTimeSpan   = 0L;
 	lpTimer->lpKernelThread      = NULL;
@@ -351,7 +352,7 @@ BOOL TimerInitialize(__COMMON_OBJECT* lpThis)    //Initializing routine of timer
 //Uninitializing routine of timer object.
 //
 
-VOID TimerUninitialize(__COMMON_OBJECT* lpThis)
+VOID TimerUninitialize(struct __COMMON_OBJECT* lpThis)
 {
 	return;
 }
@@ -370,10 +371,10 @@ VOID TimerUninitialize(__COMMON_OBJECT* lpThis)
 // 3. Initialize system level variables,such as dwPhysicalMemorySize,etc.
 //
 
-static BOOL SystemInitialize(__COMMON_OBJECT* lpThis)
+static BOOL SystemInitialize(struct __COMMON_OBJECT* lpThis)
 {
-	__SYSTEM*            lpSystem         = NULL;
-	__PRIORITY_QUEUE*    lpPriorityQueue  = NULL;
+	struct __SYSTEM*            lpSystem         = NULL;
+	struct __PRIORITY_QUEUE*    lpPriorityQueue  = NULL;
 	__INTERRUPT_OBJECT*  lpIntObject      = NULL;
 	BOOL                 bResult          = FALSE;
 	DWORD                dwFlags          = 0L;
@@ -381,15 +382,15 @@ static BOOL SystemInitialize(__COMMON_OBJECT* lpThis)
 	if(NULL == lpThis)
 		return FALSE;
 
-	lpSystem = (__SYSTEM*)lpThis;
-	lpPriorityQueue = (__PRIORITY_QUEUE*)ObjectManager.CreateObject(&ObjectManager,
+	lpSystem = (struct __SYSTEM*)lpThis;
+	lpPriorityQueue = (struct __PRIORITY_QUEUE*)ObjectManager.CreateObject(&ObjectManager,
 		NULL,
 		OBJECT_TYPE_PRIORITY_QUEUE);
 
 	if(NULL == lpPriorityQueue)  //Failed to create priority queue.
 		return FALSE;
 
-	if(!lpPriorityQueue->Initialize((__COMMON_OBJECT*)lpPriorityQueue))  //Failed to initialize
+	if(!lpPriorityQueue->Initialize((struct __COMMON_OBJECT*)lpPriorityQueue))  //Failed to initialize
 		                                                                 //priority queue.
 		goto __TERMINAL;
 	lpSystem->lpTimerQueue = lpPriorityQueue;
@@ -401,7 +402,7 @@ static BOOL SystemInitialize(__COMMON_OBJECT* lpThis)
 	if(NULL == lpIntObject)
 		goto __TERMINAL;
 
-	bResult = lpIntObject->Initialize((__COMMON_OBJECT*)lpIntObject);
+	bResult = lpIntObject->Initialize((struct __COMMON_OBJECT*)lpIntObject);
 	if(!bResult)
 		goto __TERMINAL;
 
@@ -425,12 +426,12 @@ __TERMINAL:
 		if(lpPriorityQueue != NULL)
 		{
 			ObjectManager.DestroyObject(&ObjectManager,
-				(__COMMON_OBJECT*)lpPriorityQueue);
+				(struct __COMMON_OBJECT*)lpPriorityQueue);
 		}
 		if(lpIntObject != NULL)
 		{
 			ObjectManager.DestroyObject(&ObjectManager,
-				(__COMMON_OBJECT*)lpIntObject);
+				(struct __COMMON_OBJECT*)lpIntObject);
 		}
 	}
 	return bResult;
@@ -440,14 +441,14 @@ __TERMINAL:
 //GetClockTickCounter routine.
 //
 
-static DWORD GetClockTickCounter(__COMMON_OBJECT* lpThis)
+static DWORD GetClockTickCounter(struct __COMMON_OBJECT* lpThis)
 {
-	__SYSTEM*    lpSystem = NULL;
+	struct __SYSTEM*    lpSystem = NULL;
 
 	if(NULL == lpThis)
 		return 0L;
 
-	lpSystem = (__SYSTEM*)lpThis;
+	lpSystem = (struct __SYSTEM*)lpThis;
 
 	return lpSystem->dwClockTickCounter;
 }
@@ -456,12 +457,12 @@ static DWORD GetClockTickCounter(__COMMON_OBJECT* lpThis)
 //GetPhysicalMemorySize.
 //
 
-static DWORD GetPhysicalMemorySize(__COMMON_OBJECT* lpThis)
+static DWORD GetPhysicalMemorySize(struct __COMMON_OBJECT* lpThis)
 {
 	if(NULL == lpThis)
 		return 0L;
 
-	return ((__SYSTEM*)lpThis)->dwPhysicalMemorySize;
+	return ((struct __SYSTEM*)lpThis)->dwPhysicalMemorySize;
 }
 
 //
@@ -487,8 +488,8 @@ static VOID DefaultIntHandler(LPVOID lpEsp,UCHAR ucVector)
 
 	dwTotalNum ++;    //Record this unhandled exception or interrupt.
 
-	PrintLine("  Unhandled interrupt or Exception!");  //Print out this message.
-	PrintLine("  Interrupt Vector:");
+	printf("  Unhandled interrupt or Exception!");  //Print out this message.
+	printf("  Interrupt Vector:");
 
 	dwTmp   = ucVector;
 	lpdwEsp = (DWORD*)lpEsp;
@@ -498,12 +499,13 @@ static VOID DefaultIntHandler(LPVOID lpEsp,UCHAR ucVector)
 	strBuffer[3] = ' ';
 
 	Hex2Str(dwTmp,&strBuffer[4]);
-	PrintLine(strBuffer);  //Print out the interrupt or exception's vector.
+	printf("%s\n", strBuffer);  //Print out the interrupt or exception's vector.
 	if(dwTmp == 0x2B)      //--------- ** debug ** ---------------
 	{
-		PrintLine("NIC interrupt : -------------------------------");
+		printf("NIC interrupt : -------------------------------");
 		//WriteWordToPort(0xd03e,0x0000);
 		//ReadWordFromPort(&wIsr,(WORD)0xD03E);
+/*
 		__asm
 		{
 			push eax
@@ -527,21 +529,22 @@ __REPEAT:
 			pop edx
 			pop eax
 		}
+*/
 	}
-	PrintLine("  Context:");  //Print out system context information.
+	printf("  Context:");  //Print out system context information.
 	for(dwLoop = 0;dwLoop < 12;dwLoop ++)
 	{
 		dwTmp = *lpdwEsp;
 		Hex2Str(dwTmp,&strBuffer[4]);
-		PrintLine(strBuffer);
+		printf(strBuffer);
 		lpdwEsp ++;
 	}
 
 	if(dwTmp <= 0x20)    //---------- ** debug ** --------------
 	{
 		Hex2Str(dwTotalNum,strBuffer);
-		PrintLine("Total unhandled exception or interrupt is:");
-		PrintLine(strBuffer);
+		printf("Total unhandled exception or interrupt is:");
+		printf("%s\n", strBuffer);
 __LOOP:
 	goto __LOOP;
 	}
@@ -549,26 +552,27 @@ __LOOP:
 	/*
 __DEADLOOP:    //If a unhandled interrupt or exception occurs,the system will halt.
 	goto __DEADLOOP;*/
+	/*
 	__asm               //-------------- ** debug ** ------------
 	{
 		cli
 	}
-
+	*/
 	return;
 }
 
 
-static VOID DispatchInterrupt(__COMMON_OBJECT* lpThis,
+static VOID DispatchInterrupt(struct __COMMON_OBJECTstruct __COMMON_OBJECT* lpThis,
 							  LPVOID           lpEsp,
 							  UCHAR ucVector)
 {
 	__INTERRUPT_OBJECT*    lpIntObject  = NULL;
-	__SYSTEM*              lpSystem     = NULL;
+	struct __SYSTEM*              lpSystem     = NULL;
 
 	if((NULL == lpThis) || (NULL == lpEsp))
 		return;
 
-	lpSystem = (__SYSTEM*)lpThis;
+	lpSystem = (struct __SYSTEM*)lpThis;
 	
 	lpSystem->ucIntNestLevel += 1;    //Increment nesting level.
 	if(lpSystem->ucIntNestLevel <= 1)
@@ -607,7 +611,7 @@ __RETFROMINT:
 	lpSystem->ucIntNestLevel -= 1;    //Decrement interrupt nesting level.
 	if(0 == lpSystem->ucIntNestLevel)  //The outmost interrupt.
 	{
-		KernelThreadManager.ScheduleFromInt((__COMMON_OBJECT*)&KernelThreadManager,
+		KernelThreadManager.ScheduleFromInt((struct __COMMON_OBJECT*)&KernelThreadManager,
 			lpEsp);  //Re-schedule kernel thread.
 	}
 	else
@@ -626,17 +630,17 @@ __RETFROMINT:
 // 4. Return the timer object's base address if all successfully.
 //
 
-static __COMMON_OBJECT* SetTimer(__COMMON_OBJECT* lpThis,
-								 __KERNEL_THREAD_OBJECT* lpKernelThread,
-					             DWORD  dwTimerID,
-								 DWORD  dwTimeSpan,
-								 __DIRECT_TIMER_HANDLER lpHandler,
-					             LPVOID lpHandlerParam,
-								 DWORD  dwTimerFlags)
+static struct __COMMON_OBJECT* SetTimer(struct __COMMON_OBJECT* lpThis,
+					struct __KERNEL_THREAD_OBJECT* lpKernelThread,
+					DWORD  dwTimerID,
+					DWORD  dwTimeSpan,
+					__DIRECT_TIMER_HANDLER lpHandler,
+					LPVOID lpHandlerParam,
+					DWORD  dwTimerFlags)
 {
-	__PRIORITY_QUEUE*            lpPriorityQueue    = NULL;
-	__SYSTEM*                    lpSystem           = NULL;
-	__TIMER_OBJECT*              lpTimerObject      = NULL;
+	struct __PRIORITY_QUEUE*            lpPriorityQueue    = NULL;
+	struct __SYSTEM*                    lpSystem           = NULL;
+	struct __TIMER_OBJECT*              lpTimerObject      = NULL;
 	BOOL                         bResult            = FALSE;
 	DWORD                        dwPriority         = 0L;
 	DWORD                        dwFlags            = 0L;
@@ -648,13 +652,11 @@ static __COMMON_OBJECT* SetTimer(__COMMON_OBJECT* lpThis,
 	if(dwTimeSpan <= SYSTEM_TIME_SLICE)
 		dwTimeSpan = SYSTEM_TIME_SLICE;
 
-	lpSystem    = (__SYSTEM*)lpThis;
-	lpTimerObject = (__TIMER_OBJECT*)ObjectManager.CreateObject(&ObjectManager,
-		NULL,
-		OBJECT_TYPE_TIMER);
+	lpSystem = (struct __SYSTEM*)lpThis;
+	lpTimerObject = (struct __TIMER_OBJECT*)ObjectManager.CreateObject(&ObjectManager, NULL, OBJECT_TYPE_TIMER);
 	if(NULL == lpTimerObject)    //Can not create timer object.
 		goto __TERMINAL;
-	bResult = lpTimerObject->Initialize((__COMMON_OBJECT*)lpTimerObject);  //Initialize.
+	bResult = lpTimerObject->Initialize((struct __COMMON_OBJECT*)lpTimerObject);  //Initialize.
 	if(!bResult)
 		goto __TERMINAL;
 
@@ -676,8 +678,8 @@ static __COMMON_OBJECT* SetTimer(__COMMON_OBJECT* lpThis,
 	dwPriority     = MAX_DWORD_VALUE - dwPriority;    //Final priority value.
 
 	__ENTER_CRITICAL_SECTION(NULL,dwFlags);
-	bResult = lpSystem->lpTimerQueue->InsertIntoQueue((__COMMON_OBJECT*)lpSystem->lpTimerQueue,
-		(__COMMON_OBJECT*)lpTimerObject,
+	bResult = lpSystem->lpTimerQueue->InsertIntoQueue((struct __COMMON_OBJECT*)lpSystem->lpTimerQueue,
+		(struct __COMMON_OBJECT*)lpTimerObject,
 		dwPriority);
 	if(!bResult)
 	{
@@ -700,11 +702,11 @@ __TERMINAL:
 	{
 		if(lpTimerObject != NULL)
 		{
-			ObjectManager.DestroyObject(&ObjectManager,(__COMMON_OBJECT*)lpTimerObject);
+			ObjectManager.DestroyObject(&ObjectManager,(struct __COMMON_OBJECT*)lpTimerObject);
 			lpTimerObject = NULL;
 		}
 	}
-	return (__COMMON_OBJECT*)lpTimerObject;
+	return (struct __COMMON_OBJECT*)lpTimerObject;
 }
 
 //
@@ -712,23 +714,23 @@ __TERMINAL:
 //This routine is used to cancel timer.
 //
 
-static VOID CancelTimer(__COMMON_OBJECT* lpThis,__COMMON_OBJECT* lpTimer)
+static VOID CancelTimer(struct __COMMON_OBJECT* lpThis,struct __COMMON_OBJECT* lpTimer)
 {
-	__SYSTEM*                  lpSystem       = NULL;
+	struct __SYSTEM*                  lpSystem       = NULL;
 	DWORD                      dwPriority     = 0L;
-	__TIMER_OBJECT*            lpTimerObject  = NULL;
+	struct __TIMER_OBJECT*            lpTimerObject  = NULL;
 
 	if((NULL == lpThis) || (NULL == lpTimer))
 		return;
 
-	lpSystem = (__SYSTEM*)lpThis;
-	//if(((__TIMER_OBJECT*)lpTimer)->dwTimerFlags != TIMER_FLAGS_ALWAYS)
+	lpSystem = (struct __SYSTEM*)lpThis;
+	//if(((struct __TIMER_OBJECT*)lpTimer)->dwTimerFlags != TIMER_FLAGS_ALWAYS)
 	//	return;
-	lpSystem->lpTimerQueue->DeleteFromQueue((__COMMON_OBJECT*)lpSystem->lpTimerQueue,
+	lpSystem->lpTimerQueue->DeleteFromQueue((struct __COMMON_OBJECT*)lpSystem->lpTimerQueue,
 		lpTimer);
-	lpTimerObject = (__TIMER_OBJECT*)
+	lpTimerObject = (struct __TIMER_OBJECT*)
 		lpSystem->lpTimerQueue->GetHeaderElement(
-		(__COMMON_OBJECT*)lpSystem->lpTimerQueue,
+		(struct __COMMON_OBJECT*)lpSystem->lpTimerQueue,
 		&dwPriority);
 	if(NULL == lpTimerObject)    //There is not any timer object to be processed.
 		return;
@@ -741,21 +743,21 @@ static VOID CancelTimer(__COMMON_OBJECT* lpThis,__COMMON_OBJECT* lpTimer)
 		lpSystem->dwNextTimerTick = dwPriority;
 	dwPriority = MAX_DWORD_VALUE - dwPriority;
 	lpSystem->lpTimerQueue->InsertIntoQueue(
-		(__COMMON_OBJECT*)lpSystem->lpTimerQueue,
-		(__COMMON_OBJECT*)lpTimerObject,
+		(struct __COMMON_OBJECT*)lpSystem->lpTimerQueue,
+		(struct __COMMON_OBJECT*)lpTimerObject,
 		dwPriority);    //Insert into timer object queue.
 
 	return;
 
-	/*__SYSTEM*  lpSystem  = NULL;
+	/*struct __SYSTEM*  lpSystem  = NULL;
 
 	if((NULL == lpThis) || (NULL == lpTimer))
 		return;
 
-	lpSystem = (__SYSTEM*)lpThis;
-	//if(((__TIMER_OBJECT*)lpTimer)->dwTimerFlags != TIMER_FLAGS_ALWAYS)
+	lpSystem = (struct __SYSTEM*)lpThis;
+	//if(((struct __TIMER_OBJECT*)lpTimer)->dwTimerFlags != TIMER_FLAGS_ALWAYS)
 	//	return;
-	if(lpSystem->lpTimerQueue->DeleteFromQueue((__COMMON_OBJECT*)lpSystem->lpTimerQueue,
+	if(lpSystem->lpTimerQueue->DeleteFromQueue((struct __COMMON_OBJECT*)lpSystem->lpTimerQueue,
 		lpTimer))
 	{
 		ObjectManager.DestroyObject(&ObjectManager,
@@ -772,7 +774,7 @@ static VOID CancelTimer(__COMMON_OBJECT* lpThis,__COMMON_OBJECT* lpTimer)
 
 //The definition of system object.
 
-__SYSTEM System = {
+struct __SYSTEM System = {
 	{0},                      //lpInterruptVector[MAX_INTERRUPT_VECTOR].
 	NULL,                     //lpTimerQueue.
 	0L,                       //dwClockTickCounter,
@@ -782,7 +784,7 @@ __SYSTEM System = {
 	0,
 	0,                        //ucReserved3;
 	0L,                       //dwPhysicalMemorySize,
-    SystemInitialize,         //Initialize routine.
+    	SystemInitialize,         //Initialize routine.
 	GetClockTickCounter,      //GetClockTickCounter routine.
 	GetPhysicalMemorySize,    //GetPhysicalMemorySize routine.
 	DispatchInterrupt,        //DispatchInterrupt routine.
@@ -809,9 +811,7 @@ VOID GeneralIntHandler(DWORD dwVector,LPVOID lpEsp)
 {
 	UCHAR    ucVector = LOBYTE(LOWORD(dwVector));
 
-	System.DispatchInterrupt((__COMMON_OBJECT*)&System,
-		lpEsp,
-		ucVector);
+	System.DispatchInterrupt((struct __COMMON_OBJECT*)&System, lpEsp, ucVector);
 }
 
 

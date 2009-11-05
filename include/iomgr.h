@@ -29,14 +29,14 @@
 //between device drivers to communicate each other.
 //
 
-typedef DWORD (*DRCB_WAITING_ROUTINE)(__COMMON_OBJECT*);
-typedef DWORD (*DRCB_COMPLETION_ROUTINE)(__COMMON_OBJECT*);
-typedef DWORD (*DRCB_CANCEL_ROUTINE)(__COMMON_OBJECT*);
+typedef DWORD (*DRCB_WAITING_ROUTINE)(struct __COMMON_OBJECT*);
+typedef DWORD (*DRCB_COMPLETION_ROUTINE)(struct __COMMON_OBJECT*);
+typedef DWORD (*DRCB_CANCEL_ROUTINE)(struct __COMMON_OBJECT*);
 
 BEGIN_DEFINE_OBJECT(__DRCB)
     INHERIT_FROM_COMMON_OBJECT
-	__EVENT*                          lpSynObject;      //Used to synchronize the access.
-    __KERNEL_THREAD_OBJECT*           lpKernelThread;   //The kernel thread who originates
+    	struct __EVENT*                          lpSynObject;      //Used to synchronize the access.
+    	struct __KERNEL_THREAD_OBJECT*           lpKernelThread;   //The kernel thread who originates
 	                                                    //the device access.
 	DWORD                             dwDrcbFlag;
 	DWORD                             dwStatus;
@@ -69,8 +69,8 @@ END_DEFINE_OBJECT()                                       //End of __DRCB's defi
 //Initialize routine and Uninitialize routine's definition.
 //
 
-BOOL DrcbInitialize(__COMMON_OBJECT*);
-VOID DrcbUninitialize(__COMMON_OBJECT*);
+BOOL DrcbInitialize(struct __COMMON_OBJECT*);
+VOID DrcbUninitialize(struct __COMMON_OBJECT*);
 
 //
 //DRCB status definition.
@@ -131,44 +131,44 @@ BEGIN_DEFINE_OBJECT(__DRIVER_OBJECT)
 	__DRIVER_OBJECT*            lpPrev;
     __DRIVER_OBJECT*            lpNext;
 
-	DWORD          (*DeviceRead)(__COMMON_OBJECT*  lpDrv,    //Read routine.
-	                             __COMMON_OBJECT*  lpDev,
+	DWORD          (*DeviceRead)(struct __COMMON_OBJECT*  lpDrv,    //Read routine.
+	                             struct __COMMON_OBJECT*  lpDev,
 								 __DRCB*           lpDrcb);
 
-    DWORD          (*DeviceWrite)(__COMMON_OBJECT*  lpDrv,   //Write routine.
-		                          __COMMON_OBJECT*  lpDev,
+    DWORD          (*DeviceWrite)(struct __COMMON_OBJECT*  lpDrv,   //Write routine.
+		                          struct __COMMON_OBJECT*  lpDev,
 								  __DRCB*           lpDrcb);
 
-	DWORD          (*CreateFileSystem)(__COMMON_OBJECT*  lpDrv,    //CreateFileSystem.
-		                               __COMMON_OBJECT*  lpDev,
+	DWORD          (*CreateFileSystem)(struct __COMMON_OBJECT*  lpDrv,    //CreateFileSystem.
+		                               struct __COMMON_OBJECT*  lpDev,
 									   __DRCB*           lpDrcb);
 
-	DWORD          (*DeviceCtrl)(__COMMON_OBJECT*  lpDrv,
-		                         __COMMON_OBJECT*  lpDev,
+	DWORD          (*DeviceCtrl)(struct __COMMON_OBJECT*  lpDrv,
+		                         struct __COMMON_OBJECT*  lpDev,
 								 __DRCB*           lpDrcb);
 
-	DWORD          (*DeviceFlush)(__COMMON_OBJECT*  lpDrv,
-		                          __COMMON_OBJECT*  lpDev,
+	DWORD          (*DeviceFlush)(struct __COMMON_OBJECT*  lpDrv,
+		                          struct __COMMON_OBJECT*  lpDev,
 								  __DRCB*           lpDrcb);
 
-	DWORD          (*DeviceSeek)(__COMMON_OBJECT*   lpDrv,
-		                         __COMMON_OBJECT*   lpDev,
+	DWORD          (*DeviceSeek)(struct __COMMON_OBJECT*   lpDrv,
+		                         struct __COMMON_OBJECT*   lpDev,
 								 __DRCB*            lpDrcb);
 
-	DWORD          (*DeviceOpen)(__COMMON_OBJECT*   lpDrv,
-		                         __COMMON_OBJECT*   lpDev,
+	DWORD          (*DeviceOpen)(struct __COMMON_OBJECT*   lpDrv,
+		                         struct __COMMON_OBJECT*   lpDev,
 								 __DRCB*            lpDrcb);
 
-	DWORD          (*DeviceClose)(__COMMON_OBJECT*  lpDrv,
-		                          __COMMON_OBJECT*  lpDev,
+	DWORD          (*DeviceClose)(struct __COMMON_OBJECT*  lpDrv,
+		                          struct __COMMON_OBJECT*  lpDev,
 								  __DRCB*           lpDrcb);
 
-	DWORD          (*DeviceCreate)(__COMMON_OBJECT*  lpDrv,
-		                           __COMMON_OBJECT*  lpDev,
+	DWORD          (*DeviceCreate)(struct __COMMON_OBJECT*  lpDrv,
+		                           struct __COMMON_OBJECT*  lpDev,
 								   __DRCB*           lpDrcb);
 
-	DWORD          (*DeviceDestroy)(__COMMON_OBJECT* lpDrv,
-		                            __COMMON_OBJECT* lpDev,
+	DWORD          (*DeviceDestroy)(struct __COMMON_OBJECT* lpDrv,
+		                            struct __COMMON_OBJECT* lpDev,
 									__DRCB*          lpDrcb);
 
 END_DEFINE_OBJECT() //End definition of __DRIVER_OBJECT.
@@ -177,8 +177,8 @@ END_DEFINE_OBJECT() //End definition of __DRIVER_OBJECT.
 //Initialize routine and Uninitialize routine's definition.
 //
 
-BOOL DrvObjInitialize(__COMMON_OBJECT*);
-VOID DrvObjUninitialize(__COMMON_OBJECT*);
+BOOL DrvObjInitialize(struct __COMMON_OBJECT*);
+VOID DrvObjUninitialize(struct __COMMON_OBJECT*);
 
 //
 //The definition of __DEVICE_OBJECT.
@@ -219,8 +219,8 @@ END_DEFINE_OBJECT()     //__DEVICE_OBJECT.
 //Initialize routine and Uninitialize routine's definition.
 //
 
-BOOL DevObjInitialize(__COMMON_OBJECT*);
-VOID DevObjUninitialize(__COMMON_OBJECT*);
+BOOL DevObjInitialize(struct __COMMON_OBJECT*);
+VOID DevObjUninitialize(struct __COMMON_OBJECT*);
 
 //
 //Device type definition.
@@ -251,51 +251,51 @@ BEGIN_DEFINE_OBJECT(__IO_MANAGER)
 
 	__RESOURCE_DESCRIPTOR*         lpResDescriptor;   //Pointes to resource descriptor's list.
 
-	BOOL                 (*Initialize)(__COMMON_OBJECT*    lpThis);  //Initialize routine.
+	BOOL                 (*Initialize)(struct __COMMON_OBJECT*    lpThis);  //Initialize routine.
 
 	//
 	//The following routines are implemented to user kernel thread.
 	//
-	__COMMON_OBJECT*     (*CreateFile)(__COMMON_OBJECT*    lpThis,
+	struct __COMMON_OBJECT*     (*CreateFile)(struct __COMMON_OBJECT*    lpThis,
 		                               LPSTR               lpszFileName,
 									   DWORD               dwAccessMode,
 									   DWORD               dwShareMode,
 									   LPVOID              lpReserved);  //CreateFile routine.
 
-	BOOL                 (*ReadFile)(__COMMON_OBJECT*   lpThis,
-		                             __COMMON_OBJECT*   lpFileObject,
+	BOOL                 (*ReadFile)(struct __COMMON_OBJECT*   lpThis,
+		                             struct __COMMON_OBJECT*   lpFileObject,
 									 DWORD              dwByteSize,
 									 LPVOID             lpBuffer,
 									 DWORD*             lpReadSize);
 
-	BOOL                 (*WriteFile)(__COMMON_OBJECT*  lpThis,
-		                              __COMMON_OBJECT*  lpFileObject,
+	BOOL                 (*WriteFile)(struct __COMMON_OBJECT*  lpThis,
+		                              struct __COMMON_OBJECT*  lpFileObject,
 									  DWORD             dwWriteSize,
 									  LPVOID            lpBuffer,
 									  DWORD*            lpWrittenSize);
 
-	VOID                 (*CloseFile)(__COMMON_OBJECT*  lpThis,
-		                              __COMMON_OBJECT*  lpFileObject);
+	VOID                 (*CloseFile)(struct __COMMON_OBJECT*  lpThis,
+		                              struct __COMMON_OBJECT*  lpFileObject);
 
-	BOOL                 (*IOControl)(__COMMON_OBJECT*  lpThis,
-		                              __COMMON_OBJECT*  lpFileObject,
+	BOOL                 (*IOControl)(struct __COMMON_OBJECT*  lpThis,
+		                              struct __COMMON_OBJECT*  lpFileObject,
 									  DWORD             dwCommand,
 									  LPVOID            lpParameter,
 									  DWORD             dwOutputBufLen,
 									  LPVOID            lpOutBuffer,
 									  DWORD*            lpdwOutFilled);
 
-	BOOL                 (*SetFilePointer)(__COMMON_OBJECT*  lpThis,
-		                                   __COMMON_OBJECT*  lpFileObject,
+	BOOL                 (*SetFilePointer)(struct __COMMON_OBJECT*  lpThis,
+		                                   struct __COMMON_OBJECT*  lpFileObject,
 										   DWORD             dwWhereBegin,
 										   INT               nOffSet);
 
-	BOOL                 (*FlushFile)(__COMMON_OBJECT*  lpThis,
-		                              __COMMON_OBJECT*  lpFileObject);
+	BOOL                 (*FlushFile)(struct __COMMON_OBJECT*  lpThis,
+		                              struct __COMMON_OBJECT*  lpFileObject);
 
 	//The following routines are called by device driver(s).
 
-	__DEVICE_OBJECT*     (*CreateDevice)(__COMMON_OBJECT*  lpThis,
+	__DEVICE_OBJECT*     (*CreateDevice)(struct __COMMON_OBJECT*  lpThis,
 		                                 LPSTR             lpszDevName,
 										 DWORD             dwAttribute,
 										 DWORD             dwBlockSize,
@@ -304,10 +304,10 @@ BEGIN_DEFINE_OBJECT(__IO_MANAGER)
 										 LPVOID            lpDevExtension,
 										 __DRIVER_OBJECT*  lpDrvObject);
 
-	VOID                 (*DestroyDevice)(__COMMON_OBJECT* lpThis,
+	VOID                 (*DestroyDevice)(struct __COMMON_OBJECT* lpThis,
 		                                  __DEVICE_OBJECT* lpDevObj);
 
-	BOOL                 (*ReserveResource)(__COMMON_OBJECT*  lpThis,
+	BOOL                 (*ReserveResource)(struct __COMMON_OBJECT*  lpThis,
 		                                    __RESOURCE_DESCRIPTOR*
 											                  lpResDesc);
 	BOOL                 (*LoadDriver)(__DRIVER_ENTRY DrvEntry);

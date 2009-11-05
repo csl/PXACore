@@ -50,15 +50,15 @@ typedef BOOL (*__INTERRUPT_HANDLER)(LPVOID lpEsp,LPVOID);    //Interrupt handler
 
 BEGIN_DEFINE_OBJECT(__INTERRUPT_OBJECT)
     INHERIT_FROM_COMMON_OBJECT
-	__INTERRUPT_OBJECT*           lpPrevInterruptObject;
-    __INTERRUPT_OBJECT*           lpNextInterruptObject;
-	UCHAR                         ucVector;
-	BOOL                          (*InterruptHandler)(LPVOID lpParam,LPVOID lpEsp);
-	LPVOID                        lpHandlerParam;
+    struct __INTERRUPT_OBJECT*    lpPrevInterruptObject;
+    struct __INTERRUPT_OBJECT*    lpNextInterruptObject;
+    UCHAR                         ucVector;
+    BOOL                          (*InterruptHandler)(LPVOID lpParam,LPVOID lpEsp);
+    LPVOID                        lpHandlerParam;
 END_DEFINE_OBJECT()
 
-BOOL InterruptInitialize(__COMMON_OBJECT* lpThis);    //Interrupt object's initializing routine.
-VOID InterruptUninitialize(__COMMON_OBJECT* lpThis);  //Uninitializing routine.
+BOOL InterruptInitialize(struct __COMMON_OBJECT* lpThis);    //Interrupt object's initializing routine.
+VOID InterruptUninitialize(struct __COMMON_OBJECT* lpThis);  //Uninitializing routine.
 
 //
 //Timer object's definition.
@@ -70,38 +70,38 @@ typedef DWORD    (*__DIRECT_TIMER_HANDLER)(LPVOID);    //Timer handler's protype
 BEGIN_DEFINE_OBJECT(__TIMER_OBJECT)
     INHERIT_FROM_COMMON_OBJECT
 	//__TIMER_OBJECT*             lpPrevTimerObject;
-    //__TIMER_OBJECT*             lpNextTimerObject;
+        //__TIMER_OBJECT*             lpNextTimerObject;
 	DWORD                       dwTimerID;            //Timer ID,one kernel thread may set
 	                                                  //several timers,this is it's ID.
 	DWORD                       dwTimeSpan;           //Timer span in millisecond.
-	__KERNEL_THREAD_OBJECT*     lpKernelThread;       //The kernel thread who set the timer.
+	struct __KERNEL_THREAD_OBJECT* lpKernelThread;       //The kernel thread who set the timer.
 	LPVOID                      lpHandlerParam;
 	DWORD                       (*DirectTimerHandler)(LPVOID);       //lpHandlerParam is it's parameter.
 	DWORD                       dwTimerFlags;
 END_DEFINE_OBJECT()
 
-BOOL  TimerInitialize(__COMMON_OBJECT* lpThis);    //Initializing routine of timer object.
-VOID  TimerUninitialize(__COMMON_OBJECT* lpThis);  //Uninitializing routine of timer object.
+BOOL  TimerInitialize(struct __COMMON_OBJECT* lpThis);    //Initializing routine of timer object.
+VOID  TimerUninitialize(struct __COMMON_OBJECT* lpThis);  //Uninitializing routine of timer object.
 
 //
 //The following is the definition of system object.
 //
 
 BEGIN_DEFINE_OBJECT(__SYSTEM)
-    __INTERRUPT_OBJECT*                   lpInterruptVector[MAX_INTERRUPT_VECTOR];
-    __PRIORITY_QUEUE*                     lpTimerQueue;
+	struct __INTERRUPT_OBJECT*                   lpInterruptVector[MAX_INTERRUPT_VECTOR];
+	struct __PRIORITY_QUEUE*                     lpTimerQueue;
 
 	DWORD                                 dwClockTickCounter;    //Records how many clock
-	                                                             //tickes have occured since
-	                                                             //system start.
+				                                     //tickes have occured since
+				                                     //system start.
 	DWORD                                 dwNextTimerTick;       //When dwClockTickCounter
-	                                                             //reaches this number,
-	                                                             //one or many timer event
-	                                                             //set by kernel thread
-	                                                             //should be processed.
+				                                     //reaches this number,
+				                                     //one or many timer event
+				                                     //set by kernel thread
+				                                     //should be processed.
 	UCHAR                                 ucIntNestLevel;        //Interrupt nesting level.
-#define IN_INTERRUPT()  (System.ucIntNestLevel)                  //Current context is interrupt.
-#define IN_KERNELTHREAD() (System.ucIntNestLevel == 0)           //Current context is process.
+	#define IN_INTERRUPT()  (System.ucIntNestLevel)                  //Current context is interrupt.
+	#define IN_KERNELTHREAD() (System.ucIntNestLevel == 0)           //Current context is process.
 
 	UCHAR                                 ucReserved1;           //Align to DWORD.
 	UCHAR                                 ucReserved2;
@@ -109,47 +109,47 @@ BEGIN_DEFINE_OBJECT(__SYSTEM)
 
 	DWORD                                 dwPhysicalMemorySize;
 
-	BOOL                                  (*Initialize)(__COMMON_OBJECT* lpThis);
-	DWORD                                 (*GetClockTickCounter)(__COMMON_OBJECT* lpThis);
-	DWORD                                 (*GetPhysicalMemorySize)(__COMMON_OBJECT* lpThis);
-	VOID                                  (*DispatchInterrupt)(__COMMON_OBJECT* lpThis,
-		                                                       LPVOID           lpEsp,
-		                                                       UCHAR            ucVector);
+	BOOL                                  (*Initialize)(struct __COMMON_OBJECT* lpThis);
+	DWORD                                 (*GetClockTickCounter)(struct __COMMON_OBJECT* lpThis);
+	DWORD                                 (*GetPhysicalMemorySize)(struct __COMMON_OBJECT* lpThis);
+	VOID                                  (*DispatchInterrupt)(struct __COMMON_OBJECT* lpThis,
+					                               LPVOID           lpEsp,
+					                               UCHAR            ucVector);
 
-	__COMMON_OBJECT*                      (*ConnectInterrupt)(__COMMON_OBJECT* lpThis,
-		                                                      __INTERRUPT_HANDLER InterruptHandler,
-															  LPVOID           lpHandlerParam,
-									        	   			  UCHAR            ucVector,
-											        		  UCHAR            ucReserved1,
-													          UCHAR            ucReserved2,
-											         		  UCHAR            ucInterruptMode,
-												        	  BOOL             bIfShared,
-										         			  DWORD            dwCPUMask
-												        	  );
-	VOID                                  (*DisconnectInterrupt)(__COMMON_OBJECT* lpThis,
-		                                                         __COMMON_OBJECT* lpIntObj);
+	struct __COMMON_OBJECT*               (*ConnectInterrupt)(struct __COMMON_OBJECT* lpThis,
+					                              __INTERRUPT_HANDLER InterruptHandler,	  										LPVOID           lpHandlerParam,
+									UCHAR            ucVector,
+									UCHAR            ucReserved1,
+									UCHAR            ucReserved2,
+	 	 							UCHAR            ucInterruptMode,
+									BOOL             bIfShared,
+									DWORD            dwCPUMask);
+
+	VOID                                  (*DisconnectInterrupt)( struct __COMMON_OBJECT* lpThis,
+					                              struct __COMMON_OBJECT* lpIntObj);
 
 
-	__COMMON_OBJECT*                      (*SetTimer)(__COMMON_OBJECT*         lpThis,
-		                                              __KERNEL_THREAD_OBJECT*  lpKernelThread,
-											          DWORD                    dwTimerID,
-											          DWORD                    dwTimeSpan,
-											          __DIRECT_TIMER_HANDLER   DirectTimerHandler,
-											          LPVOID                   lpHandlerParam,
-													  DWORD                    dwTimerFlags
-											          );
-	VOID                                  (*CancelTimer)(__COMMON_OBJECT* lpThis,
-		                                                 __COMMON_OBJECT* lpTimer);
-
+	struct __COMMON_OBJECT*               (*SetTimer)(struct __COMMON_OBJECT*         lpThis,
+									__KERNEL_THREAD_OBJECT*  lpKernelThread,
+									DWORD                    dwTimerID,
+									DWORD                    dwTimeSpan,
+									__DIRECT_TIMER_HANDLER DirectTimerHandler, 
+									LPVOID 			 lpHandlerParam,
+									DWORD                    dwTimerFlags
+												  );
+	VOID                                  (*CancelTimer)(struct __COMMON_OBJECT* lpThis,
+					                         struct __COMMON_OBJECT* lpTimer);
 END_DEFINE_OBJECT()
+
+
 
 #define TIMER_FLAGS_ONCE        0x00000001    //Set a timer with this flags,the timer only
                                               //apply once,i.e,the kernel thread who set
-											  //the timer can receive timer message only
-											  //once.
+					//the timer can receive timer message only
+					//once.
 #define TIMER_FLAGS_ALWAYS      0x00000002    //Set a timer with this flags,the timer will
-											  //availiable always,only if the kernel thread
-											  //cancel the timer by calling CancelTimer.
+					//availiable always,only if the kernel thread
+					//cancel the timer by calling CancelTimer.
 
 
 /**************************************************************************************
@@ -158,7 +158,7 @@ END_DEFINE_OBJECT()
 ***************************************************************************************
 **************************************************************************************/
 
-extern __SYSTEM System;    //Declares a global object--System.
+extern struct __SYSTEM System;    //Declares a global object--System.
 
 extern __PERF_RECORDER  TimerIntPr;    //Performance recorder object used to mesure
                                        //the performance of timer interrupt.
