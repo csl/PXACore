@@ -18,6 +18,7 @@
 #include "kmemmgr.h"
 #include "syn_mech.h"
 #include "buffmgr.h"
+#include "shell.h"
 
 /*
 #ifndef __STRING__

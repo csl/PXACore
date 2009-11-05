@@ -858,7 +858,7 @@ static BOOL MsgQueueEmpty(struct __COMMON_OBJECT* lpThread)
 
 /*
 //SendMessage.
-static BOOL MgrSendMessage(struct __COMMON_OBJECT* lpThread,__KERNEL_THREAD_MESSAGE* lpMsg)
+static BOOL MgrSendMessage(struct __COMMON_OBJECT* lpThread,struct __KERNEL_THREAD_MESSAGE* lpMsg)
 {
 	struct __KERNEL_THREAD_OBJECT*     lpKernelThread = NULL;
 	struct __KERNEL_THREAD_OBJECT*     lpNewThread    = NULL;
@@ -911,7 +911,7 @@ static BOOL MgrSendMessage(struct __COMMON_OBJECT* lpThread,__KERNEL_THREAD_MESS
 */
 
 //GetMessage.
-static BOOL MgrGetMessage(struct __COMMON_OBJECT* lpThread,__KERNEL_THREAD_MESSAGE* lpMsg)
+static BOOL MgrGetMessage(struct __COMMON_OBJECT* lpThread,struct __KERNEL_THREAD_MESSAGE* lpMsg)
 {
 	struct __KERNEL_THREAD_OBJECT*     lpKernelThread  = NULL;
 	DWORD                       dwFlags         = 0L;
@@ -1105,9 +1105,9 @@ struct __KERNEL_THREAD_MANAGER KernelThreadManager = {
 //Dispatch a message to an message(event) handler.
 //
 
-DWORD DispatchMessage(struct __KERNEL_THREAD_MESSAGE* lpMsg,__KERNEL_THREAD_MESSAGE_HANDLER lpHandler)
+DWORD DispatchMessage(struct __KERNEL_THREAD_MESSAGE* lpMsg, __KERNEL_THREAD_MESSAGE_HANDLER lpHandler)
 {
-	return lpHandler(lpMsg->wCommand,lpMsg->wParam,lpMsg->dwParam);
+	return lpHandler(lpMsg->wCommand, lpMsg->wParam, lpMsg->dwParam);
 }
 
 

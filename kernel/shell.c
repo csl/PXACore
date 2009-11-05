@@ -55,7 +55,7 @@ static WORD        BufferPtr = 0;         //Buffer pointer,points to the first
 //line string.
 //
 /*
-struct __CMD_PARA_OBJ* FormParameterObj(LPSTR pszCmd)
+struct __CMD_PARA_OBJ* FormParameterObj(LPSTR pr pszCmd)
 {
 	struct __CMD_PARA_OBJ*     pObjBuffer = NULL;    //Local variables.
 	struct __CMD_PARA_OBJ*     pBasePtr   = NULL;
@@ -155,53 +155,54 @@ VOID ReleaseParameterObj(struct __CMD_PARA_OBJ* lpParamObj)
 //Command handler predefinitions.
 //
 
-VOID VerHandler(LPSTR);          //Handles the version command.
-VOID MemHandler(LPSTR);          //Handles the memory command.
-VOID SysInfoHandler(LPSTR);      //Handles the sysinfo command.
-VOID HlpHandler(LPSTR);
-VOID DateHandler(LPSTR);
-VOID TimeHandler(LPSTR);
-VOID CpuHandler(LPSTR);
-VOID SptHandler(LPSTR);
-VOID ClsHandler(LPSTR);
-VOID RunTimeHandler(LPSTR);
-VOID TestHandler(LPSTR);
-VOID UnTestHandler(LPSTR);
-VOID MemViewHandler(LPSTR);
-VOID SendMsgHandler(LPSTR);
-VOID KtViewHandler(LPSTR);
-VOID SysNameHandler(LPSTR);
-VOID IoCtrlApp(LPSTR);
-VOID SysDiagApp(LPSTR);
+VOID VerHandler(LPSTR pr);          //Handles the version command.
+VOID MemHandler(LPSTR pr);          //Handles the memory command.
+//VOID SysInfoHandler(LPSTR pr);      //Handles the sysinfo command.
+VOID HlpHandler(LPSTR pr);
+//VOID DateHandler(LPSTR pr);
+//VOID TimeHandler(LPSTR pr);
+//VOID CpuHandler(LPSTR pr);
+//VOID SptHandler(LPSTR pr);
+//VOID ClsHandler(LPSTR pr);
+//VOID RunTimeHandler(LPSTR pr);
+//VOID TestHandler(LPSTR pr);
+//VOID UnTestHandler(LPSTR pr);
+//VOID MemViewHandler(LPSTR pr);
+//VOID SendMsgHandler(LPSTR pr);
+//VOID KtViewHandler(LPSTR pr);
+//VOID SysNameHandler(LPSTR pr);
+//VOID IoCtrlApp(LPSTR pr);
+//VOID SysDiagApp(LPSTR pr);
 
 #define CMD_OBJ_NUM  18
 
-struct __CMD_OBJ  CmdObj[CMD_OBJ_NUM] = {
+struct __CMD_OBJ  CmdObj[CMD_OBJ_NUM] = 
+{
 	{"version"  ,    VerHandler},
 	{"memory"   ,    MemHandler},
-	{"sysinfo"  ,    SysInfoHandler},
+	//{"sysinfo"  ,    SysInfoHandler},
 	//{"sysname"  ,    SysNameHandler},
-	{"help"     ,    HlpHandler},
-	{"date"     ,    DateHandler},
-	{"time"     ,    TimeHandler},
-	{"cpuinfo"  ,    CpuHandler},
-	{"support"  ,    SptHandler},
-	{"runtime"  ,    RunTimeHandler},
-	{"test"     ,    TestHandler},
-	{"untest"   ,    UnTestHandler},
-	{"memview"  ,    MemViewHandler},
-	{"sendmsg"  ,    SendMsgHandler},
-	{"ktview"   ,    KtViewHandler},
-	{"ioctrl"   ,    IoCtrlApp},
-	{"sysdiag"  ,    SysDiagApp},
-	{"cls"      ,    ClsHandler}
+	{"help"     ,    HlpHandler}
+	//{"date"     ,    DateHandler},
+	//{"time"     ,    TimeHandler},
+	//{"cpuinfo"  ,    CpuHandler},
+	//{"support"  ,    SptHandler},
+	//{"runtime"  ,    RunTimeHandler},
+	//{"test"     ,    TestHandler},
+	//{"untest"   ,    UnTestHandler},
+	//{"memview"  ,    MemViewHandler},
+	//{"sendmsg"  ,    SendMsgHandler},
+	//{"ktview"   ,    KtViewHandler},
+	//{"ioctrl"   ,    IoCtrlApp},
+	//{"sysdiag"  ,    SysDiagApp},
+	//{"cls"      ,    ClsHandler}
 };
 
 //
 //Global Functions.
 //
 
-VOID HlpHandler(LPSTR)           //Command 'help' 's handler.
+VOID HlpHandler(LPSTR pr)           //Command 'help' 's handler.
 {
 	LPSTR strHelpTitle   = "    The following command is availiable currently:";
 	LPSTR strHelpVer     = "    version      : Print out the version information.";
@@ -243,9 +244,10 @@ VOID HlpHandler(LPSTR)           //Command 'help' 's handler.
 //This handler changes the system name,and save it to system config database.
 //
 
-static VOID SaveSysName(LPSTR)
+static VOID SaveSysName(LPSTR pr)
 {
 }
+
 /*
 VOID SysNameHandler(LPSTR pszSysName)
 {
@@ -283,17 +285,17 @@ __TERMINAL:
 //
 static LPSTR                      pszThreadID   = "    Thread ID     : ";
 static LPSTR                      pszContext    = "    Context:";
-static LPSTR                      pszEax        = "        EAX       : ";
-static LPSTR                      pszEbx        = "        EBX       : ";
-static LPSTR                      pszEcx        = "        ECX       : ";
-static LPSTR                      pszEdx        = "        EDX       : ";
-static LPSTR                      pszEsi        = "        ESI       : ";
-static LPSTR                      pszEdi        = "        EDI       : ";
-static LPSTR                      pszEbp        = "        EBP       : ";
-static LPSTR                      pszEsp        = "        ESP       : ";
+static LPSTR                     pszEax        = "        EAX       : ";
+static LPSTR                     pszEbx        = "        EBX       : ";
+static LPSTR                    pszEcx        = "        ECX       : ";
+static LPSTR                    pszEdx        = "        EDX       : ";
+static LPSTR                    pszEsi        = "        ESI       : ";
+static LPSTR                     pszEdi        = "        EDI       : ";
+static LPSTR                     pszEbp        = "        EBP       : ";
+static LPSTR                     pszEsp        = "        ESP       : ";
 static LPSTR                      pszEFlags     = "        EFlags    : ";
-static LPSTR                      pszStartAddr  = "    Start Address : ";
-static LPSTR                      pszStackSize  = "    Stack Size    : ";
+static LPSTR                   pszStartAddr  = "    Start Address : ";
+static LPSTR                    pszStackSize  = "    Stack Size    : ";
 static LPSTR                      pszCurrMsgNum = "    Message num   : ";
 
 /*
@@ -307,56 +309,56 @@ static VOID PrintAllKt(struct __KTHREAD_CONTROL_BLOCK** ppControlBlock)
 			continue;
 		printf("%s\n",pszThreadID);
 		Int2Str(ppControlBlock[i]->dwKThreadID,Buffer);
-		PrintStr(Buffer);
+		printf(Buffer);
 
 		printf("%s\n",pszContext);
 		printf("%s\n",pszEax);
 		Hex2Str(ppControlBlock[i]->dwEAX,Buffer);
-		PrintStr(Buffer);
+		printf(Buffer);
 
 		printf("%s\n",pszEbx);
 		Hex2Str(ppControlBlock[i]->dwEBX,Buffer);
-		PrintStr(Buffer);
+		printf(Buffer);
 
 		printf(pszEcx);
 		Hex2Str(ppControlBlock[i]->dwECX,Buffer);
-		PrintStr(Buffer);
+		printf(Buffer);
 
 		printf(pszEdx);
 		Hex2Str(ppControlBlock[i]->dwEDX,Buffer);
-		PrintStr(Buffer);
+		printf(Buffer);
 
 		printf(pszEsi);
 		Hex2Str(ppControlBlock[i]->dwESI,Buffer);
-		PrintStr(Buffer);
+		printf(Buffer);
 
 		printf(pszEdi);
 		Hex2Str(ppControlBlock[i]->dwEDI,Buffer);
-		PrintStr(Buffer);
+		printf(Buffer);
 
 		printf(pszEbp);
 		Hex2Str(ppControlBlock[i]->dwEBP,Buffer);
-		PrintStr(Buffer);
+		printf(Buffer);
 
 		printf(pszEsp);
 		Hex2Str(ppControlBlock[i]->dwESP,Buffer);
-		PrintStr(Buffer);
+		printf(Buffer);
 
 		printf(pszEFlags);
 		Hex2Str(ppControlBlock[i]->dwEFlags,Buffer);
-		PrintStr(Buffer);
+		printf(Buffer);
 
 		printf(pszStartAddr);
 		Hex2Str((DWORD)ppControlBlock[i]->pKThreadRoutine,Buffer);
-		PrintStr(Buffer);
+		printf(Buffer);
 
 		printf(pszStackSize);
 		Hex2Str(ppControlBlock[i]->dwStackSize,Buffer);
-		PrintStr(Buffer);
+		printf(Buffer);
 
 		printf(pszCurrMsgNum);
 		Hex2Str(ppControlBlock[i]->wCurrentMsgNum,Buffer);
-		PrintStr(Buffer);
+		printf(Buffer);
 
 		printf("\n");
 		//GotoHome();
@@ -396,56 +398,56 @@ static VOID PrintKtByID(DWORD dwKThreadID)
 	}
 	printf(pszThreadID);
 	Int2Str(pControlBlock->dwKThreadID,Buffer);
-	PrintStr(Buffer);
+	printf(Buffer);
 
 	printf(pszContext);
 	printf(pszEax);
 	Hex2Str(pControlBlock->dwEAX,Buffer);
-	PrintStr(Buffer);
+	printf(Buffer);
 
 	printf(pszEbx);
 	Hex2Str(pControlBlock->dwEBX,Buffer);
-	PrintStr(Buffer);
+	printf(Buffer);
 
 	printf(pszEcx);
 	Hex2Str(pControlBlock->dwECX,Buffer);
-	PrintStr(Buffer);
+	printf(Buffer);
 
 	printf(pszEdx);
 	Hex2Str(pControlBlock->dwEDX,Buffer);
-	PrintStr(Buffer);
+	printf(Buffer);
 
 	printf(pszEsi);
 	Hex2Str(pControlBlock->dwESI,Buffer);
-	PrintStr(Buffer);
+	printf(Buffer);
 
 	printf(pszEdi);
 	Hex2Str(pControlBlock->dwEDI,Buffer);
-	PrintStr(Buffer);
+	printf(Buffer);
 
 	printf(pszEbp);
 	Hex2Str(pControlBlock->dwEBP,Buffer);
-	PrintStr(Buffer);
+	printf(Buffer);
 
 	printf(pszEsp);
 	Hex2Str(pControlBlock->dwESP,Buffer);
-	PrintStr(Buffer);
+	printf(Buffer);
 
 	printf(pszEFlags);
 	Hex2Str(pControlBlock->dwEFlags,Buffer);
-	PrintStr(Buffer);
+	printf(Buffer);
 
 	printf(pszStartAddr);
 	Hex2Str((DWORD)pControlBlock->pKThreadRoutine,Buffer);
-	PrintStr(Buffer);
+	printf(Buffer);
 
 	printf(pszStackSize);
 	Hex2Str(pControlBlock->dwStackSize,Buffer);
-	PrintStr(Buffer);
+	printf(Buffer);
 
 	printf(pszCurrMsgNum);
 	Hex2Str(pControlBlock->wCurrentMsgNum,Buffer);
-	PrintStr(Buffer);
+	printf(Buffer);
 
 	printf("\n");
 	//GotoHome();
@@ -671,12 +673,12 @@ __PRINT_USAGE:
 		//GotoHome();
 		for(i = 0;i < dwNumber;i ++)
 		{
-			PrintStr("        0x");
+			printf("        0x");
 			Hex2Str(dwStartAddress,memBuffer);
-			PrintStr(memBuffer);
-			PrintStr("      0x");
+			printf(memBuffer);
+			printf("      0x");
 			Hex2Str(*(DWORD*)dwStartAddress,memBuffer);
-			PrintStr(memBuffer);
+			printf(memBuffer);
 			printf("\n");
 			//GotoHome();
 			dwStartAddress += 4;
@@ -736,7 +738,7 @@ VOID ShellThread1(LPVOID)
 				dwSum  = dwTmp1 + dwTmp2;
 				Int2Str(dwSum,Buffer);
 				printf("The sum is : ");
-				PrintStr(Buffer);
+				printf(Buffer);
 				break;
 			case KMSG_USER_ACC:
 				dwTmp1 = msg.dwParam_01;
@@ -747,7 +749,7 @@ VOID ShellThread1(LPVOID)
 				}
 				printf("The accumulated result is : ");
 				Int2Str(dwSum,Buffer);
-				PrintStr(Buffer);
+				printf(Buffer);
 				break;
 			default:
 				break;
@@ -999,7 +1001,8 @@ static DWORD LazyPig(LPVOID)
 }
 */
 
-VOID TestHandler(LPSTR)
+/*
+VOID TestHandler(LPSTR pr)
 {
 	struct __KERNEL_THREAD_OBJECT*  lpCritical1 = NULL;
 	struct __KERNEL_THREAD_OBJECT*  lpCritical2 = NULL;
@@ -1055,7 +1058,7 @@ VOID TestHandler(LPSTR)
 		NULL,
 		NULL,
 		"Lazy pig");
-
+*/
 	/*
 	lpCritical1->WaitForThisObject((struct __COMMON_OBJECT*)lpCritical1);
 	lpCritical2->WaitForThisObject((struct __COMMON_OBJECT*)lpCritical2);
@@ -1071,9 +1074,9 @@ VOID TestHandler(LPSTR)
 	KernelThreadManager.DestroyKernelThread((struct __COMMON_OBJECT*)&KernelThreadManager,
 		(struct __COMMON_OBJECT*)lpHigh);
 		*/
-}
-
-VOID IoCtrlApp(LPSTR)
+//}
+/*
+VOID IoCtrlApp(LPSTR pr)
 {
 	struct __KERNEL_THREAD_OBJECT*    lpIoCtrlThread    = NULL;
 
@@ -1104,12 +1107,14 @@ VOID IoCtrlApp(LPSTR)
 		(struct __COMMON_OBJECT*)lpIoCtrlThread);  //Destroy the thread object.
 
 }
+*/
 
 //
 //System diag application's shell start code.
 //
 
-VOID SysDiagApp(LPSTR)
+/*
+VOID SysDiagApp(LPSTR pr)
 {
 	struct __KERNEL_THREAD_OBJECT*        lpSysDiagThread    = NULL;
 
@@ -1234,7 +1239,7 @@ static DWORD ConsumerRoutine3(LPVOID)
 	return 0L;
 }
 
-VOID UnTestHandler(LPSTR)
+VOID UnTestHandler(LPSTR pr)
 {
 	struct __KERNEL_THREAD_OBJECT*    lpProduce;
 	struct __KERNEL_THREAD_OBJECT*    lpConsumer1;
@@ -1310,30 +1315,31 @@ VOID UnTestHandler(LPSTR)
 	lpConsumer3->WaitForThisObject((struct __COMMON_OBJECT*)lpConsumer3);
 }
 
-VOID RunTimeHandler(LPSTR)
+VOID RunTimeHandler(LPSTR pr)
 {
 	DWORD dwTime = System.GetClockTickCounter((struct __COMMON_OBJECT*)&System);
 	BYTE  Buffer[12];
 	dwTime /= SYSTEM_TIME_SLICE;
 	printf("The system has running ");
 	Int2Str(dwTime,Buffer);
-	PrintStr(Buffer);
-	PrintStr(" second(s).");
+	printf("%d\n", Buffer);
+	printf(" second(s).");
 }
+*/
 
-VOID ClsHandler(LPSTR)
+VOID ClsHandler(LPSTR pr)
 {
 	//ClearScreen();
 }
 
-VOID VerHandler(LPSTR)
+VOID VerHandler(LPSTR pr)
 {
 	//GotoHome();
 	printf("\n");
-	PrintStr(VERSION_INFO);
+	printf(VERSION_INFO);
 }
 
-VOID MemHandler(LPSTR)
+VOID MemHandler(LPSTR pr)
 {
 	printf("------------------ ** memory layout ** ------------------");
 	printf("    0x00000000 - 0x000FFFFF        Hardware buffer       ");
@@ -1361,7 +1367,7 @@ LPSTR strHdr[] = {               //I have put the defination of this strings
 
 static BYTE Buffer[] = {"Hello,Taiwan!"};
 /*
-VOID SysInfoHandler(LPSTR)
+VOID SysInfoHandler(LPSTR pr)
 {
 	DWORD sysContext[11];
 
@@ -1409,67 +1415,68 @@ VOID SysInfoHandler(LPSTR)
 #else                            //If not an I386 or above platform.
 	//GotoHome();
 	printf("\n");
-	PrintStr("    This operation can not supported on no-I386 platform.");
+	printf("    This operation can not supported on no-I386 platform.");
 	return;
 #endif                           //Now,we got the general registers and segment
 	                             //registers' value,print them out.
 	//GotoHome();
 	printf("\n");
-	PrintStr("    System context information(general registers and segment registers):");
+	printf("    System context information(general registers and segment registers):");
 	for(DWORD bt = 0;bt < 11;bt ++)
 	{
 		//GotoHome();
 		printf("\n");
-		PrintStr(strHdr[bt]);
+		printf(strHdr[bt]);
 		Hex2Str(sysContext[bt],Buffer);
 		//Buffer[8] = 0x00;
-		PrintStr(Buffer);
+		printf(Buffer);
 	}
 	return;
 }
 */
 
-VOID DateHandler(LPSTR)
+VOID DateHandler(LPSTR pr)
 {
 	//GotoHome();
 	printf("\n");
-	PrintStr("DateHandler called.");
+	printf("DateHandler called.");
 }
 
-VOID TimeHandler(LPSTR)
+VOID TimeHandler(LPSTR pr)
 {
 	//GotoHome();
 	printf("\n");
-	PrintStr("Time Handler called.");
+	printf("Time Handler called.");
 }
 
-VOID CpuHandler(LPSTR)
+VOID CpuHandler(LPSTR pr)
 {
 	//GotoHome();
 	printf("\n");
-	PrintStr("Cpu Handler called.");
+	printf("Cpu Handler called.");
 }
 
-VOID SptHandler(LPSTR)           //Command 'support' handler.
+
+VOID SptHandler(LPSTR pr)           //Command 'support' handler.
 {
 	LPSTR strSupportInfo1 = "    For any technical support,send E-Mail to:";
 	LPSTR strSupportInfo2 = "    garryxin@yahoo.com.cn.";
 	
 	//GotoHome();
 	printf("\n");
-	PrintStr(strSupportInfo1);
+	printf("%s", strSupportInfo1);
 	//GotoHome();
 	printf("\n");
-	PrintStr(strSupportInfo2);
+	printf("%s\n", strSupportInfo2);
 	return;
 }
 
-VOID  DefaultHandler(LPSTR)      //Default command handler.
+VOID  DefaultHandler(LPSTR pr)      //Default command handler.
 {
 	LPSTR strPrompt = "You entered incorrect command name.";
 	printf("\n");
 	//GotoHome();
-	PrintStr(strPrompt);
+	printf("%s\n", strPrompt);
 	return;
 }
 
@@ -1479,6 +1486,7 @@ VOID  DefaultHandler(LPSTR)      //Default command handler.
                                             //why,maybe some rules I do not know,but I
                                             //think it's would be gate's reason,so I
                                             //want to fuck bill gates again!!!
+/*
 VOID  DoCommand()
 {
 	DWORD dwIndex;
@@ -1500,7 +1508,7 @@ VOID  DoCommand()
 
 	for(dwIndex = 0;dwIndex < CMD_OBJ_NUM;dwIndex ++)
 	{
-		if(StrCmp(&tmpBuffer[0],CmdObj[dwIndex].CmdStr))
+		if(StrCmp(&tmpBuffer[0], CmdObj[dwIndex].CmdStr))
 		{
 			CmdObj[dwIndex].CmdHandler(&CmdBuffer[wIndex]);  //Call the command handler.
 			bResult = TRUE;      //Set the flag.
@@ -1546,6 +1554,7 @@ VOID  DoCommand()
 __END:
 	return;
 }
+*/
 
 VOID  PrintPrompt()
 {
@@ -1563,7 +1572,7 @@ VOID  PrintPrompt()
 	return;
 }
 
-
+/*
 BOOL EventHandler(WORD wCommand, WORD wParam, DWORD dwParam)
 {
 	WORD wr = 0x0700;
@@ -1608,31 +1617,31 @@ BOOL EventHandler(WORD wCommand, WORD wParam, DWORD dwParam)
 		case 100:
 			//GotoHome();
 			printf("\n");
-			PrintStr("Timer ID = 100,please handle it.");
+			printf("Timer ID = 100,please handle it.");
 			Int2Str(100,Buffer);
-			PrintStr(Buffer);
+			printf(Buffer);
 			break;
 		case 200:
 			//GotoHome();
 			printf("\n");
-			PrintStr("Timer ID = 200,please handle it.");
+			printf("Timer ID = 200,please handle it.");
 			Int2Str(200,Buffer);
-			PrintStr(Buffer);
+			printf(Buffer);
 			break;
 		case 300:
 			//GotoHome();
 			printf("\n");
-			PrintStr("Timer ID = 300,please handle it.");
+			printf("Timer ID = 300,please handle it.");
 			break;
 		case 400:
 			//GotoHome();
 			printf("\n");
-			PrintStr("Timer ID = 400,please handle it.");
+			printf("Timer ID = 400,please handle it.");
 			break;
 		case 500:
 			//GotoHome();
 			printf("\n");
-			PrintStr("Timer ID = 500,please handle it.");
+			printf("Timer ID = 500,please handle it.");
 			break;
 		default:
 			break;
@@ -1642,9 +1651,10 @@ BOOL EventHandler(WORD wCommand, WORD wParam, DWORD dwParam)
 	}
 	return 0L;
 }
+*/
 
 //
-//Entry point.
+//Shell Entry point.
 //
 
 DWORD shell_execute()
@@ -1656,12 +1666,14 @@ DWORD shell_execute()
 
 	while(TRUE)
 	{
+/*
 		if(GetMessage(&KernelThreadMessage))
 		{
 			if(KTMSG_THREAD_TERMINAL == KernelThreadMessage.wCommand)
 				goto __TERMINAL;
 			DispatchMessage(&KernelThreadMessage, EventHandler);
 		}
+*/
 	}
 
 __TERMINAL:                      //Terminal code here.

@@ -52,7 +52,7 @@ struct __CMD_PARA_OBJ
 	BYTE               byFunctionLabel;        //The function label.
 	BYTE               byParameterNum;         //How many parameters  followed.
 	WORD               wReserved;
-	__CMD_PARA_OBJ*    pNext;                  //Points to the next command paramter object.
+	struct __CMD_PARA_OBJ*    pNext;                  //Points to the next command paramter object.
 	BYTE               Parameter[0][CMD_PARAMETER_LEN + 1]; //The parameters.
 };
 
