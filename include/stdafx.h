@@ -8,7 +8,6 @@
 */
 
 #include "types.h"
-
 #define LPVOID              void*
 #define UCHAR               unsigned char
 
@@ -19,6 +18,10 @@
 #include "syn_mech.h"
 #include "buffmgr.h"
 #include "shell.h"
+
+#define MAX_DWORD_VALUE     0xFFFFFFFF
+
+extern BYTE                      HostName[16];
 
 /*
 #ifndef __STRING__

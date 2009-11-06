@@ -271,8 +271,8 @@ static struct __KERNEL_THREAD_OBJECT* CreateKernelThread(struct __COMMON_OBJECT*
 						  DWORD dwStatus, 
 						  DWORD dwPriority, 
 						  __KERNEL_THREAD_ROUTINE lpStartRoutine, 
-					          LPVOID lpRoutineParam, 
-					          LPVOID lpReserved, 
+					           LPVOID lpRoutineParam, 
+					           LPVOID lpReserved, 
 						  LPSTR lpszName)
 {
 	struct __KERNEL_THREAD_OBJECT* lpKernelThread = NULL;
@@ -297,11 +297,11 @@ static struct __KERNEL_THREAD_OBJECT* CreateKernelThread(struct __COMMON_OBJECT*
 	if(NULL == lpKernelThread)    //If failed to create the kernel thread object.
 		goto __TERMINAL;
 
-	if(!lpKernelThread->Initialize((struct __COMMON_OBJECT*)lpKernelThread))    
+	if(!lpKernelThread->Initialize((struct __COMMON_OBJECT*) lpKernelThread))    
 		//Failed to initialize.
 		goto __TERMINAL;
 
-	if(0 == dwStackSize)       
+	if(0 == dwStackSize)
 	//If the dwStackSize is zero,then allocate the default size's stack.
 	{
 		dwStackSize = DEFAULT_STACK_SIZE;
@@ -333,7 +333,7 @@ static struct __KERNEL_THREAD_OBJECT* CreateKernelThread(struct __COMMON_OBJECT*
 	lpKernelThread->bUsedMath             = FALSE;      //May be updated in the future.
 	lpKernelThread->dwStackSize           = dwStackSize ? dwStackSize : DEFAULT_STACK_SIZE;
 
-	lpKernelThread->lpInitStackPointer    = (LPVOID)((DWORD)lpStack + dwStackSize);
+	lpKernelThread->lpInitStackPointer    = (LPVOID)((DWORD) lpStack + dwStackSize);
 
 	lpKernelThread->KernelThreadRoutine   = lpStartRoutine;       //Will be updated.
 	lpKernelThread->lpRoutineParam        = lpRoutineParam;
@@ -372,16 +372,17 @@ static struct __KERNEL_THREAD_OBJECT* CreateKernelThread(struct __COMMON_OBJECT*
 
 	if(KERNEL_THREAD_STATUS_READY == dwStatus)         //Add into Ready Queue.
 	{
-		lpMgr->AddReadyKernelThread((struct __COMMON_OBJECT*)lpMgr, lpKernelThread);
+		lpMgr->AddReadyKernelThread((struct __COMMON_OBJECT*) lpMgr, lpKernelThread);
 	}
 	else                                               //Add into Suspended Queue.
 	{
-	if(!lpMgr->lpSuspendedQueue->InsertIntoQueue((struct __COMMON_OBJECT*)lpMgr->lpSuspendedQueue, (struct __COMMON_OBJECT*)lpKernelThread,dwPriority))
+		if(!lpMgr->lpSuspendedQueue->InsertIntoQueue(
+		(struct __COMMON_OBJECT*)lpMgr->lpSuspendedQueue, (struct __COMMON_OBJECT*) lpKernelThread,dwPriority))
 			goto __TERMINAL;
 	}
 
 	//Call the create hook.
-	lpMgr->CallThreadHook(THREAD_HOOK_TYPE_CREATE,lpKernelThread, NULL);
+	lpMgr->CallThreadHook(THREAD_HOOK_TYPE_CREATE, lpKernelThread, NULL);
 	bSuccess = TRUE;  //Now,the TRANSACTION of create a kernel thread is successfully.
 
 __TERMINAL:
@@ -390,7 +391,7 @@ __TERMINAL:
 	{
 		//First,release the resources created successfully.
 		if(NULL != lpKernelThread)
-		ObjectManager.DestroyObject(&ObjectManager,(struct __COMMON_OBJECT*)lpKernelThread);
+			ObjectManager.DestroyObject(&ObjectManager,(struct __COMMON_OBJECT*) lpKernelThread);
 		if(NULL != lpStack)
 			KMemFree(lpStack,KMEM_SIZE_TYPE_ANY,0L);
 		return NULL;
@@ -726,50 +727,60 @@ static DWORD TerminalKernelThread(struct __COMMON_OBJECT* lpThis,struct __COMMON
 // 3. Puts the current kernel thread into sleeping queue of kernel thread manager;
 // 4. Schedules another kernel thread to.
 //
-/*
+
 static BOOL Sleep(struct __COMMON_OBJECT* lpThis,//struct __COMMON_OBJECT* lpKernelThread,
 						DWORD dwMillisecond)
 {
-	__KERNEL_THREAD_MANAGER*           lpManager      = NULL;
+	struct __KERNEL_THREAD_MANAGER*           lpManager      = NULL;
 	struct __KERNEL_THREAD_OBJECT*            lpKernelThread = NULL;
 	DWORD                              dwTmpCounter   = 0L;
-	__KERNEL_THREAD_CONTEXT*           lpContext      = NULL;
+	//struct __KERNEL_THREAD_CONTEXT*           lpContext      = NULL;
 	DWORD                              dwFlags        = 0L;
 
 	if((NULL == lpThis) ||
 	  (dwMillisecond < SYSTEM_TIME_SLICE))    //Parameters check.
 	  return FALSE;
 
-	lpManager = (__KERNEL_THREAD_MANAGER*)lpThis;
+	lpManager = (struct __KERNEL_THREAD_MANAGER*) lpThis;
+
 	lpKernelThread = lpManager->lpCurrentKernelThread;
+
 	if(NULL == lpKernelThread)    //The routine is called in system initializing process.
 	{
-		__ERROR_HANDLER(ERROR_LEVEL_CRITICAL,0L,NULL);
+		//__ERROR_HANDLER(ERROR_LEVEL_CRITICAL,0L,NULL);
 		return FALSE;
 	}
+
 	dwTmpCounter =  dwMillisecond / SYSTEM_TIME_SLICE;
-	dwTmpCounter += System.dwClockTickCounter;         //Now,dwTmpCounter countains the 
+	//dwTmpCounter += System.dwClockTickCounter;   //Now,dwTmpCounter countains the 
 	                                                   //tick counter value when this
 	                                                   //kernel thread who calls this routine
 	                                                   //must be waken up.
 	//ENTER_CRITICAL_SECTION();
 	__ENTER_CRITICAL_SECTION(NULL,dwFlags)
-	if((0 == lpManager->dwNextWakeupTick) ||
-	   (lpManager->dwNextWakeupTick > dwTmpCounter))
+
+	if((0 == lpManager->dwNextWakeupTick) ||  (lpManager->dwNextWakeupTick > dwTmpCounter))
 	   lpManager->dwNextWakeupTick = dwTmpCounter;     //Update dwNextWakeupTick value.
+
 	lpKernelThread->dwThreadStatus = KERNEL_THREAD_STATUS_SLEEPING;
+
 	dwTmpCounter = MAX_DWORD_VALUE - dwTmpCounter;     //Calculates the priority of the
 	                                                   //current kernel thread in the sleeping
 	                                                   //queue.
+
 	lpManager->lpSleepingQueue->InsertIntoQueue((struct __COMMON_OBJECT*)lpManager->lpSleepingQueue,
 		(struct __COMMON_OBJECT*)lpKernelThread,
 		dwTmpCounter);
+
 	__LEAVE_CRITICAL_SECTION(NULL,dwFlags)
+
 	//lpContext = &lpKernelThread->KernelThreadContext;
+
 	lpManager->ScheduleFromProc(NULL);
+
 	return TRUE;
 }
-*/
+
 //CancelSleep Routine.
 static BOOL CancelSleep(struct __COMMON_OBJECT* lpThis,struct __COMMON_OBJECT* lpKernelThread)
 {
@@ -1035,7 +1046,8 @@ static VOID UnlockKernelThread(struct __COMMON_OBJECT* lpThis,struct __COMMON_OB
 //The definition of Kernel Thread Manager.
 //
 
-struct __KERNEL_THREAD_MANAGER KernelThreadManager = {
+struct __KERNEL_THREAD_MANAGER KernelThreadManager = 
+{
 	0L,                                              //dwCurrentIRQL.
 	NULL,                                            //CurrentKernelThread.
 

@@ -222,6 +222,7 @@ VOID KernelThreadWrapper(struct __COMMON_OBJECT* lpKThread)
 	dwRetValue = lpKernelThread->KernelThreadRoutine(lpKernelThread->lpRoutineParam);
 
 	__ENTER_CRITICAL_SECTION(NULL,dwFlags);
+
 	lpKernelThread->dwReturnValue    = dwRetValue;      //Set the return value of this thread.
 	lpKernelThread->dwThreadStatus   = KERNEL_THREAD_STATUS_TERMINAL;  //Change the status.
 
@@ -233,6 +234,7 @@ VOID KernelThreadWrapper(struct __COMMON_OBJECT* lpKThread)
 	lpWaitingThread = (struct __KERNEL_THREAD_OBJECT*)lpWaitingQueue->GetHeaderElement(
 		(struct __COMMON_OBJECT*)lpWaitingQueue,
 		NULL);
+
 	while(lpWaitingThread)
 	{
 		lpWaitingThread->dwThreadStatus = KERNEL_THREAD_STATUS_READY;
@@ -243,6 +245,7 @@ VOID KernelThreadWrapper(struct __COMMON_OBJECT* lpKThread)
 			(struct __COMMON_OBJECT*)lpWaitingQueue,
 			NULL);
 	}
+
 	__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
 
 __TERMINAL:
@@ -250,7 +253,7 @@ __TERMINAL:
 		(struct __COMMON_OBJECT*)lpKernelThread,
 		0L);    //Insert the current kernel thread object into TERMINAL queue.
 
-	//KernelThreadManager.ScheduleFromProc(NULL);  //Re-schedule kernel thread.
+	KernelThreadManager.ScheduleFromProc(NULL);  //Re-schedule kernel thread.
 
 	return;        //***** CAUTION! ***** : This instruction will never reach.
 }

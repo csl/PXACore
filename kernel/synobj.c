@@ -102,7 +102,7 @@ DWORD TimeOutWaiting(struct __COMMON_OBJECT* lpSynObject,      //Synchronous obj
 	//Set a one time timer.
 	lpTimerObj = (__TIMER_OBJECT*)System.SetTimer((struct __COMMON_OBJECT*)&System,
 		lpKernelThread,
-#define TIMEOUT_WAITING_TIMER_ID 2048
+		#define TIMEOUT_WAITING_TIMER_ID 2048
 		TIMEOUT_WAITING_TIMER_ID,
 		dwMillionSecond,
 		WaitingTimerHandler,

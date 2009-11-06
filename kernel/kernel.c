@@ -125,6 +125,11 @@ int main()
 
 	printf("KernelThreadManager.Initialize Scuessed\n");
 
+/*
+	if(!System.Initialize((struct __COMMON_OBJECT*) &System))                        //Initialize system object.
+		goto __TERMINAL;
+
+*/
 	lpIdleThread = KernelThreadManager.CreateKernelThread(    //Create system idle thread.
 		(struct __COMMON_OBJECT*)&KernelThreadManager,
 		0L,
@@ -339,7 +344,7 @@ int main()
 
 	//g_pCurrentTask = &tcbShell;  //Will be deleted
 
-	StrCpy("[system-view]",&HostName[0]);
+	//strcpy("[system-view]",&HostName[0]);
 
 	//EntryPoint();                //Create the shell process.
 
