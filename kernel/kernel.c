@@ -116,6 +116,8 @@ int main()
 	//initizal serial device
 	SerialInit();
 
+	DisableInterrupt();    //The following code is executed in no-interruptable envrionment.
+
 	//printf("%s\n\n",pszStartMsg1);
 	printf("%s\n",pszWelcome);
 
@@ -124,11 +126,9 @@ int main()
 		goto __TERMINAL; 
 
 	printf("KernelThreadManager.Initialize Scuessed\n");
-
 /*
 	if(!System.Initialize((struct __COMMON_OBJECT*) &System))                        //Initialize system object.
 		goto __TERMINAL;
-
 */
 	lpIdleThread = KernelThreadManager.CreateKernelThread(    //Create system idle thread.
 		(struct __COMMON_OBJECT*)&KernelThreadManager,
@@ -163,6 +163,10 @@ int main()
 		//__ERROR_HANDLER(ERROR_LEVEL_FATAL,0L,NULL);
 		goto __TERMINAL;
 	}
+
+	EnableInterrupt();
+	RestoreKernelThread(lpShellThread);
+
 
 /*
 	DWORD                         dwKThreadID      = 0;
@@ -365,8 +369,6 @@ int main()
 
 	g_pShellCtrlBlock = GetKThreadControlBlock(dwKThreadID);  //Initialize the shell's
 	                                                          //control block.*/
-	//EnableInterrupt();
-
 	DeadLoop();
 	//EntryPoint();
 	//ScheduleKThread();            //Schedule the kernal thread.

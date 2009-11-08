@@ -38,8 +38,6 @@
 	.text
 	/* exception handler vector table */
 _start:
-	bl main	
-	b _start
 	b reset_handler
 	b und_handler
 	b swi_handler
@@ -69,7 +67,7 @@ loop:
 	b loop
 
 irq_handler:
-	//b irq_service_routine
+	b __Interrupt_Handler
 
 fiq_handler:
 	b loop
@@ -98,9 +96,7 @@ reset_handler:
 	bl jump_to_main
 					
 set_misc:	
-        bl 	set_misc
-
-
+       
         ldr r0, =0x2001			/* Allows access to all coprocessors */
         mcr     p15, 0, r0, c15, c1, 0
         nop
@@ -381,24 +377,28 @@ set_stack_pointer:
         orr r0, r0, #0xd1	/* set FIQ mode bits */
         msr CPSR_c, r0		/* move back to CPSR */
         ldr sp, =(fiq_stack + FIQ_STACK_SIZE - 4)	/* initialize the stack ptr */
+
         /* IRQ mode */
         mrs r0, cpsr		/* move CPSR to r0 */
         bic r0, r0, #0x1f	/* clear all mode bits */
         orr r0, r0, #0xd2	/* set IRQ mode bits */
         msr CPSR_c, r0		/* move back to CPSR */
         ldr sp, =(irq_stack + IRQ_STACK_SIZE - 4)	/* initialize the stack ptr */
+
         /* Abort mode */
         mrs r0, cpsr		/* move CPSR to r0 */
         bic r0, r0, #0x1f	/* clear all mode bits */
         orr r0, r0, #0xd7	/* set Abort mode bits */
         msr CPSR_c, r0		/* move back to CPSR */
         ldr sp, =(abt_stack + ABT_STACK_SIZE - 4)	/* initialize the stack ptr */
+
         /* Undef mode */
         mrs r0, cpsr		/* move CPSR to r0 */
         bic r0, r0, #0x1f	/* clear all mode bits */
         orr r0, r0, #0xdb	/* set Undef mode bits */
         msr CPSR_c, r0		/* move back to CPSR */
         ldr sp, =(und_stack + UND_STACK_SIZE - 4)	/* initialize the stack ptr */
+
         /* System mode */
         mrs r0, cpsr		/* move CPSR to r0 */
         bic r0, r0, #0x1f	/* clear all mode bits */

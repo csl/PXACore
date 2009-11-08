@@ -17,9 +17,9 @@
 #endif
 
 
-#define __ENTER_CRITICAL_SECTION(lpObj,dwFlags)
+#define __ENTER_CRITICAL_SECTION(lpObj, dwFlags)
 
-#define __LEAVE_CRITICAL_SECTION(lpObj,dwFlags)
+#define __LEAVE_CRITICAL_SECTION(lpObj, dwFlags)
 
 /*
 #ifdef __I386

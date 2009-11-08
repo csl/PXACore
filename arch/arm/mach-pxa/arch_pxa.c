@@ -17,6 +17,9 @@
 #include "stdafx.h"
 #include "l_stdio.h"
 
+#include "pxa255.h"
+
+
 //#define MIN_STACK_SIZE 128
 //
 //This value is the default stack size of a kernel thread in IA32 platform,
@@ -24,6 +27,8 @@
 //use this value as stack size.
 //
 #define DEFAULT_STACK_SIZE 0x00004000 //16k bytes.
+#define PXA255_TMR_CLK 3686400
+#define OS_TICKS_PER_SEC 10
 
 //
 //Initializes the context of a kernel thread.
@@ -121,7 +126,7 @@ VOID InitKernelThreadContext(struct __KERNEL_THREAD_OBJECT* lpKernelThread)
 	DWORD*        lpStackPtr = NULL;
 
 	lpStackPtr = lpKernelThread->lpInitStackPointer;
-	*(lpStackPtr) = (DWORD) lpKernelThread->lpRoutineParam; /* r15 (pc) thread address */
+	*(lpStackPtr) = (DWORD) lpKernelThread->KernelThreadRoutine; /* r15 (pc) thread address */
 	*(--lpStackPtr) = (DWORD) 0x14141414L;	/* r14 (lr) */
 	*(--lpStackPtr) = (DWORD) 0x12121212L;	/* r12 */
 	*(--lpStackPtr) = (DWORD) 0x11111111L;	/* r11 */
@@ -143,6 +148,24 @@ VOID InitKernelThreadContext(struct __KERNEL_THREAD_OBJECT* lpKernelThread)
 	printf("%x %x\n", lpStackPtr, lpKernelThread->lpInitStackPointer);
 #endif
 	//while (1) ;
+}
+
+VOID RestoreKernelThread(struct __KERNEL_THREAD_OBJECT* lp)
+{
+	printf("%x %x\n", lp->lpInitStackPointer, lp->KernelThreadRoutine);
+
+	asm ( 
+		"mov sp, %0\n\t"		// restore current thread's context
+		"ldr r5, [sp]\n\t"		// restore current thread's context
+		"ldr r4, [sp], #4\n\t"
+		//"bb:\n\t"
+		//"b bb\n\t"
+		//"msr SPSR_cxsf, r4\n\t"
+		//"mrs r4, SPSR\n\t"
+		"ldmfd sp!, {r0-r12, lr, pc}^\n\t"	//jump to Kernel Thread
+		: 
+		: "r" (lp->lpInitStackPointer)
+	);
 }
 
 //context_switch
@@ -177,6 +200,102 @@ VOID __SaveAndSwitch(struct __KERNEL_THREAD_OBJECT* lpPrev, struct __KERNEL_THRE
 	);
 }
 
+
+VOID __Interrupt_Handler(void)
+{
+
+	/*
+	#define NO_INT 0xc0
+	#define NO_IRQ 0x80
+	#define NO_FIQ 0x40
+	#define SVC32_MODE 0x13
+	#define FIQ32_MODE 0x11
+	#define IRQ32_MODE 0x12
+	*/
+	printf("__Interrupt_Handler function\n");
+	asm ( 
+		"msr CPSR_c, #(0xc0 | 0x12)\n\t"  //CPSR_c (0:7 bits), IRQ stack
+		"stmfd sp!, {r1-r3}\n\t"	  // push working registers onto "IRQ stack"
+		"mov r1, sp\n\t"		
+		"add sp, sp, #12\n\t"		//IRQ stack sp = sp -12
+		"sub r2, lr, #4\n\t"		//r2 = lr - 4
+		"mrs r3, SPSR\n\t"		//r3 = SPSR
+
+		"msr CPSR_c, #(0xc0 | 0x13)\n\t"	//sp = thread stack
+		"stmfd sp!, {r2}\n\t"			//r2 = lr - 4
+		"stmfd sp!, {lr}\n\t"
+		"stmfd sp!, {r4-r12}\n\t"
+
+		//pop working registers (r1-r3) onto "IRQ stack"
+		"ldmfd r1!, {r4-r6}\n\t" //move thread's r1-r3 from IRQ stack to SVC stack
+		
+		//sp = thread stack
+		"stmfd sp!, {r4-r6}\n\t"
+		"stmfd sp!, {r0}\n\t"	//push thread's r0 onto "thread's stack"
+		"stmfd sp!, {r3}\n\t"	//push thread's CPSR (IRQ's SPSR)
+
+		//Determind interrupt_nesting -> FIQ
+//		"ldr r0, =interrupt_nesting\n\t"
+		"ldrb r1, [r0]\n\t"
+		"cmp r1, #1\n\t"
+		"bne i_r_q\n\t"
+
+//		"ldr r4, [%0]\n\t"		// current_thread->stack_ptr = sp
+		"add r4, r4, #8\n\t"
+		"str sp, [r4]\n\t"
+
+"i_r_q:"
+		// re-enable FIQ, chagen to IRQ mode
+		"msr CPSR_c, #(0x80 | 0x12)\n\t"	//NO_IRQ | IRQ32_MODE
+
+		"bl interrupt_handler\n\t"
+
+		"msr CPSR_c, #(0xc0 | 0x13)\n\t"	//NO_INT | SVC32_MODE
+
+		//"bl exit_interrupt"
+		
+		//restore thread
+		"ldmfd sp!, {r4}\n\t"
+		"msr SPSR_cxsf, r4\n\t"
+		"ldmfd sp!, {r0-r12, lr, pc}^\n\t"
+//		: 
+//		: "r" (lpPrev->lpInitStackPointer),
+//		  "r" (lpNex->lpInitStackPointer)
+	);
+}
+
+
+VOID DisableInterrupt(VOID)
+{
+	INT_REG(INT_ICMR) = 0;
+}
+
+
+VOID EnableInterrupt(VOID)
+{
+	printf("EnableINterrupt\n");
+	INT_REG(INT_ICLR) &= ~BIT26;
+	TMR_REG(TMR_OSMR0) = PXA255_TMR_CLK / OS_TICKS_PER_SEC;
+	TMR_REG(TMR_OSMR1) = 0x3FFFFFFF;
+	TMR_REG(TMR_OSMR2) = 0x7FFFFFFF;
+	TMR_REG(TMR_OSMR3) = 0xBFFFFFFF;
+	TMR_REG(TMR_OSCR) = 0x00;
+	TMR_REG(TMR_OSSR) = BIT0;
+	TMR_REG(TMR_OIER) = BIT0;
+	INT_REG(INT_ICMR) |= BIT26;
+}
+
+
+void interrupt_handler()
+{
+	printf("interrupt_handler function\n");
+	while (1) ;
+	if (INT_REG(INT_ICIP) & BIT26) {
+		TMR_REG(TMR_OSCR) = 0x00;
+		//advance_time_tick();
+		TMR_REG(TMR_OSSR) = BIT0;
+	}
+}
 
 /*
 VOID InitKernelThreadContext(__KERNEL_THREAD_OBJECT* lpKernelThread,

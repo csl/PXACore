@@ -2,8 +2,6 @@
 #define CURT_MACH_PXA255_PORT_H
 
 #include "arch/arm/mach-pxa/pxa255.h"
-#include "kernel/types.h"
-#include "kernel/thread.h"
 
 #define PXA255_TMR_CLK 3686400 
 #define OS_TICKS_PER_SEC 10
