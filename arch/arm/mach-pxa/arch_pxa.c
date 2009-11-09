@@ -35,7 +35,7 @@
 //The initialization process is different on different platforms,so
 //implement this routine in ARCH directory.
 //
-VOID InitKernelThreadContext(struct __KERNEL_THREAD_OBJECT* lpKernelThread);
+DWORD* InitKernelThreadContext(struct __KERNEL_THREAD_OBJECT* lpKernelThread);
 
 
 //
@@ -121,7 +121,7 @@ __declspec(naked) VOID __SaveAndSwitch(__KERNEL_THREAD_CONTEXT** lppOldContext,
 //This routine initializes a kernel thread's context.
 //This routine's action depends on different platform.
 //
-VOID InitKernelThreadContext(struct __KERNEL_THREAD_OBJECT* lpKernelThread)
+DWORD* InitKernelThreadContext(struct __KERNEL_THREAD_OBJECT* lpKernelThread)
 {
 	DWORD*        lpStackPtr = NULL;
 
@@ -145,9 +145,9 @@ VOID InitKernelThreadContext(struct __KERNEL_THREAD_OBJECT* lpKernelThread)
 
 #ifdef  DEBUG
 	printf("InitKernelThreadContext\n");
-	printf("%x %x\n", lpStackPtr, lpKernelThread->lpInitStackPointer);
+	printf("%x %x %x\n", lpStackPtr, lpKernelThread->lpInitStackPointer, lpKernelThread->KernelThreadRoutine);
 #endif
-	//while (1) ;
+	return lpStackPtr;
 }
 
 VOID RestoreKernelThread(struct __KERNEL_THREAD_OBJECT* lp)
@@ -156,13 +156,27 @@ VOID RestoreKernelThread(struct __KERNEL_THREAD_OBJECT* lp)
 
 	asm ( 
 		"mov sp, %0\n\t"		// restore current thread's context
-		"ldr r5, [sp]\n\t"		// restore current thread's context
 		"ldr r4, [sp], #4\n\t"
-		//"bb:\n\t"
-		//"b bb\n\t"
-		//"msr SPSR_cxsf, r4\n\t"
-		//"mrs r4, SPSR\n\t"
-		"ldmfd sp!, {r0-r12, lr, pc}^\n\t"	//jump to Kernel Thread
+		//"ldr r2, [sp]\n\t"		// restore current thread's context
+		"msr SPSR_cxsf, r4\n\t"
+		"mrs r4, SPSR\n\t"
+		"ldr r0, [sp], #4\n\t"
+		"ldr r1, [sp], #4\n\t"
+		"ldr r2, [sp], #4\n\t"
+		"ldr r3, [sp], #4\n\t"
+		"ldr r4, [sp], #4\n\t"
+		"ldr r5, [sp], #4\n\t"
+		"ldr r6, [sp], #4\n\t"
+		"ldr r7, [sp], #4\n\t"
+		"ldr r8, [sp], #4\n\t"
+		"ldr r9, [sp], #4\n\t"
+		"ldr r10, [sp], #4\n\t"
+		"ldr r11, [sp], #4\n\t"
+		"ldr r12, [sp], #4\n\t"
+		"ldr lr, [sp], #4\n\t"
+		"ldr pc, [sp], #4\n\t"
+		"bb: b bb\n\t"
+		//"ldmfd sp!, {r0-r12, lr, pc}^\n\t"	//jump to Kernel Thread
 		: 
 		: "r" (lp->lpInitStackPointer)
 	);
@@ -213,6 +227,7 @@ VOID __Interrupt_Handler(void)
 	#define IRQ32_MODE 0x12
 	*/
 	printf("__Interrupt_Handler function\n");
+	while (1);
 	asm ( 
 		"msr CPSR_c, #(0xc0 | 0x12)\n\t"  //CPSR_c (0:7 bits), IRQ stack
 		"stmfd sp!, {r1-r3}\n\t"	  // push working registers onto "IRQ stack"

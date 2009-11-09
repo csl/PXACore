@@ -61,6 +61,7 @@ DWORD SystemIdle(LPVOID lpData)
 
 DWORD SystemShell(void)
 {
+	printf("fuck\n");
 	shell_execute();
 
 	/*DWORD dwCounter = 0L;

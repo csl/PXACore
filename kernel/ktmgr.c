@@ -368,7 +368,7 @@ static struct __KERNEL_THREAD_OBJECT* CreateKernelThread(struct __COMMON_OBJECT*
 	//
 
 	//Depend on ARCH
-	InitKernelThreadContext(lpKernelThread);
+	lpKernelThread->lpInitStackPointer = InitKernelThreadContext(lpKernelThread);
 
 	if(KERNEL_THREAD_STATUS_READY == dwStatus)         //Add into Ready Queue.
 	{
