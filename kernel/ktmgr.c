@@ -382,7 +382,7 @@ static struct __KERNEL_THREAD_OBJECT* CreateKernelThread(struct __COMMON_OBJECT*
 	}
 
 	//Call the create hook.
-	lpMgr->CallThreadHook(THREAD_HOOK_TYPE_CREATE, lpKernelThread, NULL);
+	//lpMgr->CallThreadHook(THREAD_HOOK_TYPE_CREATE, lpKernelThread, NULL);
 	bSuccess = TRUE;  //Now,the TRANSACTION of create a kernel thread is successfully.
 
 __TERMINAL:
@@ -460,7 +460,7 @@ static BOOL ResumeKernelThread(struct __COMMON_OBJECT* lpThis,struct __COMMON_OB
 //This routine can be called anywhere that re-schedule is required.
 //
 
-static VOID ScheduleFromProc()
+static VOID ScheduleFromProc(void)
 //__KERNEL_THREAD_CONTEXT* lpContext
 {
 	struct __KERNEL_THREAD_OBJECT*          lpKernelThread     = NULL;

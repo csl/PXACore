@@ -126,7 +126,8 @@ DWORD* InitKernelThreadContext(struct __KERNEL_THREAD_OBJECT* lpKernelThread)
 	DWORD*        lpStackPtr = NULL;
 
 	lpStackPtr = lpKernelThread->lpInitStackPointer;
-	*(lpStackPtr) = (DWORD) lpKernelThread->KernelThreadRoutine; /* r15 (pc) thread address */
+	*(lpStackPtr) = 0x0;
+	*(--lpStackPtr) = (DWORD) lpKernelThread->KernelThreadRoutine; /* r15 (pc) thread address */
 	*(--lpStackPtr) = (DWORD) 0x14141414L;	/* r14 (lr) */
 	*(--lpStackPtr) = (DWORD) 0x12121212L;	/* r12 */
 	*(--lpStackPtr) = (DWORD) 0x11111111L;	/* r11 */
@@ -145,7 +146,7 @@ DWORD* InitKernelThreadContext(struct __KERNEL_THREAD_OBJECT* lpKernelThread)
 
 #ifdef  DEBUG
 	printf("InitKernelThreadContext\n");
-	printf("%x %x %x\n", lpStackPtr, lpKernelThread->lpInitStackPointer, lpKernelThread->KernelThreadRoutine);
+	printf("lpStackPtr = %x %x, KernelThreadRoutine = %x\n", lpStackPtr, lpKernelThread->lpInitStackPointer, lpKernelThread->KernelThreadRoutine);
 #endif
 	return lpStackPtr;
 }
@@ -157,26 +158,9 @@ VOID RestoreKernelThread(struct __KERNEL_THREAD_OBJECT* lp)
 	asm ( 
 		"mov sp, %0\n\t"		// restore current thread's context
 		"ldr r4, [sp], #4\n\t"
-		//"ldr r2, [sp]\n\t"		// restore current thread's context
 		"msr SPSR_cxsf, r4\n\t"
 		"mrs r4, SPSR\n\t"
-		"ldr r0, [sp], #4\n\t"
-		"ldr r1, [sp], #4\n\t"
-		"ldr r2, [sp], #4\n\t"
-		"ldr r3, [sp], #4\n\t"
-		"ldr r4, [sp], #4\n\t"
-		"ldr r5, [sp], #4\n\t"
-		"ldr r6, [sp], #4\n\t"
-		"ldr r7, [sp], #4\n\t"
-		"ldr r8, [sp], #4\n\t"
-		"ldr r9, [sp], #4\n\t"
-		"ldr r10, [sp], #4\n\t"
-		"ldr r11, [sp], #4\n\t"
-		"ldr r12, [sp], #4\n\t"
-		"ldr lr, [sp], #4\n\t"
-		"ldr pc, [sp], #4\n\t"
-		"bb: b bb\n\t"
-		//"ldmfd sp!, {r0-r12, lr, pc}^\n\t"	//jump to Kernel Thread
+		"ldmfd sp!, {r0-r12, lr, pc}^\n\t"	//jump to Kernel Thread
 		: 
 		: "r" (lp->lpInitStackPointer)
 	);
@@ -185,7 +169,7 @@ VOID RestoreKernelThread(struct __KERNEL_THREAD_OBJECT* lp)
 //context_switch
 VOID __SaveAndSwitch(struct __KERNEL_THREAD_OBJECT* lpPrev, struct __KERNEL_THREAD_OBJECT* lpNex)
 {
-
+	printf("__SaveAndSwitch\n");
 	asm ( 
 		"stmfd sp!, {lr}\n\t"		// save current thread's context
 		"stmfd sp!, {lr}\n\t"
@@ -194,7 +178,7 @@ VOID __SaveAndSwitch(struct __KERNEL_THREAD_OBJECT* lpPrev, struct __KERNEL_THRE
 		"stmfd sp!, {r4}\n\t"
 	
 		//"ldr r4, =%0\n\t"
-		"str sp, [%0]\n\t"		// current_thread->stack_ptr = sp
+		"mov sp, %0\n\t"		// current_thread->stack_ptr = sp
 /*	
 		"ldr r4, =lpPrev\n\t"		// current_thread = next_thread
 		"ldr r6, =lpNex\n\t"
@@ -202,7 +186,7 @@ VOID __SaveAndSwitch(struct __KERNEL_THREAD_OBJECT* lpPrev, struct __KERNEL_THRE
 		"str r6, [r4]\n\t"
 */
 //		"ldr r4, =%1\n\t"
-		"ldr sp, [%1]\n\t"		// sp = next_thread->sp
+		"mov sp, %1\n\t"		// sp = next_thread->sp
 		
 		"ldmfd sp!, {r4}\n\t"		// restore next thread's context
 		"msr SPSR_cxsf, r4\n\t"
@@ -299,6 +283,7 @@ VOID EnableInterrupt(VOID)
 	TMR_REG(TMR_OIER) = BIT0;
 	INT_REG(INT_ICMR) |= BIT26;
 }
+
 
 
 void interrupt_handler()

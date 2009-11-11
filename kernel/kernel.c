@@ -61,7 +61,6 @@ DWORD SystemIdle(LPVOID lpData)
 
 DWORD SystemShell(void)
 {
-	printf("fuck\n");
 	shell_execute();
 
 	/*DWORD dwCounter = 0L;
@@ -166,8 +165,8 @@ int main()
 	}
 
 	EnableInterrupt();
+	//KernelThreadManager.ScheduleFromProc();
 	RestoreKernelThread(lpShellThread);
-
 
 /*
 	DWORD                         dwKThreadID      = 0;

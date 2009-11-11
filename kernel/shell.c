@@ -1662,14 +1662,12 @@ DWORD shell_execute()
 	//struct __KTHREAD_MSG Msg;
 	struct __KERNEL_THREAD_MESSAGE KernelThreadMessage;
 
-	//EnableInterrupt();
-	while (1) ;
 	PrintPrompt();
 	char buf[80] = { '\0' };
 
 	while(TRUE)
 	{
-		//gets(buf);
+		gets(buf);
 /*
 		if(GetMessage(&KernelThreadMessage))
 		{
