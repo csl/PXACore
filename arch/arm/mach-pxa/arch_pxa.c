@@ -201,7 +201,6 @@ VOID __SaveAndSwitch(struct __KERNEL_THREAD_OBJECT* lpPrev, struct __KERNEL_THRE
 
 VOID __Interrupt_Handler(void)
 {
-
 	/*
 	#define NO_INT 0xc0
 	#define NO_IRQ 0x80
@@ -210,48 +209,50 @@ VOID __Interrupt_Handler(void)
 	#define FIQ32_MODE 0x11
 	#define IRQ32_MODE 0x12
 	*/
-	printf("__Interrupt_Handler function\n");
-	while (1);
+
 	asm ( 
+		//change to IRQ stack
 		"msr CPSR_c, #(0xc0 | 0x12)\n\t"  //CPSR_c (0:7 bits), IRQ stack
 		"stmfd sp!, {r1-r3}\n\t"	  // push working registers onto "IRQ stack"
-		"mov r1, sp\n\t"		
-		"add sp, sp, #12\n\t"		//IRQ stack sp = sp -12
+		"mov r1, sp\n\t"	
+		"add sp, sp, #12\n\t"		//IRQ stack: sp = sp -12
 		"sub r2, lr, #4\n\t"		//r2 = lr - 4
 		"mrs r3, SPSR\n\t"		//r3 = SPSR
 
+		//change to SVC mode
 		"msr CPSR_c, #(0xc0 | 0x13)\n\t"	//sp = thread stack
 		"stmfd sp!, {r2}\n\t"			//r2 = lr - 4
 		"stmfd sp!, {lr}\n\t"
 		"stmfd sp!, {r4-r12}\n\t"
 
-		//pop working registers (r1-r3) onto "IRQ stack"
-		"ldmfd r1!, {r4-r6}\n\t" //move thread's r1-r3 from IRQ stack to SVC stack
+		//pop "IRQ stack" to working registers (r1-r3)
+		"ldmfd r1!, {r4-r6}\n\t" //move thread'sfrom IRQ stack to SVC stack
 		
-		//sp = thread stack
-		"stmfd sp!, {r4-r6}\n\t"
-		"stmfd sp!, {r0}\n\t"	//push thread's r0 onto "thread's stack"
-		"stmfd sp!, {r3}\n\t"	//push thread's CPSR (IRQ's SPSR)
+		"stmfd sp!, {r4-r6}\n\t" //sp = thread stack ( r0 - r3 )
+		"stmfd sp!, {r0}\n\t"	 //push thread's r0 onto "thread's stack"
+		"stmfd sp!, {r3}\n\t"	 //push thread's CPSR (IRQ's SPSR)
 
 		//Determind interrupt_nesting -> FIQ
-//		"ldr r0, =interrupt_nesting\n\t"
+		//change to FIQ stack
+/*
+		"ldr r0, =interrupt_nesting\n\t"
 		"ldrb r1, [r0]\n\t"
 		"cmp r1, #1\n\t"
 		"bne i_r_q\n\t"
 
-//		"ldr r4, [%0]\n\t"		// current_thread->stack_ptr = sp
+		"ldr r4, [%0]\n\t"		// current_thread->stack_ptr = sp
 		"add r4, r4, #8\n\t"
 		"str sp, [r4]\n\t"
+*/
 
 "i_r_q:"
 		// re-enable FIQ, chagen to IRQ mode
 		"msr CPSR_c, #(0x80 | 0x12)\n\t"	//NO_IRQ | IRQ32_MODE
-
 		"bl interrupt_handler\n\t"
 
+		//chagen to SVC32
 		"msr CPSR_c, #(0xc0 | 0x13)\n\t"	//NO_INT | SVC32_MODE
-
-		//"bl exit_interrupt"
+		"bl exit_interrupt\n\t"
 		
 		//restore thread
 		"ldmfd sp!, {r4}\n\t"
@@ -289,7 +290,8 @@ VOID EnableInterrupt(VOID)
 void interrupt_handler()
 {
 	printf("interrupt_handler function\n");
-	while (1) ;
+
+	//handler timer
 	if (INT_REG(INT_ICIP) & BIT26) {
 		TMR_REG(TMR_OSCR) = 0x00;
 		//advance_time_tick();

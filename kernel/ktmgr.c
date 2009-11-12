@@ -776,7 +776,7 @@ static BOOL Sleep(struct __COMMON_OBJECT* lpThis,//struct __COMMON_OBJECT* lpKer
 
 	//lpContext = &lpKernelThread->KernelThreadContext;
 
-	lpManager->ScheduleFromProc(NULL);
+	lpManager->ScheduleFromProc();
 
 	return TRUE;
 }
@@ -941,7 +941,7 @@ static BOOL MgrGetMessage(struct __COMMON_OBJECT* lpThread,struct __KERNEL_THREA
 			(struct __COMMON_OBJECT*)lpKernelThread, 0L);
 		__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
 
-		KernelThreadManager.ScheduleFromProc(NULL);  //Re-schedule.
+		KernelThreadManager.ScheduleFromProc();  //Re-schedule.
 		//lpKernelThread->lpMsgEvent->WaitForThisObject(
 		//	(struct __COMMON_OBJECT*)(lpKernelThread->lpMsgEvent));  //Block the current thread.
 	}

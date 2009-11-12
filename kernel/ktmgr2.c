@@ -253,7 +253,7 @@ __TERMINAL:
 		(struct __COMMON_OBJECT*)lpKernelThread,
 		0L);    //Insert the current kernel thread object into TERMINAL queue.
 
-	KernelThreadManager.ScheduleFromProc(NULL);  //Re-schedule kernel thread.
+	KernelThreadManager.ScheduleFromProc();  //Re-schedule kernel thread.
 
 	return;        //***** CAUTION! ***** : This instruction will never reach.
 }
