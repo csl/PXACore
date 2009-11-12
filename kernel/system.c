@@ -678,6 +678,7 @@ static struct __COMMON_OBJECT* SetTimer(struct __COMMON_OBJECT* lpThis,
 	dwPriority     = MAX_DWORD_VALUE - dwPriority;    //Final priority value.
 
 	__ENTER_CRITICAL_SECTION(NULL,dwFlags);
+
 	bResult = lpSystem->lpTimerQueue->InsertIntoQueue((struct __COMMON_OBJECT*)lpSystem->lpTimerQueue,
 		(struct __COMMON_OBJECT*)lpTimerObject,
 		dwPriority);

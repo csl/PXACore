@@ -164,7 +164,6 @@ int main()
 		goto __TERMINAL;
 	}
 
-	EnableInterrupt();
 	//KernelThreadManager.ScheduleFromProc();
 	RestoreKernelThread(lpShellThread);
 

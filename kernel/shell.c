@@ -1662,6 +1662,7 @@ DWORD shell_execute()
 	//struct __KTHREAD_MSG Msg;
 	struct __KERNEL_THREAD_MESSAGE KernelThreadMessage;
 
+	EnableInterrupt();
 	PrintPrompt();
 	char buf[80] = { '\0' };
 
