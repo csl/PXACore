@@ -17,7 +17,7 @@
 #define FIQ_STACK_SIZE		0x10000
 #define IRQ_STACK_SIZE		0x10000
 #define ABT_STACK_SIZE		0x10000
-#define UND_STACK_SIZE	0x10000
+#define UND_STACK_SIZE		0x10000
 #define SYS_STACK_SIZE		0x10000
 
 	/* Declare the names of stacks */

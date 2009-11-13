@@ -19,6 +19,8 @@
 
 #include "pxa255.h"
 
+static int count=0;
+
 
 //#define MIN_STACK_SIZE 128
 //
@@ -201,6 +203,7 @@ VOID __SaveAndSwitch(struct __KERNEL_THREAD_OBJECT* lpPrev, struct __KERNEL_THRE
 
 VOID __Interrupt_Handler(void)
 {
+	
 	/*
 	#define NO_INT 0xc0
 	#define NO_IRQ 0x80
@@ -209,26 +212,25 @@ VOID __Interrupt_Handler(void)
 	#define FIQ32_MODE 0x11
 	#define IRQ32_MODE 0x12
 	*/
-	//printf("\n__Interrupt_Handler\n");
+	//printf("count = %d\n", count);
 
 	asm ( 	
 		//change to IRQ stack
 		"msr CPSR_c, #(0xc0 | 0x12)\n\t"  //CPSR_c (0:7 bits), IRQ stack
 		"stmfd sp!, {r1-r3}\n\t"	  // push working registers onto "IRQ stack"
 		"mov r1, sp\n\t"	
-		"add sp, sp, #12\n\t"	  //IRQ stack: sp = sp -12 (3 items)
+		"add sp, sp, #12\n\t"	  //IRQ stack: sp = sp + 12 (3 items)
 		"sub r2, lr, #4\n\t"	  //r2 = lr - 4 (return address)
 		"mrs r3, SPSR\n\t"	  //r3 = SPSR
 
 		//change to SVC mode
-		"msr CPSR_c, #(0xc0 | 0x13)\n\t"	     //sp = thread stack
+		"msr CPSR_c, #(0xc0 | 0x13)\n\t"     //sp = thread stack
 		"stmfd sp!, {r2}\n\t"		     //r2 = return address (pc)
 		"stmfd sp!, {lr}\n\t"		     //lr (r14)
 		"stmfd sp!, {r4-r12}\n\t"
 
 		//pop "IRQ stack" to working registers (r1-r3)
 		"ldmfd r1!, {r4-r6}\n\t" //move thread'sfrom IRQ stack to SVC stack
-		
 		"stmfd sp!, {r4-r6}\n\t" //sp = thread stack (r1-r3)
 		"stmfd sp!, {r0}\n\t"	 //push thread's r0 onto "thread's stack"
 		"stmfd sp!, {r3}\n\t"	 //push thread's CPSR (IRQ's SPSR)
@@ -272,11 +274,18 @@ VOID __Interrupt_Handler(void)
 		"ldmfd sp!, {pc}\n\t"
 */
 		//"bb: b bb\n\t"
+		"mov r1, %0\n\t"
+		"cmp r1,#10\n\t"
+		"bne bbb\n\t"
+		"aaa:b aaa\n\t"
+"bbb:\n\t"
 		"ldmfd sp!, {r0-r12, lr, pc}^\n\t"
-//		: 
-//		: "r" (lpPrev->lpInitStackPointer),
-//		  "r" (lpNex->lpInitStackPointer)
+		: 
+		: "r" (count)
+
 	);
+
+	
 }
 
 
@@ -314,12 +323,13 @@ void ExitInterrupt()
 
 void InterruptHandler()
 {
-	printf("interrupt_handler function\n");
+	//printf("interrupt_handler function\n");
 
 	//handler timer
 	if (INT_REG(INT_ICIP) & BIT26) 
 	{
 		TMR_REG(TMR_OSCR) = 0x00;
+		count++;
 		//advance_time_tick();
 		TMR_REG(TMR_OSSR) = BIT0;
 	}
