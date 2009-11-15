@@ -330,7 +330,8 @@ int gets(char *s)
 	char  c;
 
 	while ((c = getc()) != CR) {
-		if (c != BS) {
+		if (c != BS) 
+		{
 			cnt++;
 			*s++ = c;
 			printf("%c",c );

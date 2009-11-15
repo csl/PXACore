@@ -591,6 +591,7 @@ static VOID ScheduleFromProc(void)
 //ScheduleFromInt's implementation.
 static VOID ScheduleFromInt(struct __COMMON_OBJECT* lpThis, LPVOID lpESP)
 {
+
 	struct __KERNEL_THREAD_OBJECT*         lpNextThread    = NULL;
 	struct __KERNEL_THREAD_OBJECT*         lpCurrentThread = NULL;
 	struct __KERNEL_THREAD_MANAGER*        lpMgr           = NULL;
@@ -602,9 +603,11 @@ static VOID ScheduleFromInt(struct __COMMON_OBJECT* lpThis, LPVOID lpESP)
 
 	if(NULL == lpMgr->lpCurrentKernelThread)   //The routine is called first time.
 	{
+
 		lpNextThread = KernelThreadManager.GetScheduleKernelThread(
 			(struct __COMMON_OBJECT*)&KernelThreadManager,
 			0L);
+
 		//If this case is occurs,the system is crash.
 		if(NULL == lpNextThread)               
 		{

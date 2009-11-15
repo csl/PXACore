@@ -25,7 +25,7 @@
 //
 
 #define MAX_HOSTNAME_LEN  16
-#define VERSION_INFO "PXACore [Version 0.1]"
+#define VERSION_INFO "PXACore [Version 0.1]\n"
 
 BYTE               HostName[MAX_HOSTNAME_LEN] = {0};          //Host name.
 /*
@@ -174,7 +174,7 @@ VOID HlpHandler(LPSTR pr);
 //VOID IoCtrlApp(LPSTR pr);
 //VOID SysDiagApp(LPSTR pr);
 
-#define CMD_OBJ_NUM  18
+#define CMD_OBJ_NUM  3
 
 struct __CMD_OBJ  CmdObj[CMD_OBJ_NUM] = 
 {
@@ -368,12 +368,12 @@ static VOID PrintAllKt(struct __KTHREAD_CONTROL_BLOCK** ppControlBlock)
 
 static VOID KtViewUsage()
 {
-	printf("    Usage :");
-	printf("    ktview -i [-?] kthread_id");
-	printf("    Where :");
-	printf("        -i         : View the kernal thread's information.");
-	printf("        kthread_id : Kernal thread's ID");
-	printf("        -?         : Print out the help information of the command.");
+	printf("    Usage :\n");
+	printf("    ktview -i [-?] kthread_id\n");
+	printf("    Where :\n");
+	printf("        -i         : View the kernal thread's information.\n");
+	printf("        kthread_id : Kernal thread's ID\n");
+	printf("        -?         : Print out the help information of the command.\n");
 }
 
 /*
@@ -504,13 +504,13 @@ __TERMINAL:
 
 static VOID SendMsgUsage()
 {
-	printf("    Usage :");
-	printf("      sendmsg kthread_id command [parameter1] [parameter2]");
-	printf("    Where :");
-	printf("      kthread_id  : Kernal thread ID.");
-	printf("      command     : Command number.");
-	printf("      parameter1  : The first parameter(optional).");
-	printf("      parameter2  : The second parameter(optional).");
+	printf("    Usage :\n");
+	printf("      sendmsg kthread_id command [parameter1] [parameter2]\n");
+	printf("    Where :\n");
+	printf("      kthread_id  : Kernal thread ID.\n");
+	printf("      command     : Command number.\n");
+	printf("      parameter1  : The first parameter(optional).\n");
+	printf("      parameter2  : The second parameter(optional).\n");
 }
 
 /*
@@ -1335,17 +1335,16 @@ VOID ClsHandler(LPSTR pr)
 VOID VerHandler(LPSTR pr)
 {
 	//GotoHome();
-	printf("\n");
 	printf(VERSION_INFO);
 }
 
 VOID MemHandler(LPSTR pr)
 {
-	printf("------------------ ** memory layout ** ------------------");
-	printf("    0x00000000 - 0x000FFFFF        Hardware buffer       ");
-	printf("    0x00100000 - 0x0010FFFF        Mini-kernal           ");
-	printf("    0x00110000 - 0x013FFFFF        Master(OS Kernal)     ");
-	printf("    0x01400000 - 0xFFFFFFFF        User Space            ");
+	printf("------------------ ** memory layout ** ------------------\n");
+	printf("    0x00000000 - 0x000FFFFF        Hardware buffer       \n");
+	printf("    0x00100000 - 0x0010FFFF        Mini-kernal           \n");
+	printf("    0x00110000 - 0x013FFFFF        Master(OS Kernal)     \n");
+	printf("    0x01400000 - 0xFFFFFFFF        User Space            \n");
 }
 
 
@@ -1486,7 +1485,6 @@ VOID  DefaultHandler(LPSTR pr)      //Default command handler.
                                             //why,maybe some rules I do not know,but I
                                             //think it's would be gate's reason,so I
                                             //want to fuck bill gates again!!!
-/*
 VOID  DoCommand()
 {
 	DWORD dwIndex;
@@ -1496,30 +1494,35 @@ VOID  DoCommand()
 	BYTE tmpBuffer[36];
 	struct __KERNEL_THREAD_OBJECT* hKernelThread = NULL;
 
-	CmdBuffer[BufferPtr] = 0x00; //Prepare the command string.
-	BufferPtr = 0;
+	//CmdBuffer[BufferPtr] = 0x00; //Prepare the command string.
+	//BufferPtr = 0;
 
-	while((' ' != CmdBuffer[wIndex]) && CmdBuffer[wIndex] && (wIndex < 32))
+	wIndex = 0;
+	while((' ' != CmdBuffer[wIndex]) && CmdBuffer[wIndex] != '\0' && (wIndex < 32))
 	{
 		tmpBuffer[wIndex] = CmdBuffer[wIndex];
-		wIndex ++;
+		wIndex++;
 	}
-	tmpBuffer[wIndex] = 0;
+	tmpBuffer[wIndex]='\0';
 
-	for(dwIndex = 0;dwIndex < CMD_OBJ_NUM;dwIndex ++)
+	for(dwIndex = 0; dwIndex < CMD_OBJ_NUM; dwIndex ++)
 	{
-		if(StrCmp(&tmpBuffer[0], CmdObj[dwIndex].CmdStr))
+		//printf("%s\n", CmdObj[dwIndex].CmdStr);
+		if(!strcmp(tmpBuffer, CmdObj[dwIndex].CmdStr))
 		{
-			CmdObj[dwIndex].CmdHandler(&CmdBuffer[wIndex]);  //Call the command handler.
+			//Call the command handler.
+			CmdObj[dwIndex].CmdHandler(&CmdBuffer[wIndex]);  
 			bResult = TRUE;      //Set the flag.
 			break;
 		}
 	}
+
 	if(bResult)
 		goto __END;
 
 	dwIndex = 0;  //Now,should search external command array.
 
+/*
 	while(ExtCmdArray[dwIndex].lpszCmdName)
 	{
 		if(StrCmp(&tmpBuffer[0],ExtCmdArray[dwIndex].lpszCmdName))  //Found.
@@ -1546,19 +1549,20 @@ VOID  DoCommand()
 		dwIndex ++;
 	}
 
+*/
 	if(!bResult)
 	{
 		DefaultHandler(NULL);        //Call the default command handler.
 	}
 
+
 __END:
 	return;
 }
-*/
 
 VOID  PrintPrompt()
 {
-	LPSTR pszSysName = "[system-view]";
+	LPSTR pszSysName = "[system-view]# ";
 	if(HostName[0])
 	{
 		printf(&HostName[0]);
@@ -1595,7 +1599,7 @@ BOOL EventHandler(WORD wCommand, WORD wParam, DWORD dwParam)
 		{
 			if(0 != BufferPtr)
 			{
-				GotoPrev();
+				//GotoPrev();
 				BufferPtr --;
 			}
 			break;
@@ -1646,6 +1650,7 @@ BOOL EventHandler(WORD wCommand, WORD wParam, DWORD dwParam)
 		default:
 			break;
 		}
+
 	default:
 		break;
 	}
@@ -1662,13 +1667,19 @@ DWORD shell_execute()
 	//struct __KTHREAD_MSG Msg;
 	struct __KERNEL_THREAD_MESSAGE KernelThreadMessage;
 
+	//Enable Interrupt
 	EnableInterrupt();
-	PrintPrompt();
+
 	char buf[80] = { '\0' };
+
+	PrintPrompt();
 
 	while(TRUE)
 	{
-		gets(buf);
+		gets(CmdBuffer);
+		DoCommand();
+
+		PrintPrompt();
 /*
 		if(GetMessage(&KernelThreadMessage))
 		{
