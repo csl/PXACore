@@ -27,6 +27,7 @@
 	.global abt_stack
 	.global und_stack
 	.global sys_stack
+	.global __SwitchTo
 
 	/* Stack allocation */
 	.comm fiq_stack, FIQ_STACK_SIZE
@@ -476,7 +477,36 @@ __Interrupt_Handler:
 
 		//chagen to SVC32
 		msr CPSR_c, #(0xc0 | 0x13)	//NO_INT | SVC32_MODE
+
 		bl ExitInterrupt
 		ldmfd sp!, {r4}
 		msr SPSR_cxsf, r4
 		ldmfd sp!, {r0-r12, lr, pc}^
+
+__SwitchTo:
+	ldmfd sp!, {r0-r1}
+	mov sp,r1		//sp = nextthread->sp
+	ldr r4, [sp], #4
+        //ldmfd sp!, {r4}		//restore CPSR
+        msr SPSR_cxsf, r4
+/*
+	ldmfd sp!, {r0}	
+	ldmfd sp!, {r1}	
+	ldmfd sp!, {r2}	
+	ldmfd sp!, {r3}	
+	ldmfd sp!, {r4}	
+	ldmfd sp!, {r5}	
+	ldmfd sp!, {r6}	
+	ldmfd sp!, {r7}	
+	ldmfd sp!, {r8}	
+	ldmfd sp!, {r9}	
+	ldmfd sp!, {r10}	
+	ldmfd sp!, {r11}	
+	ldmfd sp!, {r12}	
+	ldmfd sp!, {lr}	
+	ldmfd sp!, {r0}	
+b:	bl b
+*/
+        ldmfd sp!, {r0-r12, lr, pc}^	//jump
+
+

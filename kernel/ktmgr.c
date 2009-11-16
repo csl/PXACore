@@ -30,10 +30,10 @@ extern __THREAD_HOOK_ROUTINE SetThreadHook(DWORD dwHookType, __THREAD_HOOK_ROUTI
 extern VOID CallThreadHook(DWORD dwHookType, struct __KERNEL_THREAD_OBJECT* lpPrev, 			
 								struct __KERNEL_THREAD_OBJECT* lpNext);
 extern struct __KERNEL_THREAD_OBJECT* GetScheduleKernelThread(struct __COMMON_OBJECT* lpThis, DWORD dwPriority);
-extern VOID AddReadyKernelThread(struct __COMMON_OBJECT* lpThis,struct __KERNEL_THREAD_OBJECT* lpKernelThread);
+extern VOID AddReadyKernelThread(struct __COMMON_OBJECT* lpThis, struct __KERNEL_THREAD_OBJECT* lpKernelThread);
 extern VOID KernelThreadWrapper(struct __COMMON_OBJECT*);
 extern DWORD WaitForKernelThreadObject(struct __COMMON_OBJECT* lpThis);
-
+//extern void __SwitchTo(LPVOID);
 //
 //Static global varaibles.
 //
@@ -527,6 +527,7 @@ static VOID ScheduleFromProc(void)
 			BUG();
 			return;
 		}
+
 		if(lpNew == lpCurrent)  //The same one.
 		{
 			lpCurrent->dwTotalRunTime += SYSTEM_TIME_SLICE;
@@ -589,18 +590,20 @@ static VOID ScheduleFromProc(void)
 }
 
 //ScheduleFromInt's implementation.
-static VOID ScheduleFromInt(struct __COMMON_OBJECT* lpThis, LPVOID lpESP)
+static VOID ScheduleFromInt(void)
+//struct __COMMON_OBJECT* lpThis, LPVOID lpESP
 {
 
 	struct __KERNEL_THREAD_OBJECT*         lpNextThread    = NULL;
 	struct __KERNEL_THREAD_OBJECT*         lpCurrentThread = NULL;
-	struct __KERNEL_THREAD_MANAGER*        lpMgr           = NULL;
 
-	if((NULL == lpThis) || (NULL == lpESP))    //Parameters check.
-		return;
+	//struct __KERNEL_THREAD_MANAGER*        lpMgr           = NULL;
 
-	lpMgr = (struct __KERNEL_THREAD_MANAGER*)lpThis;
+	//if((NULL == lpThis) || (NULL == lpESP))    //Parameters check.
+	//	return;
 
+	//lpMgr = (struct __KERNEL_THREAD_MANAGER*)lpThis;
+/*
 	if(NULL == lpMgr->lpCurrentKernelThread)   //The routine is called first time.
 	{
 
@@ -626,61 +629,79 @@ static VOID ScheduleFromInt(struct __COMMON_OBJECT* lpThis, LPVOID lpESP)
 		//__SwitchTo(lpNextThread->lpKernelThreadContext);  //Switch to this thread.
 	}
 	else  //Not the first time be called.
+*/
+
+	lpCurrentThread = KernelThreadManager.lpCurrentKernelThread;
+	//This code line saves the context of current kernel thread.
+
+	//Depend or ARCH
+	//lpCurrentThread->lpKernelThreadContext = (struct __KERNEL_THREAD_CONTEXT*)lpESP;
+
+	switch(lpCurrentThread->dwThreadStatus)
 	{
-		lpCurrentThread = KernelThreadManager.lpCurrentKernelThread;
-		//This code line saves the context of current kernel thread.
+	case KERNEL_THREAD_STATUS_BLOCKED:     //Waiting shared object in process.
+	case KERNEL_THREAD_STATUS_TERMINAL:    //In process of termination.
+	case KERNEL_THREAD_STATUS_SLEEPING:    //In process of falling in sleep.
+	case KERNEL_THREAD_STATUS_SUSPENDED:   //In process of being suspended.
+	case KERNEL_THREAD_STATUS_READY:       //Wakeup immediately in another interrupt.
+		lpCurrentThread->dwTotalRunTime += SYSTEM_TIME_SLICE;
+		//lpContext = lpCurrentThread->lpKernelThreadContext;
+		KernelThreadManager.CallThreadHook(
+			THREAD_HOOK_TYPE_BEGINSCHEDULE,NULL,lpCurrentThread);
 
 		//Depend or ARCH
-		//lpCurrentThread->lpKernelThreadContext = (struct __KERNEL_THREAD_CONTEXT*)lpESP;
+		LPVOID pointer = lpCurrentThread->lpInitStackPointer;
+		printf("lpCurrentThread->lpInitStackPointer = %x\n", pointer);
+		__SwitchTo(pointer);
+		break;                             //This instruction will never reach.
 
-		switch(lpCurrentThread->dwThreadStatus)
+	case KERNEL_THREAD_STATUS_RUNNING:
+		lpNextThread = KernelThreadManager.GetScheduleKernelThread(
+			(struct __COMMON_OBJECT*)&KernelThreadManager,
+			lpCurrentThread->dwThreadPriority);
+
+		printf("%x %x\n",lpCurrentThread, lpNextThread);
+		if(NULL == lpNextThread || lpNextThread == lpCurrentThread)  //Current is most priority.
 		{
-		case KERNEL_THREAD_STATUS_BLOCKED:     //Waiting shared object in process.
-		case KERNEL_THREAD_STATUS_TERMINAL:    //In process of termination.
-		case KERNEL_THREAD_STATUS_SLEEPING:    //In process of falling in sleep.
-		case KERNEL_THREAD_STATUS_SUSPENDED:   //In process of being suspended.
-		case KERNEL_THREAD_STATUS_READY:       //Wakeup immediately in another interrupt.
 			lpCurrentThread->dwTotalRunTime += SYSTEM_TIME_SLICE;
-			//lpContext = lpCurrentThread->lpKernelThreadContext;
-			KernelThreadManager.CallThreadHook(
-				THREAD_HOOK_TYPE_BEGINSCHEDULE,NULL,lpCurrentThread);
+			printf("lpCurrentThread->dwTotalRunTime = %d\n", lpCurrentThread->dwTotalRunTime);
+
+			if (lpCurrentThread->dwTotalRunTime>1000) goto change;
+			//KernelThreadManager.CallThreadHook(
+			//	THREAD_HOOK_TYPE_BEGINSCHEDULE,NULL,lpCurrentThread);
 			//Depend or ARCH
-			//__SwitchTo(lpCurrentThread->lpKernelThreadContext);
-			break;                             //This instruction will never reach.
-
-		case KERNEL_THREAD_STATUS_RUNNING:
-			lpNextThread = KernelThreadManager.GetScheduleKernelThread(
-				(struct __COMMON_OBJECT*)&KernelThreadManager,
-				lpCurrentThread->dwThreadPriority);
-			if(NULL == lpNextThread)  //Current is most priority.
-			{
-				lpCurrentThread->dwTotalRunTime += SYSTEM_TIME_SLICE;
-				KernelThreadManager.CallThreadHook(
-					THREAD_HOOK_TYPE_BEGINSCHEDULE,NULL,lpCurrentThread);
-				//Depend or ARCH
-				//__SwitchTo(lpCurrentThread->lpKernelThreadContext);
-				return;
-			}
-			else
-			{
-				lpCurrentThread->dwThreadStatus = KERNEL_THREAD_STATUS_READY;
-				KernelThreadManager.AddReadyKernelThread(
-					(struct __COMMON_OBJECT*)&KernelThreadManager,
-					lpCurrentThread);  //Add to ready queue.
-
-				lpNextThread->dwTotalRunTime += SYSTEM_TIME_SLICE;
-				lpNextThread->dwThreadStatus = KERNEL_THREAD_STATUS_RUNNING;
-				lpMgr->lpCurrentKernelThread = lpNextThread;
-				KernelThreadManager.CallThreadHook(
-					THREAD_HOOK_TYPE_BEGINSCHEDULE,NULL,lpNextThread);
-				//Depend or ARCH
-				//__SwitchTo(lpNextThread->lpKernelThreadContext);
-				return;
-			}
-		default:
-			BUG();
-			break;
+			//LPVOID pointer = lpCurrentThread->lpInitStackPointer;
+			//printf("lpCurrentThread->lpInitStackPointer = %x\n", pointer);
+			//__SwitchTo(pointer);
+			return;
 		}
+		else
+		{
+change:
+			lpCurrentThread->dwThreadStatus = KERNEL_THREAD_STATUS_READY;
+			KernelThreadManager.AddReadyKernelThread(
+				(struct __COMMON_OBJECT*)&KernelThreadManager,
+				lpCurrentThread);  //Add to ready queue.
+
+			lpNextThread->dwTotalRunTime += SYSTEM_TIME_SLICE;
+			lpNextThread->dwThreadStatus = KERNEL_THREAD_STATUS_RUNNING;
+			KernelThreadManager.lpCurrentKernelThread = lpNextThread;
+			
+			//KernelThreadManager.CallThreadHook(
+			//	THREAD_HOOK_TYPE_BEGINSCHEDULE,NULL,lpNextThread);
+			
+			//Depend or ARCH
+			LPVOID pointer = lpNextThread->lpInitStackPointer;
+#ifdef  DEBUG
+			printf("lpNextThread->lpInitStackPointer = %x\n", pointer);
+#endif			
+			if (pointer>0xB0000000) while (1) ;
+			__SwitchTo(pointer);
+			return;
+		}
+	default:
+		BUG();
+		break;
 	}
 }
 

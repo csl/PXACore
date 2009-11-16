@@ -37,18 +37,19 @@ void DeadLoop()
 
 /**/
 static DWORD dwIdleCounter = 0L;
-DWORD SystemIdle(LPVOID lpData)
+DWORD SystemIdle()
 {
 
-	DWORD* lpdwCounter = NULL;
-	lpdwCounter = (DWORD*)lpData;
+	//DWORD* lpdwCounter = NULL;
+	//lpdwCounter = (DWORD*)lpData;
 	//DWORD dwCounter = 0L;
+
 	while(TRUE)
 	{
-		(*lpdwCounter) ++;
-		if(GLOBAL_COUNTER == *lpdwCounter)
+		dwIdleCounter++;
+		if(GLOBAL_COUNTER == dwIdleCounter)
 		{
-			(*lpdwCounter) = 0;
+			dwIdleCounter = 0;
 			printf("System idle thread is sheduled,I-I-I-I-I-I-I-I-I-I-I.");
 		}
 	}
@@ -134,7 +135,7 @@ int main()
 		(struct __COMMON_OBJECT*)&KernelThreadManager,
 		0L,
 		KERNEL_THREAD_STATUS_READY,
-		PRIORITY_LEVEL_LOWEST,         //Lowest priority level.
+		PRIORITY_LEVEL_NORMAL,         //Lowest priority level.
 		SystemIdle,
 		(LPVOID)(&dwIdleCounter),
 		NULL,
@@ -164,7 +165,9 @@ int main()
 		goto __TERMINAL;
 	}
 
-	//KernelThreadManager.ScheduleFromProc();
+	//Start first process
+	lpShellThread->dwThreadStatus = KERNEL_THREAD_STATUS_RUNNING;
+	KernelThreadManager.lpCurrentKernelThread = lpShellThread;
 	RestoreKernelThread(lpShellThread);
 
 /*

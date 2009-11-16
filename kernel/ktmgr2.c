@@ -26,7 +26,8 @@
 
 void BUG()
 {
-	printf("BUG oencountered.");
+	printf("BUG oencountered.\n");
+	while (1);
 }
 
 //

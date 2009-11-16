@@ -314,7 +314,7 @@ BEGIN_DEFINE_OBJECT(__KERNEL_THREAD_MANAGER)
 				   struct __COMMON_OBJECT* lpKernelThread );
 
 	VOID (*ScheduleFromProc)(void); //__KERNEL_THREAD_CONTEXT*   lpContext
-	VOID (*ScheduleFromInt)( struct __COMMON_OBJECT* lpThis, LPVOID lpESP );
+	VOID (*ScheduleFromInt)(void);  //struct __COMMON_OBJECT* lpThis, LPVOID lpESP
 
 	DWORD (*SetThreadPriority)(struct __COMMON_OBJECT* lpKernelThread, DWORD wNewPriority );
 

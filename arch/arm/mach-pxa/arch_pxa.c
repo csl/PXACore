@@ -149,7 +149,7 @@ VOID RestoreKernelThread(struct __KERNEL_THREAD_OBJECT* lp)
 		"mov sp, %0\n\t"		// restore current thread's context
 		"ldr r4, [sp], #4\n\t"
 		"msr SPSR_cxsf, r4\n\t"
-		"mrs r4, SPSR\n\t"
+		//"mrs r4, SPSR\n\t"
 		"ldmfd sp!, {r0-r12, lr, pc}^\n\t"	//jump to Kernel Thread
 		: 
 		: "r" (lp->lpInitStackPointer)
@@ -209,6 +209,7 @@ VOID EnableInterrupt(VOID)
 
 void ExitInterrupt()
 {
+	KernelThreadManager.ScheduleFromInt();
 /*
 	if (interrupt_nesting > 0) 
 		interrupt_nesting--;
