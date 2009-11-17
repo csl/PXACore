@@ -451,19 +451,21 @@ jump_to_main:
 __Interrupt_Handler:
 		msr CPSR_c, #(0xc0 | 0x12)  //CPSR_c (0:7 bits), IRQ stack
 		stmfd sp!, {r1-r3}	  // push working registers onto "IRQ stack"
-		mov r1, sp	
+		mov r1, sp
 		add sp, sp, #12	  //IRQ stack: sp = sp + 12 (3 items)
 		sub r2, lr, #4	  //r2 = lr - 4 (return address)
 		mrs r3, SPSR	  //r3 = SPSR
 
 		//change to SVC mode
-		msr CPSR_c, #(0xc0 | 0x13)     //sp = thread stack
+		msr CPSR_c, #(0xc0 | 0x13)     //sp => thread stack
+		mov r2,sp
 		stmfd sp!, {r2}		     //r2 = return address (pc)
 		stmfd sp!, {lr}		     //lr (r14)
 		stmfd sp!, {r4-r12}
 
 		//pop "IRQ stack" to working registers (r1-r3)
 		ldmfd r1!, {r4-r6} //move thread'sfrom IRQ stack to SVC stack
+
 		stmfd sp!, {r4-r6} //sp = thread stack (r1-r3)
 		stmfd sp!, {r0}	 //push thread's r0 onto "thread's stack"
 		stmfd sp!, {r3}	 //push thread's CPSR (IRQ's SPSR)
@@ -477,17 +479,17 @@ __Interrupt_Handler:
 
 		//chagen to SVC32
 		msr CPSR_c, #(0xc0 | 0x13)	//NO_INT | SVC32_MODE
-
 		bl ExitInterrupt
+
 		ldmfd sp!, {r4}
 		msr SPSR_cxsf, r4
 		ldmfd sp!, {r0-r12, lr, pc}^
 
 __SwitchTo:
-	ldmfd sp!, {r0-r1}
-	mov sp,r1		//sp = nextthread->sp
-	ldr r4, [sp], #4
-        //ldmfd sp!, {r4}		//restore CPSR
+	ldmfd sp!, {r5-r6}
+	mov sp,r6		//sp = nextthread->sp
+	//ldr r4, [sp], #4
+        ldmfd sp!, {r4}		//restore CPSR
         msr SPSR_cxsf, r4
 /*
 	ldmfd sp!, {r0}	
@@ -504,7 +506,7 @@ __SwitchTo:
 	ldmfd sp!, {r11}	
 	ldmfd sp!, {r12}	
 	ldmfd sp!, {lr}	
-	ldmfd sp!, {r0}	
+	ldmfd sp!, {pc}	
 b:	bl b
 */
         ldmfd sp!, {r0-r12, lr, pc}^	//jump

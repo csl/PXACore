@@ -142,7 +142,7 @@ VOID RestoreKernelThread(struct __KERNEL_THREAD_OBJECT* lp)
 {
 
 #ifdef  DEBUG
-	printf("%x %x\n", lp->lpInitStackPointer, lp->KernelThreadRoutine);
+	printf("lpInitStackPointer = %x, KernelThreadRoutine = %x\n", lp->lpInitStackPointer, lp->KernelThreadRoutine);
 #endif
 
 	asm ( 
@@ -209,16 +209,17 @@ VOID EnableInterrupt(VOID)
 
 void ExitInterrupt()
 {
-	KernelThreadManager.ScheduleFromInt();
 /*
 	if (interrupt_nesting > 0) 
 		interrupt_nesting--;
-
-	if (current_thread->time_quantum <= 0) 
-	{
-		//schedule(SCHED_TIME_EXPIRE);
-	}
 */
+	printf("timer = %d\n", KernelThreadManager.lpCurrentKernelThread->dwTotalRunTime);
+	KernelThreadManager.lpCurrentKernelThread->dwTotalRunTime++;
+	if (KernelThreadManager.lpCurrentKernelThread->dwTotalRunTime % 100 == 0) 
+	{
+		KernelThreadManager.ScheduleFromInt();
+	}
+
 }
 
 void InterruptHandler()

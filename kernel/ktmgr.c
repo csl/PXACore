@@ -660,13 +660,11 @@ static VOID ScheduleFromInt(void)
 			(struct __COMMON_OBJECT*)&KernelThreadManager,
 			lpCurrentThread->dwThreadPriority);
 
-		printf("%x %x\n",lpCurrentThread, lpNextThread);
+		printf("lpInitStackPointer %x %x\n",lpCurrentThread->lpInitStackPointer, lpNextThread->lpInitStackPointer);
 		if(NULL == lpNextThread || lpNextThread == lpCurrentThread)  //Current is most priority.
 		{
 			lpCurrentThread->dwTotalRunTime += SYSTEM_TIME_SLICE;
 			printf("lpCurrentThread->dwTotalRunTime = %d\n", lpCurrentThread->dwTotalRunTime);
-
-			if (lpCurrentThread->dwTotalRunTime>1000) goto change;
 			//KernelThreadManager.CallThreadHook(
 			//	THREAD_HOOK_TYPE_BEGINSCHEDULE,NULL,lpCurrentThread);
 			//Depend or ARCH
@@ -677,7 +675,7 @@ static VOID ScheduleFromInt(void)
 		}
 		else
 		{
-change:
+
 			lpCurrentThread->dwThreadStatus = KERNEL_THREAD_STATUS_READY;
 			KernelThreadManager.AddReadyKernelThread(
 				(struct __COMMON_OBJECT*)&KernelThreadManager,

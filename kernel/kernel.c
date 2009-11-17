@@ -50,7 +50,7 @@ DWORD SystemIdle()
 		if(GLOBAL_COUNTER == dwIdleCounter)
 		{
 			dwIdleCounter = 0;
-			printf("System idle thread is sheduled,I-I-I-I-I-I-I-I-I-I-I.");
+			printf("System idle thread is sheduled,I-I-I-I-I-I-I-I-I-I-I.\n");
 		}
 	}
 
