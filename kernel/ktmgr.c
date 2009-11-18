@@ -502,7 +502,7 @@ static VOID ScheduleFromProc(void)
 			lpNew->dwThreadStatus = KERNEL_THREAD_STATUS_RUNNING;
 			lpNew->dwTotalRunTime += SYSTEM_TIME_SLICE;
 			KernelThreadManager.lpCurrentKernelThread = lpNew;
-
+		
 			//Call schedule hook before swich.
 			KernelThreadManager.CallThreadHook(
 				THREAD_HOOK_TYPE_ENDSCHEDULE | THREAD_HOOK_TYPE_BEGINSCHEDULE,

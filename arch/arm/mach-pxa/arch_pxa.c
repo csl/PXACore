@@ -156,6 +156,7 @@ VOID RestoreKernelThread(struct __KERNEL_THREAD_OBJECT* lp)
 	);
 }
 
+/*
 //context_switch
 VOID __SaveAndSwitch(struct __KERNEL_THREAD_OBJECT* lpPrev, struct __KERNEL_THREAD_OBJECT* lpNex)
 {
@@ -168,12 +169,12 @@ VOID __SaveAndSwitch(struct __KERNEL_THREAD_OBJECT* lpPrev, struct __KERNEL_THRE
 	
 		//"ldr r4, =%0\n\t"
 		"mov sp, %0\n\t"		// current_thread->stack_ptr = sp
-/*	
+	
 		"ldr r4, =lpPrev\n\t"		// current_thread = next_thread
 		"ldr r6, =lpNex\n\t"
 		"ldr r6, [r6]\n\t"
 		"str r6, [r4]\n\t"
-*/
+
 //		"ldr r4, =%1\n\t"
 		"mov sp, %1\n\t"		// sp = next_thread->sp
 		
@@ -186,16 +187,25 @@ VOID __SaveAndSwitch(struct __KERNEL_THREAD_OBJECT* lpPrev, struct __KERNEL_THRE
 		  "r" (lpNex->lpInitStackPointer)
 	);
 }
+*/
+
+void SetSP(LPVOID sp_addr)
+{
+#ifdef  DEBUG
+	printf("\nsp: new:%x old: %x\n", sp_addr,KernelThreadManager.lpCurrentKernelThread->lpInitStackPointer);
+#endif
+	KernelThreadManager.lpCurrentKernelThread->lpInitStackPointer = sp_addr;
+	
+}
 
 VOID DisableInterrupt(VOID)
 {
 	INT_REG(INT_ICMR) = 0;
 }
 
-
 VOID EnableInterrupt(VOID)
 {
-	//printf("EnableINterrupt\n");
+	//printf("Enable Interrupt\n");
 	INT_REG(INT_ICLR) &= ~BIT26;
 	TMR_REG(TMR_OSMR0) = PXA255_TMR_CLK / OS_TICKS_PER_SEC;
 	TMR_REG(TMR_OSMR1) = 0x3FFFFFFF;
@@ -213,7 +223,10 @@ void ExitInterrupt()
 	if (interrupt_nesting > 0) 
 		interrupt_nesting--;
 */
-	printf("timer = %d\n", KernelThreadManager.lpCurrentKernelThread->dwTotalRunTime);
+#ifdef  DEBUG
+	printf("\ntimer count = %d\n", KernelThreadManager.lpCurrentKernelThread->dwTotalRunTime);
+#endif
+	
 	KernelThreadManager.lpCurrentKernelThread->dwTotalRunTime++;
 	if (KernelThreadManager.lpCurrentKernelThread->dwTotalRunTime % 100 == 0) 
 	{
