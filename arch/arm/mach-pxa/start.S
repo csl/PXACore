@@ -28,6 +28,7 @@
 	.global und_stack
 	.global sys_stack
 	.global __SwitchTo
+	.global __SaveAndSwitch
 
 	/* Stack allocation */
 	.comm fiq_stack, FIQ_STACK_SIZE
@@ -491,6 +492,7 @@ __Interrupt_Handler:
 
 __SaveAndSwitch:
 	// save lpPrev thread's context
+	mov r5,r1
 	stmfd sp!, {lr}		
 	stmfd sp!, {lr}
 	stmfd sp!, {r0-r12, lr}
@@ -500,10 +502,10 @@ __SaveAndSwitch:
 	bl SetSP
 
 	// restor next thread sp
-	mov sp, r1		//r1: lpNext->stack_ptr, sp = lpNext->stack_ptr
+	mov sp, r5		//r1: lpNext->stack_ptr, sp = lpNext->stack_ptr
 	
 	// restore next thread's context
-	ldmfd sp!, {r4}		
+	ldmfd sp!, {r4}
 	msr SPSR_cxsf, r4
 	ldmfd sp!, {r0-r12, lr, pc}^
 

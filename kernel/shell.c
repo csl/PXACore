@@ -1668,7 +1668,7 @@ DWORD shell_execute()
 	struct __KERNEL_THREAD_MESSAGE KernelThreadMessage;
 
 	//Enable Interrupt
-	EnableInterrupt();
+	//EnableInterrupt();
 
 	char buf[80] = { '\0' };
 
@@ -1680,14 +1680,8 @@ DWORD shell_execute()
 		DoCommand();
 
 		PrintPrompt();
-/*
-		if(GetMessage(&KernelThreadMessage))
-		{
-			if(KTMSG_THREAD_TERMINAL == KernelThreadMessage.wCommand)
-				goto __TERMINAL;
-			DispatchMessage(&KernelThreadMessage, EventHandler);
-		}
-*/
+
+		//KernelThreadManager.ScheduleFromProc();
 	}
 
 __TERMINAL:                      //Terminal code here.

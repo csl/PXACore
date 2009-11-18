@@ -501,15 +501,17 @@ static VOID ScheduleFromProc(void)
 
 			lpNew->dwThreadStatus = KERNEL_THREAD_STATUS_RUNNING;
 			lpNew->dwTotalRunTime += SYSTEM_TIME_SLICE;
-			KernelThreadManager.lpCurrentKernelThread = lpNew;
 		
 			//Call schedule hook before swich.
-			KernelThreadManager.CallThreadHook(
-				THREAD_HOOK_TYPE_ENDSCHEDULE | THREAD_HOOK_TYPE_BEGINSCHEDULE,
-				lpCurrent,lpNew);
+			//KernelThreadManager.CallThreadHook(
+				//THREAD_HOOK_TYPE_ENDSCHEDULE | THREAD_HOOK_TYPE_BEGINSCHEDULE,
+				//lpCurrent,lpNew);
 
 			//Depend on ARCH
-			//__SaveAndSwitch(&lpCurrent->lpKernelThreadContext, &lpNew->lpKernelThreadContext);  //Switch.
+			printf("RUNNING: lpInitStackPointer = %x, new = %x\n", lpCurrent->lpInitStackPointer, lpNew->lpInitStackPointer);
+			__SaveAndSwitch(lpCurrent->lpInitStackPointer, lpNew->lpInitStackPointer);  //Switch.
+			KernelThreadManager.lpCurrentKernelThread = lpNew;
+
 			__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
 			return;
 		}
@@ -539,15 +541,15 @@ static VOID ScheduleFromProc(void)
 		{
 			lpNew->dwTotalRunTime += SYSTEM_TIME_SLICE;
 			lpNew->dwThreadStatus = KERNEL_THREAD_STATUS_RUNNING;
-			KernelThreadManager.lpCurrentKernelThread = lpNew;
-
 			//Call schedule hook routine.
-			KernelThreadManager.CallThreadHook(
-				THREAD_HOOK_TYPE_ENDSCHEDULE | THREAD_HOOK_TYPE_BEGINSCHEDULE,
-				lpCurrent,lpNew);
+			//KernelThreadManager.CallThreadHook(
+				//THREAD_HOOK_TYPE_ENDSCHEDULE | THREAD_HOOK_TYPE_BEGINSCHEDULE,
+				//lpCurrent,lpNew);
 
 			//Depend on ARCH
-			//__SaveAndSwitch(&lpCurrent->lpKernelThreadContext,&lpNew->lpKernelThreadContext);
+			printf("READY: lpInitStackPointer = %x, new = %x\n", lpCurrent->lpInitStackPointer, lpNew->lpInitStackPointer);
+			__SaveAndSwitch(lpCurrent->lpInitStackPointer, lpNew->lpInitStackPointer);  //Switch.
+			KernelThreadManager.lpCurrentKernelThread = lpNew;
 			__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
 			return;
 		}
@@ -571,14 +573,15 @@ static VOID ScheduleFromProc(void)
 		}
 		lpNew->dwThreadStatus = KERNEL_THREAD_STATUS_RUNNING;
 		lpNew->dwTotalRunTime += SYSTEM_TIME_SLICE;
-		KernelThreadManager.lpCurrentKernelThread = lpNew;
 
 		//Call schedule hook.
-		KernelThreadManager.CallThreadHook(
-			THREAD_HOOK_TYPE_ENDSCHEDULE | THREAD_HOOK_TYPE_BEGINSCHEDULE,
-			lpCurrent,lpNew);
+		//KernelThreadManager.CallThreadHook(
+		//	THREAD_HOOK_TYPE_ENDSCHEDULE | THREAD_HOOK_TYPE_BEGINSCHEDULE,
+		//	lpCurrent,lpNew);
 		//Depend on ARCH
-		//__SaveAndSwitch(&lpCurrent->lpKernelThreadContext, &lpNew->lpKernelThreadContext);
+		printf("status: lpInitStackPointer = %x, new = %x\n", lpCurrent->lpInitStackPointer, lpNew->lpInitStackPointer);
+		__SaveAndSwitch(lpCurrent->lpInitStackPointer, lpNew->lpInitStackPointer);  //Switch.
+		KernelThreadManager.lpCurrentKernelThread = lpNew;
 		__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
 
 		return;
