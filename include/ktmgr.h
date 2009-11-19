@@ -373,14 +373,12 @@ DWORD DispatchMessage(struct __KERNEL_THREAD_MESSAGE*, __KERNEL_THREAD_MESSAGE_H
                                                                   //The routine dispatch a
                                                                   //message to it's handler.
 
-BOOL  GetMessage(struct __KERNEL_THREAD_MESSAGE*);                       //Get a message from the 
+BOOL  GetMessage(struct __KERNEL_THREAD_MESSAGE*);                //Get a message from the 
                                                                   //current kernel thread's
                                                                   //message queue.
 
-//Send a message to the
+//Send a message to the kernel thread.
 BOOL  SendMessage(struct __COMMON_OBJECT* lpThread, struct __KERNEL_THREAD_MESSAGE*); 
-                                                                       //kernel thread.
-
 
 /***************************************************************************************
 ****************************************************************************************

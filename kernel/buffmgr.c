@@ -155,7 +155,7 @@ static VOID CombineFreeBlock(struct __BUFFER_CONTROL_BLOCK* lpControlBlock,  //T
 			                                           //skip two blocks.
 		{
 			lpFreeHeader = (struct __FREE_BUFFER_HEADER*)((DWORD)lpNextHeader + 
-                                   sizeof(struct __FREE_BUFFER_HEADER) + 					   lpNextHeader->dwBlockSize);
+                                   sizeof(struct __FREE_BUFFER_HEADER) + lpNextHeader->dwBlockSize);
 
 			if((LPVOID)lpFreeHeader == lpEndAddr)  
 			//Seek to the end of the buffer pool.

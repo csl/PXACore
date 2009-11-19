@@ -24,6 +24,7 @@
 //reachs KTHREAD_SCHEDULE_TIME,Hello Taiwan
 //will schedule the kernal thread.
 //
+
 #define KTHREAD_SCHEDULE_TIME  20
 
 //
@@ -47,7 +48,8 @@
 //
 typedef VOID (*LPKTHREAD_ROUTINE)(LPVOID);
 
-struct __KTHREAD_CONTROL_BLOCK{
+struct __KTHREAD_CONTROL_BLOCK
+{
 	DWORD               dwKThreadID;           //Kernal thread ID.
 	DWORD               dwKThreadStatus;       //Kernal thread status.
 	DWORD               dwKThreadPriority;     //Priority.
@@ -55,17 +57,17 @@ struct __KTHREAD_CONTROL_BLOCK{
 	LPKTHREAD_ROUTINE   pKThreadRoutine;       //The start address of the kernal thread.
 	LPVOID              pData;                 //The parameter of kernal thread routine.
 
-	__KTHREAD_CONTROL_BLOCK*  pNext;           //Points to the next kernal thread.
-	__KTHREAD_CONTROL_BLOCK*  pPrev;           //Points to the previous kernal thread.
+	struct __KTHREAD_CONTROL_BLOCK*  pNext;           //Points to the next kernal thread.
+	struct __KTHREAD_CONTROL_BLOCK*  pPrev;           //Points to the previous kernal thread.
 
-	__KTHREAD_MSG       ktmsg[MAX_KTHREAD_MSG_NUM];  //Kernal thread message operation 
+	struct __KTHREAD_MSG       ktmsg[MAX_KTHREAD_MSG_NUM];  //Kernal thread message operation 
 	                                                 //members.
 	WORD                wHeader;                     //Message queue header index.
 	WORD                wTrial;                      //Message queue trial index.
 	WORD                wCurrentMsgNum;              //Current message number.
 	WORD                wReserved;                   //Aligment to 4 byte boundry.
-
-#ifdef __I386__                                //The following variables is used to save     
+/*
+#ifdef __I386__                                    //The following variables is used to save     
 	                                           //all general registers and flag register.
 	DWORD               dwEAX;
 	DWORD               dwEBX;
@@ -81,23 +83,24 @@ struct __KTHREAD_CONTROL_BLOCK{
 	DWORD               dwEFlags;
 #else
 #endif
+*/
 };
 
 //
 //Kernal thread message operations.
 //
 
-BOOL KtMsgQueueFull(__KTHREAD_CONTROL_BLOCK*);  //If the kernal thread's message queue is full.
+BOOL KtMsgQueueFull(struct __KTHREAD_CONTROL_BLOCK*);  //If the kernal thread's message queue is full.
 
-BOOL KtMsgQueueEmpty(__KTHREAD_CONTROL_BLOCK*); //If the kernal thread's message queue is empty.
+BOOL KtMsgQueueEmpty(struct __KTHREAD_CONTROL_BLOCK*); //If the kernal thread's message queue is empty.
 
-BOOL KtSendMessage(__KTHREAD_CONTROL_BLOCK*,__KTHREAD_MSG*);  //Add a message to the msg queue.
+BOOL KtSendMessage(struct __KTHREAD_CONTROL_BLOCK*,struct __KTHREAD_MSG*);  //Add a message to the msg queue.
 
-BOOL KtGetMessage(__KTHREAD_CONTROL_BLOCK*,__KTHREAD_MSG*);   //Get a message from the queue.
+BOOL KtGetMessage(struct __KTHREAD_CONTROL_BLOCK*,struct __KTHREAD_MSG*);   //Get a message from the queue.
 
-typedef BOOL (*__KTHREAD_MSG_HANDLER)(WORD,DWORD,DWORD);      //Kernal thread message handler type.
+typedef BOOL (*struct __KTHREAD_MSG_HANDLER)(WORD,DWORD,DWORD);      //Kernal thread message handler type.
 
-BOOL KtDispatchMessage(__KTHREAD_MSG*,__KTHREAD_MSG_HANDLER);  //Dispatch a message.
+BOOL KtDispatchMessage(struct __KTHREAD_MSG*,struct __KTHREAD_MSG_HANDLER);  //Dispatch a message.
 
 //
 //Max kernal thread number.
@@ -134,7 +137,7 @@ DWORD GetCurrentKThreadID();
 //
 //Get kernal thread's control block,by the kernal thread ID.
 //
-__KTHREAD_CONTROL_BLOCK* GetKThreadControlBlock(DWORD);
+struct __KTHREAD_CONTROL_BLOCK* GetKThreadControlBlock(DWORD);
 
 //
 //The following function re-schedule the kernal thread.

@@ -1341,9 +1341,9 @@ VOID VerHandler(LPSTR pr)
 VOID MemHandler(LPSTR pr)
 {
 	printf("------------------ ** memory layout ** ------------------\n");
-	printf("    0x00000000 - 0x000FFFFF        Hardware buffer       \n");
-	printf("    0x00100000 - 0x0010FFFF        Mini-kernal           \n");
-	printf("    0x00110000 - 0x013FFFFF        Master(OS Kernal)     \n");
+	printf("    0x00000000 - 0x000FFFFF        Bootloader       \n");
+	printf("    0x00100000 - 0x0010FFFF        PXACore(OS Kernal)           \n");
+	printf("    0x00110000 - 0x013FFFFF        Stack     \n");
 	printf("    0x01400000 - 0xFFFFFFFF        User Space            \n");
 }
 
@@ -1562,7 +1562,7 @@ __END:
 
 VOID  PrintPrompt()
 {
-	LPSTR pszSysName = "[system-view]# ";
+	LPSTR pszSysName = "[system-view]#";
 	if(HostName[0])
 	{
 		printf(&HostName[0]);

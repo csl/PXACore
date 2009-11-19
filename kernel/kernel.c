@@ -148,6 +148,26 @@ int main()
 		goto __TERMINAL;
 	}
 
+	/*
+	//Create statistics kernel thread.
+	lpStatKernelThread = KernelThreadManager.CreateKernelThread(
+		(struct __COMMON_OBJECT*)&KernelThreadManager,
+		0L,
+		KERNEL_THREAD_STATUS_READY,
+		PRIORITY_LEVEL_HIGH,  //With high priority.
+		StatThreadRoutine,
+		NULL,
+		NULL,
+		"CPU STAT");
+
+	if(NULL == lpStatKernelThread)
+	{
+		//PrintLine("Can not create idle kernel thread,please restart the system.");
+		__ERROR_HANDLER(ERROR_LEVEL_FATAL,0L,NULL);
+		goto __TERMINAL;
+	}
+	*/
+
 	lpShellThread = KernelThreadManager.CreateKernelThread(   //Create shell thread.
 		(struct __COMMON_OBJECT*)&KernelThreadManager,
 		0L,

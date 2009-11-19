@@ -13,21 +13,20 @@
 //    Lines number              :
 //***********************************************************************/
 
-#ifndef __STDAFX_H__
+
 #include "stdafx.h"
-#endif
 
 //
 //The following two global variables are used to control the 
 //kernal threads.
 //Once create a kernal thread,the creat rountine will add a entry
-//to the __KTHREAD_CONTROL_BLOCK* array,and make the proper
+//to the struct __KTHREAD_CONTROL_BLOCK* array,and make the proper
 //g_bKThreadQueueStatus index to 1.
 //Once delete a kernal thread,onle set the g_bKThreadQueueStatus's
 //indexed value to 0.
 //
-__KTHREAD_CONTROL_BLOCK*  g_pKThreadQueue[MAX_KTHREAD_NUM]        = {0};
-BYTE                      g_bKThreadQueueStatus[MAX_KTHREAD_NUM]  = {0};
+struct __KTHREAD_CONTROL_BLOCK*  g_pKThreadQueue[MAX_KTHREAD_NUM] = {0};
+BYTE g_bKThreadQueueStatus[MAX_KTHREAD_NUM] = {0};
 
 //
 //The kernal thread queue pointers.
@@ -38,11 +37,11 @@ BYTE                      g_bKThreadQueueStatus[MAX_KTHREAD_NUM]  = {0};
 //4. Dead queue,countains the dead kernal thread;
 //5. Suspend queue,countains the suspended kernal thread.
 //
-static __KTHREAD_CONTROL_BLOCK*  g_pReadyQueue     = NULL;
-static __KTHREAD_CONTROL_BLOCK*  g_pBlockedQueue   = NULL;
-static __KTHREAD_CONTROL_BLOCK*  g_pRunningQueue   = NULL;
-static __KTHREAD_CONTROL_BLOCK*  g_pDeadQueue      = NULL;
-static __KTHREAD_CONTROL_BLOCK*  g_pSuspendQueue   = NULL;
+static struct __KTHREAD_CONTROL_BLOCK*  g_pReadyQueue     = NULL;
+static struct __KTHREAD_CONTROL_BLOCK*  g_pBlockedQueue   = NULL;
+static struct __KTHREAD_CONTROL_BLOCK*  g_pRunningQueue   = NULL;
+static struct __KTHREAD_CONTROL_BLOCK*  g_pDeadQueue      = NULL;
+static struct __KTHREAD_CONTROL_BLOCK*  g_pSuspendQueue   = NULL;
 
 //
 //The current running kernal thread's ID.
@@ -54,7 +53,7 @@ static DWORD  g_dwCurrentKThreadID = 1;
 //
 
 //If message queue is full.
-BOOL KtMsgQueueFull(__KTHREAD_CONTROL_BLOCK* pControlBlock)
+BOOL KtMsgQueueFull(struct __KTHREAD_CONTROL_BLOCK* pControlBlock)
 {
 	if(NULL == pControlBlock)  //Parameter check.
 		return FALSE;
@@ -63,7 +62,7 @@ BOOL KtMsgQueueFull(__KTHREAD_CONTROL_BLOCK* pControlBlock)
 }
 
 //If message queue empty.
-BOOL KtMsgQueueEmpty(__KTHREAD_CONTROL_BLOCK* pControlBlock)
+BOOL KtMsgQueueEmpty(struct __KTHREAD_CONTROL_BLOCK* pControlBlock)
 {
 	if(NULL == pControlBlock)
 		return FALSE;
@@ -72,10 +71,9 @@ BOOL KtMsgQueueEmpty(__KTHREAD_CONTROL_BLOCK* pControlBlock)
 }
 
 //Add a message to the current kernal thread's message queue.
-BOOL KtSendMessage(__KTHREAD_CONTROL_BLOCK* pControlBlock,
-				   __KTHREAD_MSG*           pMsg)
+BOOL KtSendMessage(struct __KTHREAD_CONTROL_BLOCK* pControlBlock, struct __KTHREAD_MSG* pMsg)
 {
-	BOOL           bResult = FALSE;
+	BOOL bResult = FALSE;
 
 	if((NULL == pControlBlock) || (NULL == pMsg)) //Parameters check.
 		return bResult;
@@ -84,7 +82,7 @@ BOOL KtSendMessage(__KTHREAD_CONTROL_BLOCK* pControlBlock,
 		return bResult;
 
 	//DisableInterrupt();                           //The following operation should not be
-	                                              //interrupted.
+	                                                //interrupted.
 	pControlBlock->ktmsg[pControlBlock->wTrial].wCommand    = pMsg->wCommand;
 	pControlBlock->ktmsg[pControlBlock->wTrial].dwParam_01  = pMsg->dwParam_01;
 	pControlBlock->ktmsg[pControlBlock->wTrial].dwParam_02  = pMsg->dwParam_02;
@@ -101,8 +99,7 @@ BOOL KtSendMessage(__KTHREAD_CONTROL_BLOCK* pControlBlock,
 }
 
 //Get a message from current kernal thread's message queue and delete it from the queue.
-BOOL KtGetMessage(__KTHREAD_CONTROL_BLOCK* pControlBlock,
-				  __KTHREAD_MSG*           pMsg)
+BOOL KtGetMessage(struct __KTHREAD_CONTROL_BLOCK* pControlBlock, struct __KTHREAD_MSG* pMsg)
 {
 	if((NULL == pControlBlock) || (NULL == pMsg))  //Parameters check.
 		return FALSE;
@@ -124,8 +121,7 @@ BOOL KtGetMessage(__KTHREAD_CONTROL_BLOCK* pControlBlock,
 	return TRUE;
 }
 
-BOOL KtDispatchMessage(__KTHREAD_MSG* pMsg,
-						__KTHREAD_MSG_HANDLER    msghdr)
+BOOL KtDispatchMessage(struct __KTHREAD_MSG* pMsg, struct __KTHREAD_MSG_HANDLER    msghdr)
 {
 	if((NULL == pMsg) || (NULL == msghdr))
 		return FALSE;
@@ -147,20 +143,22 @@ DWORD  GetCurrentKThreadID()
 //and update the corresponding queue.
 //If failed,it returns 0,otherwise,returns the created kernal thread's ID.
 //
-DWORD CreateKThread(DWORD             dwStackSize,      //Thread's stack size.
-					DWORD             dwFlags,          //Flags.
-					DWORD             dwPriority,       //Priority.
-					LPKTHREAD_ROUTINE pStartAddress,    //Start running address.
-					LPVOID            pData,            //Parameter.
-					LPVOID            /*pReserved*/)        //Reserved.
+DWORD CreateKThread(DWORD  dwStackSize,      //Thread's stack size.
+		    DWORD             dwFlags,          //Flags.
+		    DWORD             dwPriority,       //Priority.
+		    LPKTHREAD_ROUTINE pStartAddress,    //Start running address.
+		    LPVOID            pData,            //Parameter.
+		    LPVOID            /*pReserved*/)        //Reserved.
 {
 	DWORD                    dwKThreadID      = 0x00000000;
-	__KTHREAD_CONTROL_BLOCK* pControlBlock    = NULL;
+	struct __KTHREAD_CONTROL_BLOCK* pControlBlock    = NULL;
 	LPVOID                   pStackPointer    = NULL;
 	BOOL                     bFind            = FALSE;
 	
 	RoundTo4k(dwStackSize);               //Round the stack size to 4k times.
-	pControlBlock = (__KTHREAD_CONTROL_BLOCK*)KMemAlloc(dwStackSize,KMEM_SIZE_TYPE_4K);
+
+	pControlBlock = (struct __KTHREAD_CONTROL_BLOCK*) KMemAlloc(dwStackSize,KMEM_SIZE_TYPE_4K);
+
 	if(NULL == pControlBlock)             //If can not allocate the memory.
 	{
 		return dwKThreadID;
@@ -238,7 +236,7 @@ DWORD CreateKThread(DWORD             dwStackSize,      //Thread's stack size.
 //
 VOID TerminalKThread(DWORD dwKThreadID)
 {
-	__KTHREAD_CONTROL_BLOCK* pControlBlock = NULL;
+	struct __KTHREAD_CONTROL_BLOCK* pControlBlock = NULL;
 	DWORD                    dwStackSize   = 0;
 
 	if((dwKThreadID < 1) || (dwKThreadID > MAX_KTHREAD_NUM))  //Parameter check.
@@ -260,9 +258,9 @@ VOID TerminalKThread(DWORD dwKThreadID)
 //If failed,returns NULL,else,returns the pointer of kernal thread's
 //control block.
 //
-__KTHREAD_CONTROL_BLOCK* GetKThreadControlBlock(DWORD dwKThreadID)
+struct __KTHREAD_CONTROL_BLOCK* GetKThreadControlBlock(DWORD dwKThreadID)
 {
-	__KTHREAD_CONTROL_BLOCK*  pControlBlock = NULL;
+	struct __KTHREAD_CONTROL_BLOCK*  pControlBlock = NULL;
 
 	if((0 == dwKThreadID) || (MAX_KTHREAD_NUM == dwKThreadID))  //Parameter check.
 	{
@@ -292,8 +290,10 @@ VOID SetKThreadPriority(DWORD dwKThreadID,DWORD dwPriority)
 //kernal thread.
 //
 
-__declspec(naked) static VOID SwitchKThread(LPVOID pContext)
+
+static VOID SwitchKThread(LPVOID pContext)  //__declspec(naked) 
 {
+/*
 #ifdef __I386__                           //Intel's x86 CPU implementation.
 	__asm{
 		cli
@@ -348,7 +348,9 @@ __declspec(naked) static VOID SwitchKThread(LPVOID pContext)
 	}
 #else
 #endif
+*/
 }
+
 
 //
 //The following function save the current kernal thread's context.
@@ -361,13 +363,13 @@ __declspec(naked) static VOID SwitchKThread(LPVOID pContext)
 //parameter.
 //
 
-static VOID SaveKThreadContext(__KTHREAD_CONTROL_BLOCK* pControlBlock,DWORD dwEsp)
+static VOID SaveKThreadContext(struct __KTHREAD_CONTROL_BLOCK* pControlBlock,DWORD dwEsp)
 {
 	DWORD* pdwEsp = (DWORD*)dwEsp;
 
 	if(NULL == pControlBlock)             //Parameter check.
 		return;
-
+/*
 #ifdef __I386__
 	pControlBlock->dwEBP = *pdwEsp;
 	pdwEsp ++;
@@ -391,6 +393,8 @@ static VOID SaveKThreadContext(__KTHREAD_CONTROL_BLOCK* pControlBlock,DWORD dwEs
 	pControlBlock->dwESP = (DWORD)pdwEsp;
 #else
 #endif
+*/
+
 }
 
 //
@@ -401,14 +405,14 @@ static VOID SaveKThreadContext(__KTHREAD_CONTROL_BLOCK* pControlBlock,DWORD dwEs
 
 VOID ScheduleKThread(DWORD dwEsp)              //The dwEsp parameter is the esp value
                                                //before the TimerHandler is called.
-											   //We can access the current kernal
-											   //thread's context,such as general
-											   //registers by this parameter.
+					       //We can access the current kernal
+					       //thread's context,such as general
+					       //registers by this parameter.
 {
 	DWORD dwKThreadID = g_dwCurrentKThreadID;
 	DWORD dwIndex     = 0;
-	__KTHREAD_CONTROL_BLOCK* pControlBlock     = NULL;
-	__KTHREAD_CONTROL_BLOCK* pCurrControlBlock = NULL;
+	struct __KTHREAD_CONTROL_BLOCK* pControlBlock     = NULL;
+	struct __KTHREAD_CONTROL_BLOCK* pCurrControlBlock = NULL;
 	LPVOID                   pContext          = NULL;
 	//BYTE              Buffer[12];   //---------- ** debug ** ------------
 	//static DWORD             dwTmp = 0;

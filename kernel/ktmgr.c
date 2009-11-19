@@ -201,7 +201,6 @@ static BOOL KernelThreadMgrInit(struct __COMMON_OBJECT* lpThis)
 	if(FALSE == lpTerminalQueue->Initialize((struct __COMMON_OBJECT*)lpTerminalQueue))
 		goto __TERMINAL;
 
-
 	//
 	//Now,the objects required by Kernel Thread Manager are created and initialized success-
 	//fully,initialize the kernel thread manager itself now.
@@ -377,8 +376,9 @@ static struct __KERNEL_THREAD_OBJECT* CreateKernelThread(struct __COMMON_OBJECT*
 	else                                               //Add into Suspended Queue.
 	{
 		if(!lpMgr->lpSuspendedQueue->InsertIntoQueue(
-		(struct __COMMON_OBJECT*)lpMgr->lpSuspendedQueue, (struct __COMMON_OBJECT*) lpKernelThread,dwPriority))
-			goto __TERMINAL;
+			(struct __COMMON_OBJECT*)lpMgr->lpSuspendedQueue, 
+			(struct __COMMON_OBJECT*) lpKernelThread,dwPriority))
+				goto __TERMINAL;
 	}
 
 	//Call the create hook.
@@ -696,7 +696,7 @@ static VOID ScheduleFromInt(void)
 #ifdef  DEBUG
 			printf("lpNextThread->lpInitStackPointer = %x\n", pointer);
 #endif			
-			if (pointer>0xB0000000) while (1) ;
+			//if (pointer>0xB0000000) while (1) ;
 			__SwitchTo(pointer);
 			return;
 		}
@@ -864,7 +864,7 @@ static DWORD SetThreadStatus(struct __COMMON_OBJECT* lpKernelThread,DWORD dwStat
 	return 0L;
 }
 
-/*
+
 //MsgQueueFull.
 static BOOL MsgQueueFull(struct __COMMON_OBJECT* lpThread)
 {
@@ -873,11 +873,11 @@ static BOOL MsgQueueFull(struct __COMMON_OBJECT* lpThread)
 	if(NULL == lpThread)    //Parameter check.
 		return FALSE;
 
-	lpKernelThread = (struct __KERNEL_THREAD_OBJECT*)lpThread;
+	lpKernelThread = (struct __KERNEL_THREAD_OBJECT*) lpThread;
 
 	return MAX_KTHREAD_MSG_NUM == lpKernelThread->ucCurrentMsgNum ? TRUE : FALSE;
 }
-*/
+
 
 //MsgQueueEmpty.
 static BOOL MsgQueueEmpty(struct __COMMON_OBJECT* lpThread)
@@ -892,25 +892,28 @@ static BOOL MsgQueueEmpty(struct __COMMON_OBJECT* lpThread)
 	return 0 == lpKernelThread->ucCurrentMsgNum ? TRUE : FALSE;
 }
 
-/*
+
 //SendMessage.
-static BOOL MgrSendMessage(struct __COMMON_OBJECT* lpThread,struct __KERNEL_THREAD_MESSAGE* lpMsg)
+static BOOL MgrSendMessage(struct __COMMON_OBJECT* lpThread, struct __KERNEL_THREAD_MESSAGE* lpMsg)
 {
-	struct __KERNEL_THREAD_OBJECT*     lpKernelThread = NULL;
-	struct __KERNEL_THREAD_OBJECT*     lpNewThread    = NULL;
-	BOOL                        bResult        = FALSE;
-	DWORD                       dwFlags        = 0L;
+	struct __KERNEL_THREAD_OBJECT* lpKernelThread = NULL;
+	struct __KERNEL_THREAD_OBJECT* lpNewThread = NULL;
+	BOOL bResult        = FALSE;
+	DWORD dwFlags        = 0L;
 
 	if((NULL == lpThread) || (NULL == lpMsg)) //Parameters check.
 		return bResult;
+
 	lpKernelThread = (struct __KERNEL_THREAD_OBJECT*)lpThread;
 
 	__ENTER_CRITICAL_SECTION(NULL,dwFlags);
+
 	if(MsgQueueFull(lpThread))             //Message queue is full.
 	{
 		__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
 		return bResult;
 	}
+
 	//Message queue not full,put the message to the queue.
 	lpKernelThread->KernelThreadMsg[lpKernelThread->ucMsgQueueTrial].wCommand
 		= lpMsg->wCommand;
@@ -924,8 +927,9 @@ static BOOL MgrSendMessage(struct __COMMON_OBJECT* lpThread,struct __KERNEL_THRE
 	lpKernelThread->ucCurrentMsgNum ++;
 
 	lpNewThread = (struct __KERNEL_THREAD_OBJECT*)lpKernelThread->lpMsgWaitingQueue->GetHeaderElement(
-		(struct __COMMON_OBJECT*)lpKernelThread->lpMsgWaitingQueue,
+		(struct __COMMON_OBJECT*) lpKernelThread->lpMsgWaitingQueue,
 		NULL);
+
 	if(lpNewThread)  //Should wakeup the target kernel thread.
 	{
 		lpNewThread->dwThreadStatus = KERNEL_THREAD_STATUS_READY;
@@ -933,24 +937,32 @@ static BOOL MgrSendMessage(struct __COMMON_OBJECT* lpThread,struct __KERNEL_THRE
 			(struct __COMMON_OBJECT*)&KernelThreadManager,
 			lpNewThread);  //Add to ready queue.
 	}
+
 	__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
+
 	//
 	//If in kernel thread context,then re-schedule kernel thread.
 	//
+
+	//in furture, handler
+/*
 	if(IN_KERNELTHREAD())  //---- !!!!!!!! PROBLEM CAUSED !!!!!!!! ----
 	{
-		KernelThreadManager.ScheduleFromProc(NULL);
+		KernelThreadManager.ScheduleFromProc();
 	}
-	bResult = TRUE;
-	return bResult;
-}
 */
 
+	bResult = TRUE;
+
+	return bResult;
+}
+
+
 //GetMessage.
-static BOOL MgrGetMessage(struct __COMMON_OBJECT* lpThread,struct __KERNEL_THREAD_MESSAGE* lpMsg)
+static BOOL MgrGetMessage(struct __COMMON_OBJECT* lpThread, struct __KERNEL_THREAD_MESSAGE* lpMsg)
 {
-	struct __KERNEL_THREAD_OBJECT*     lpKernelThread  = NULL;
-	DWORD                       dwFlags         = 0L;
+	struct __KERNEL_THREAD_OBJECT* lpKernelThread  = NULL;
+	DWORD dwFlags = 0L;
 
 	if((NULL == lpThread) || (NULL == lpMsg))   //Parameters check.
 		return FALSE;
@@ -958,12 +970,14 @@ static BOOL MgrGetMessage(struct __COMMON_OBJECT* lpThread,struct __KERNEL_THREA
 	lpKernelThread = (struct __KERNEL_THREAD_OBJECT*) lpThread;
 
 	__ENTER_CRITICAL_SECTION(NULL,dwFlags);
+
 	if(MsgQueueEmpty(lpThread))  //Current message queue is empty,should waiting.
 	{
 		lpKernelThread->dwThreadStatus = KERNEL_THREAD_STATUS_BLOCKED;
 		lpKernelThread->lpMsgWaitingQueue->InsertIntoQueue(
 			(struct __COMMON_OBJECT*)lpKernelThread->lpMsgWaitingQueue,
 			(struct __COMMON_OBJECT*)lpKernelThread, 0L);
+
 		__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
 
 		KernelThreadManager.ScheduleFromProc();  //Re-schedule.
@@ -978,12 +992,16 @@ static BOOL MgrGetMessage(struct __COMMON_OBJECT* lpThread,struct __KERNEL_THREA
 	lpMsg->dwParam      = lpKernelThread->KernelThreadMsg[lpKernelThread->ucMsgQueueHeader].dwParam;
 
 	lpKernelThread->ucMsgQueueHeader ++;
+
 	if(MAX_KTHREAD_MSG_NUM == lpKernelThread->ucMsgQueueHeader)
 		lpKernelThread->ucMsgQueueHeader = 0x0000;
+
 	lpKernelThread->ucCurrentMsgNum --;
 
-	//if(0 == lpKernelThread->ucCurrentMsgNum)     //The message queue is empty.
+	 //The message queue is empty.
+	//if(0 == lpKernelThread->ucCurrentMsgNum)    
 	//	lpKernelThread->lpMsgEvent->ResetEvent((struct __COMMON_OBJECT*)(lpKernelThread->lpMsgEvent));
+
 	//LEAVE_CRITICAL_SECTION();                    //Enable the interrupt.
 	__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
 	return TRUE;
@@ -1110,8 +1128,8 @@ struct __KERNEL_THREAD_MANAGER KernelThreadManager =
 	GetThreadPriority,                               //GetThreadPriority routine.
 
 	TerminalKernelThread,                            //TerminalKernelThread routine.
-	//Sleep,                                           //Sleep routine.
-	//CancelSleep,                                     //CancelSleep routine.
+	Sleep,                                           //Sleep routine.
+	CancelSleep,                                     //CancelSleep routine.
 
 	SetCurrentIRQL,                                  //SetCurrentIRQL routine.
 	GetCurrentIRQL,                                  //GetCurrentIRQL routine.
@@ -1124,20 +1142,14 @@ struct __KERNEL_THREAD_MANAGER KernelThreadManager =
 	GetThreadStatus,                                 //GetThreadStatus routine.
 	SetThreadStatus,                                 //SetThreadStatus routine.
 
-	//MgrSendMessage,                                  //SendMessage routine.
-	//MgrGetMessage,                                   //GetMessage routine.
-	//MsgQueueFull,                                    //MsgQueueFull routine.
-	//MsgQueueEmpty,                                   //MsgQueueEmpty routine.
+	MgrSendMessage,                                  //SendMessage routine.
+	MgrGetMessage,                                   //GetMessage routine.
+	MsgQueueFull,                                    //MsgQueueFull routine.
+	MsgQueueEmpty,                                   //MsgQueueEmpty routine.
 	LockKernelThread,                                //LockKernelThread routine.
 	UnlockKernelThread                               //UnlockKernelThread routine.
 };
 
-//
-/**************************************************************************************
-****************************************************************************************
-****************************************************************************************
-****************************************************************************************
-***************************************************************************************/
 //
 //Dispatch a message to an message(event) handler.
 //
