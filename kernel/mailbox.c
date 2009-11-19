@@ -12,9 +12,7 @@
 //    Lines number              :
 //***********************************************************************/
 
-#ifndef __STDAFX_H__
-#include "..\INCLUDE\StdAfx.h"
-#endif
+#include "stdafx.h"
 
 //#include ".\NetCore\NETBUFF.H"
 

@@ -25,7 +25,7 @@
 
 #include "stdafx.h"
 
-__PERF_RECORDER  TimerIntPr = 
+struct __PERF_RECORDER  TimerIntPr = 
 {
 	U64_ZERO,
 	U64_ZERO,
@@ -47,7 +47,7 @@ static BOOL TimerInterruptHandler(LPVOID lpEsp,LPVOID)
 {
 	DWORD                     dwPriority        = 0L;
 	struct __TIMER_OBJECT*    lpTimerObject     = 0L;
-	__KERNEL_THREAD_MESSAGE   Msg;
+	struct __KERNEL_THREAD_MESSAGE   Msg;
 	struct __PRIORITY_QUEUE*         lpTimerQueue      = NULL;
 	struct __PRIORITY_QUEUE*         lpSleepingQueue   = NULL;
 	struct __KERNEL_THREAD_OBJECT*   lpKernelThread    = NULL;
@@ -212,8 +212,8 @@ struct __COMMON_OBJECT* BOOL ConnectInterrupt(struct __COMMON_OBJECT*     lpThis
 							 BOOL                 bIfShared,
 							 DWORD                dwCPUMask)
 {
-	__INTERRUPT_OBJECT*      lpInterrupt          = NULL;
-	__INTERRUPT_OBJECT*      lpObjectRoot         = NULL;
+	struct __INTERRUPT_OBJECT*      lpInterrupt          = NULL;
+	struct __INTERRUPT_OBJECT*      lpObjectRoot         = NULL;
 	struct __SYSTEM*                lpSystem             = NULL;
 	DWORD                    dwFlags              = 0L;
 
@@ -223,7 +223,7 @@ struct __COMMON_OBJECT* BOOL ConnectInterrupt(struct __COMMON_OBJECT*     lpThis
 	if(ucVector >= MAX_INTERRUPT_VECTOR)                    //Impossible!!!
 		return NULL;
 
-	lpInterrupt = (__INTERRUPT_OBJECT*)
+	lpInterrupt = (struct __INTERRUPT_OBJECT*)
 		ObjectManager.CreateObject(&ObjectManager,NULL,OBJECT_TYPE_INTERRUPT);
 	if(NULL == lpInterrupt)    //Failed to create interrupt object.
 		return FALSE;
@@ -237,6 +237,7 @@ struct __COMMON_OBJECT* BOOL ConnectInterrupt(struct __COMMON_OBJECT*     lpThis
 	lpInterrupt->ucVector              = ucVector;
 
 	__ENTER_CRITICAL_SECTION(NULL,dwFlags);
+
 	lpObjectRoot = lpSystem->lpInterruptVector[ucVector];
 	if(NULL == lpObjectRoot)    //If this is the first interrupt object of the vector.
 	{
@@ -258,10 +259,9 @@ struct __COMMON_OBJECT* BOOL ConnectInterrupt(struct __COMMON_OBJECT*     lpThis
 //The implementation of DisconnectInterrupt.
 //
 
-static VOID DisconnectInterrupt(struct __COMMON_OBJECT* lpThis,
-								struct __COMMON_OBJECT* lpInterrupt)
+static VOID DisconnectInterrupt(struct __COMMON_OBJECT* lpThis, struct __COMMON_OBJECT* lpInterrupt)
 {
-	__INTERRUPT_OBJECT*   lpIntObject    = NULL;
+	struct __INTERRUPT_OBJECT*   lpIntObject    = NULL;
 	struct __SYSTEM*             lpSystem       = NULL;
 	UCHAR                 ucVector       = NULL;
 	DWORD                 dwFlags        = 0L;
@@ -270,7 +270,7 @@ static VOID DisconnectInterrupt(struct __COMMON_OBJECT* lpThis,
 		return;
 
 	lpSystem = (struct __SYSTEM*)lpThis;
-	lpIntObject = (__INTERRUPT_OBJECT*)lpInterrupt;
+	lpIntObject = (struct __INTERRUPT_OBJECT*)lpInterrupt;
 	ucVector    = lpIntObject->ucVector;
 
 	//ENTER_CRITICAL_SECTION();
@@ -302,12 +302,12 @@ static VOID DisconnectInterrupt(struct __COMMON_OBJECT* lpThis,
 
 BOOL InterruptInitialize(struct __COMMON_OBJECT* lpThis)
 {
-	__INTERRUPT_OBJECT*    lpInterrupt = NULL;
+	struct __INTERRUPT_OBJECT*    lpInterrupt = NULL;
 
 	if(NULL == lpThis)
 		return FALSE;
 
-	lpInterrupt = (__INTERRUPT_OBJECT*)lpThis;
+	lpInterrupt = (struct __INTERRUPT_OBJECT*)lpThis;
 	lpInterrupt->lpPrevInterruptObject = NULL;
 	lpInterrupt->lpNextInterruptObject = NULL;
 	lpInterrupt->InterruptHandler      = NULL;
@@ -375,7 +375,7 @@ static BOOL SystemInitialize(struct __COMMON_OBJECT* lpThis)
 {
 	struct __SYSTEM*            lpSystem         = NULL;
 	struct __PRIORITY_QUEUE*    lpPriorityQueue  = NULL;
-	__INTERRUPT_OBJECT*  lpIntObject      = NULL;
+	struct __INTERRUPT_OBJECT*  lpIntObject      = NULL;
 	BOOL                 bResult          = FALSE;
 	DWORD                dwFlags          = 0L;
 
@@ -395,7 +395,7 @@ static BOOL SystemInitialize(struct __COMMON_OBJECT* lpThis)
 		goto __TERMINAL;
 	lpSystem->lpTimerQueue = lpPriorityQueue;
 
-	lpIntObject = (__INTERRUPT_OBJECT*)ObjectManager.CreateObject(
+	lpIntObject = (struct __INTERRUPT_OBJECT*)ObjectManager.CreateObject(
 		&ObjectManager,
 		NULL,
 		OBJECT_TYPE_INTERRUPT);
@@ -566,7 +566,7 @@ static VOID DispatchInterrupt(struct __COMMON_OBJECTstruct __COMMON_OBJECT* lpTh
 							  LPVOID           lpEsp,
 							  UCHAR ucVector)
 {
-	__INTERRUPT_OBJECT*    lpIntObject  = NULL;
+	struct __INTERRUPT_OBJECT*    lpIntObject  = NULL;
 	struct __SYSTEM*              lpSystem     = NULL;
 
 	if((NULL == lpThis) || (NULL == lpEsp))

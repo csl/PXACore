@@ -18,6 +18,8 @@
 #include "syn_mech.h"
 #include "buffmgr.h"
 #include "shell.h"
+#include "devmgr.h"
+#include "iomgr.h"
 
 #define MAX_DWORD_VALUE     0xFFFFFFFF
 

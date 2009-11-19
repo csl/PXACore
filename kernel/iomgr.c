@@ -13,9 +13,8 @@
 //    Lines number              :
 //***********************************************************************/
 
-#ifndef __STDAFX_H__
-#include "..\INCLUDE\StdAfx.h"
-#endif
+#include "stdafx.h"
+#include "l_stdio.h"
 
 //
 //In front of this file,we implement three call back routines first,these three
@@ -39,18 +38,18 @@
 // 2. Block the current kernel thread.
 //
 
-static DWORD WaitForCompletion(__COMMON_OBJECT* lpThis)
+static DWORD WaitForCompletion(struct __COMMON_OBJECT* lpThis)
 {
-	__DRCB*                    lpDrcb           = NULL;
-	__EVENT*                   lpEvent          = NULL;
+	struct __DRCB*                    lpDrcb           = NULL;
+	struct __EVENT*                   lpEvent          = NULL;
 
 	if(NULL == lpThis) //Invalid parameter.
 		return 0L;
 
-	lpDrcb   = (__DRCB*)lpThis;
+	lpDrcb   = (struct __DRCB*)lpThis;
 	lpEvent  = lpDrcb->lpSynObject;
 	
-	lpEvent->WaitForThisObject((__COMMON_OBJECT*)lpEvent);  //Block the current kernel thread.
+	lpEvent->WaitForThisObject((struct __COMMON_OBJECT*) lpEvent);  //Block the current kernel thread.
 	return 1L;
 }
 
@@ -61,15 +60,15 @@ static DWORD WaitForCompletion(__COMMON_OBJECT* lpThis)
 // 2. Wakeup the kernel thread who waiting for the current device operation.
 //
 
-static DWORD OnCompletion(__COMMON_OBJECT* lpThis)
+static DWORD OnCompletion(struct __COMMON_OBJECT* lpThis)
 {
-	__EVENT*              lpEvent          = NULL;
+	struct __EVENT*              lpEvent          = NULL;
 
 	if(NULL == lpThis)
 		return 0L;
 
-	lpEvent = ((__DRCB*)lpThis)->lpSynObject;
-	lpEvent->SetEvent((__COMMON_OBJECT*)lpEvent);  //Wakeup kernel thread.
+	lpEvent = ((struct __DRCB*)lpThis)->lpSynObject;
+	lpEvent->SetEvent((struct __COMMON_OBJECT*)lpEvent);  //Wakeup kernel thread.
 	return 1L;
 }
 
@@ -79,7 +78,7 @@ static DWORD OnCompletion(__COMMON_OBJECT* lpThis)
 // 1. 
 //
 
-static DWORD OnCancel(__COMMON_OBJECT* lpThis)
+static DWORD OnCancel(struct __COMMON_OBJECT* lpThis)
 {
 	if(NULL == lpThis)    //Parameter check.
 		return 0L;
@@ -91,28 +90,29 @@ static DWORD OnCancel(__COMMON_OBJECT* lpThis)
 //The Initialize routine and UnInitialize routine of DRCB.
 //
 
-BOOL DrcbInitialize(__COMMON_OBJECT*  lpThis)
+BOOL DrcbInitialize(struct __COMMON_OBJECT*  lpThis)
 {
-	__EVENT*          lpSynObject     = NULL;
-	__DRCB*           lpDrcb          = NULL;
+	struct __EVENT*          lpSynObject     = NULL;
+	struct __DRCB*           lpDrcb          = NULL;
 	DWORD             dwFlags         = 0L;
 
 	if(NULL == lpThis)
 		return FALSE;
 
-	lpDrcb = (__DRCB*)lpThis;
+	lpDrcb = (struct __DRCB*)lpThis;
 
-	lpSynObject = (__EVENT*)ObjectManager.CreateObject(
+	lpSynObject = (struct __EVENT*)ObjectManager.CreateObject(
 		&ObjectManager,
 		NULL,
 		OBJECT_TYPE_EVENT);
+
 	if(NULL == lpSynObject)    //Failed to create event object.
 		return FALSE;
 
-	if(!lpSynObject->Initialize((__COMMON_OBJECT*)lpSynObject)) //Failed to initialize.
+	if(!lpSynObject->Initialize((struct __COMMON_OBJECT*)lpSynObject)) //Failed to initialize.
 	{
 		ObjectManager.DestroyObject(&ObjectManager,
-			(__COMMON_OBJECT*)lpSynObject);
+			(struct __COMMON_OBJECT*)lpSynObject);
 		return FALSE;
 	}
 
@@ -149,18 +149,18 @@ BOOL DrcbInitialize(__COMMON_OBJECT*  lpThis)
 //The Uninitialize of DRCB.
 //
 
-VOID DrcbUninitialize(__COMMON_OBJECT*  lpThis)
+VOID DrcbUninitialize(struct __COMMON_OBJECT*  lpThis)
 {
-	__DRCB*           lpDrcb            = NULL;
+	struct __DRCB*           lpDrcb            = NULL;
 
 	if(NULL == lpThis)
 		return;
 
-	lpDrcb = (__DRCB*)lpThis;
+	lpDrcb = (struct __DRCB*)lpThis;
 
 	if(lpDrcb->lpSynObject != NULL)
 		ObjectManager.DestroyObject(&ObjectManager,
-		(__COMMON_OBJECT*)(lpDrcb->lpSynObject));
+		(struct __COMMON_OBJECT*)(lpDrcb->lpSynObject));
 
 	return;
 }
@@ -169,14 +169,14 @@ VOID DrcbUninitialize(__COMMON_OBJECT*  lpThis)
 //The implementation of driver object's initialize routine.
 //
 
-BOOL DrvObjInitialize(__COMMON_OBJECT*  lpThis)
+BOOL DrvObjInitialize(struct __COMMON_OBJECT*  lpThis)
 {
-	__DRIVER_OBJECT*       lpDrvObj     = NULL;
+	struct __DRIVER_OBJECT*       lpDrvObj     = NULL;
 
 	if(NULL == lpThis)
 		return FALSE;
 
-	lpDrvObj = (__DRIVER_OBJECT*)lpThis;
+	lpDrvObj = (struct __DRIVER_OBJECT*)lpThis;
 
 	lpDrvObj->lpPrev            = NULL;
 	lpDrvObj->lpNext            = NULL;
@@ -188,7 +188,7 @@ BOOL DrvObjInitialize(__COMMON_OBJECT*  lpThis)
 //The implementation of driver object's Uninitialize routine.
 //
 
-VOID DrvObjUninitialize(__COMMON_OBJECT* lpThis)
+VOID DrvObjUninitialize(struct __COMMON_OBJECT* lpThis)
 {
 	return;
 }
@@ -197,14 +197,14 @@ VOID DrvObjUninitialize(__COMMON_OBJECT* lpThis)
 //The implementation of device object's initialize routine.
 //
 
-BOOL DevObjInitialize(__COMMON_OBJECT* lpThis)
+BOOL DevObjInitialize(struct __COMMON_OBJECT* lpThis)
 {
-	__DEVICE_OBJECT*          lpDevObject = NULL;
+	struct __DEVICE_OBJECT*          lpDevObject = NULL;
 
 	if(NULL == lpThis)
 		return FALSE;
 
-	lpDevObject = (__DEVICE_OBJECT*)lpThis;
+	lpDevObject = (struct __DEVICE_OBJECT*)lpThis;
 
 	lpDevObject->lpPrev           = NULL;
 	lpDevObject->lpNext           = NULL;
@@ -230,7 +230,7 @@ BOOL DevObjInitialize(__COMMON_OBJECT* lpThis)
 //Device object's Uninitialize routine.
 //
 
-VOID DevObjUninitialize(__COMMON_OBJECT* lpThis)
+VOID DevObjUninitialize(struct __COMMON_OBJECT* lpThis)
 {
 	return;
 }
@@ -246,10 +246,10 @@ VOID DevObjUninitialize(__COMMON_OBJECT* lpThis)
 // 1. 
 //
 
-static BOOL IOManagerInitialize(__COMMON_OBJECT* lpThis)
+static BOOL IOManagerInitialize(struct __COMMON_OBJECT* lpThis)
 {
 	BOOL                       bResult         = FALSE;
-	__IO_MANAGER*              lpIoManager     = NULL;
+	struct __IO_MANAGER*              lpIoManager     = NULL;
 
 	if(NULL == lpThis)    //Parameter check.
 		return bResult;
@@ -283,13 +283,13 @@ static BOOL IOManagerInitialize(__COMMON_OBJECT* lpThis)
 // 1. 
 //
 
-static __COMMON_OBJECT* CreateFile(__COMMON_OBJECT*  lpThis,
+static struct __COMMON_OBJECT* CreateFile(struct __COMMON_OBJECT*  lpThis,
 								   LPSTR             lpszFileName,
 								   DWORD             dwAccessMode,
 								   DWORD             dwShareMode,
 								   LPVOID            lpReserved)
 {
-	__COMMON_OBJECT*               lpFileObj         = NULL;
+	struct __COMMON_OBJECT*               lpFileObj         = NULL;
 
 	if((NULL == lpThis)
 	   || (NULL == lpszFileName)) //Parameters check.
@@ -307,17 +307,17 @@ static __COMMON_OBJECT* CreateFile(__COMMON_OBJECT*  lpThis,
 // 4. According to the result,set appropriate return value(s).
 //
 
-static BOOL  ReadFile(__COMMON_OBJECT*    lpThis,
-					  __COMMON_OBJECT*    lpFileObj,
-					  DWORD               dwByteSize,
-					  LPVOID              lpBuffer,
-					  DWORD*              lpdwReadSize)
+static BOOL  ReadFile(struct __COMMON_OBJECT*    lpThis,
+		    struct __COMMON_OBJECT*    lpFileObj,
+		    DWORD               dwByteSize,
+		    LPVOID              lpBuffer,
+		    DWORD*              lpdwReadSize)
 {
 	BOOL              bResult             = FALSE;
-	__DRCB*           lpDrcb              = NULL;
-	__IO_MANAGER*     lpIoManager         = NULL;
-	__DEVICE_OBJECT*  lpDevObject         = NULL;
-	__DRIVER_OBJECT*  lpDrvObject         = NULL;
+	struct __DRCB*           lpDrcb              = NULL;
+	struct __IO_MANAGER*     lpIoManager         = NULL;
+	struct __DEVICE_OBJECT*  lpDevObject         = NULL;
+	struct __DRIVER_OBJECT*  lpDrvObject         = NULL;
 	DWORD             dwReadBlockSize     = 0L;
 	DWORD             dwTotalSize         = 0L;
 
@@ -327,17 +327,18 @@ static BOOL  ReadFile(__COMMON_OBJECT*    lpThis,
 	   || (NULL == lpBuffer))    //Parameters check.
 	   goto __TERMINAL;
 
-	lpIoManager = (__IO_MANAGER*)lpThis;
-	lpDevObject = (__DEVICE_OBJECT*)lpFileObj;
+	lpIoManager = (struct __IO_MANAGER*)lpThis;
+	lpDevObject = (struct __DEVICE_OBJECT*)lpFileObj;
 	lpDrvObject = lpDevObject->lpDriverObject;
 
-	lpDrcb = (__DRCB*)ObjectManager.CreateObject(&ObjectManager,
+	lpDrcb = (struct __DRCB*) ObjectManager.CreateObject(&ObjectManager,
 		NULL,
 		OBJECT_TYPE_DRCB);
+
 	if(NULL == lpDrcb)        //Failed to create DRCB object.
 		goto __TERMINAL;
 
-	if(!lpDrcb->Initialize((__COMMON_OBJECT*)lpDrcb))  //Failed to initialize.
+	if(!lpDrcb->Initialize((struct __COMMON_OBJECT*)lpDrcb))  //Failed to initialize.
 		goto __TERMINAL;
 
 	//
@@ -355,9 +356,10 @@ static BOOL  ReadFile(__COMMON_OBJECT*    lpThis,
 	lpDrcb->OnCompletion      = OnCompletion;
 	lpDrcb->OnCancel          = OnCancel;
 
-	lpDrvObject->DeviceCtrl((__COMMON_OBJECT*)lpDrvObject,
-		(__COMMON_OBJECT*)lpDevObject,
+	lpDrvObject->DeviceCtrl((struct __COMMON_OBJECT*)lpDrvObject,
+		(struct __COMMON_OBJECT*)lpDevObject,
 		lpDrcb);
+
 	if(DRCB_STATUS_SUCCESS != lpDrcb->dwStatus)    //Can not get read block size successfully.
 		goto __TERMINAL;
 
@@ -367,24 +369,25 @@ static BOOL  ReadFile(__COMMON_OBJECT*    lpThis,
 	dwTotalSize = dwByteSize;
 	lpDrcb->dwRequestMode = DRCB_REQUEST_MODE_READ;
 	lpDrcb->dwStatus      = DRCB_STATUS_INITIALIZED;
+
 	while(TRUE)
 	{
 		lpDrcb->dwOutputLen    = 
 			dwTotalSize > dwReadBlockSize ? dwReadBlockSize : dwTotalSize;
 		lpDrcb->lpOutputBuffer = 
 			lpBuffer;
-		lpDrvObject->DeviceRead((__COMMON_OBJECT*)lpDrvObject,
-			(__COMMON_OBJECT*)lpDevObject,
+		lpDrvObject->DeviceRead((struct __COMMON_OBJECT*)lpDrvObject,
+			(struct __COMMON_OBJECT*)lpDevObject,
 			lpDrcb);
 		if(DRCB_STATUS_SUCCESS != lpDrcb->dwStatus)  //Can not read successfully.
 			goto __TERMINAL;    //Exit the read process.
 		if(lpDrcb->dwOutputLen < dwReadBlockSize)  //This suituation indicates the following
 			                                       //case:
-												   //1. At the end of the target file,but
-												   //   the original request data size is
-												   //   not satisfied;
-												   //2. The read transaction is over.
-												   //
+		//1. At the end of the target file,but
+		//   the original request data size is
+		//   not satisfied;
+		//2. The read transaction is over.
+		
 		{
 			*lpdwReadSize  = dwByteSize - dwTotalSize;
 			*lpdwReadSize += lpDrcb->dwOutputLen;  //Set the actually read byte size.
@@ -405,7 +408,7 @@ static BOOL  ReadFile(__COMMON_OBJECT*    lpThis,
 __SUCCESSFUL:
 
 	ObjectManager.DestroyObject(&ObjectManager,
-		(__COMMON_OBJECT*)lpDrcb);    //Destroy the DRCB object.
+		(struct __COMMON_OBJECT*)lpDrcb);    //Destroy the DRCB object.
 
 __TERMINAL:
 	if(!bResult)    //This routine failed.
@@ -413,7 +416,7 @@ __TERMINAL:
 		if(lpDrcb != NULL)    //Destroy the DRCB object.
 		{
 			ObjectManager.DestroyObject(&ObjectManager,
-				(__COMMON_OBJECT*)lpDrcb);
+				(struct __COMMON_OBJECT*)lpDrcb);
 		}
 	}
 	return bResult;
@@ -427,16 +430,16 @@ __TERMINAL:
 // 3. According to the result,set appropriate return value(s).
 //
 
-static BOOL WriteFile(__COMMON_OBJECT*  lpThis,
-					  __COMMON_OBJECT*  lpFileObj,
-					  DWORD             dwWriteSize,
-					  LPVOID            lpBuffer,
-					  DWORD*            lpWrittenSize)
+static BOOL WriteFile(struct __COMMON_OBJECT*  lpThis,
+		   struct __COMMON_OBJECT*  lpFileObj,
+		   DWORD             dwWriteSize,
+		   LPVOID            lpBuffer,
+		   DWORD*            lpWrittenSize)
 {
 	BOOL              bResult           = FALSE;
-	__DRCB*           lpDrcb            = NULL;
-	__DEVICE_OBJECT*  lpDevObject       = NULL;
-	__DRIVER_OBJECT*  lpDrvObject       = NULL;
+	struct __DRCB*           lpDrcb            = NULL;
+	struct __DEVICE_OBJECT*  lpDevObject       = NULL;
+	struct __DRIVER_OBJECT*  lpDrvObject       = NULL;
 	DWORD             dwWriteBlockSize  = 0L;
 	DWORD             dwTotalSize       = 0L;
 
@@ -446,16 +449,17 @@ static BOOL WriteFile(__COMMON_OBJECT*  lpThis,
 	  (NULL == lpBuffer))    //Parameters check.
 	  return bResult;
 
-	lpDevObject = (__DEVICE_OBJECT*)lpFileObj;
+	lpDevObject = (struct __DEVICE_OBJECT*)lpFileObj;
 	lpDrvObject = lpDevObject->lpDriverObject;
 
-	lpDrcb = (__DRCB*)ObjectManager.CreateObject(&ObjectManager,
+	lpDrcb = (struct __DRCB*)ObjectManager.CreateObject(&ObjectManager,
 		NULL,
 		OBJECT_TYPE_DRCB);
+
 	if(NULL == lpDrcb)  //Failed to create DRCB object.
 		goto __TERMINAL;
 
-	if(!lpDrcb->Initialize((__COMMON_OBJECT*)lpDrcb)) //Failed to initialize.
+	if(!lpDrcb->Initialize((struct __COMMON_OBJECT*)lpDrcb)) //Failed to initialize.
 		goto __TERMINAL;
 
 	//
@@ -471,8 +475,8 @@ static BOOL WriteFile(__COMMON_OBJECT*  lpThis,
 	lpDrcb->OnCancel          = OnCancel;
 	lpDrcb->OnCompletion      = OnCompletion;
 
-	lpDrvObject->DeviceCtrl((__COMMON_OBJECT*)lpDrvObject,
-		(__COMMON_OBJECT*)lpDevObject,
+	lpDrvObject->DeviceCtrl((struct __COMMON_OBJECT*)lpDrvObject,
+		(struct __COMMON_OBJECT*)lpDevObject,
 		lpDrcb);    //Get the write block size.
 	if(DRCB_STATUS_SUCCESS != lpDrcb->dwStatus)    //Failed to get the write block size.
 		goto __TERMINAL;
@@ -489,33 +493,32 @@ static BOOL WriteFile(__COMMON_OBJECT*  lpThis,
 
 	while(TRUE)
 	{
-		lpDrcb->dwInputLen     = 
-			dwTotalSize > dwWriteBlockSize ? dwWriteBlockSize : dwTotalSize;
+		lpDrcb->dwInputLen  = dwTotalSize > dwWriteBlockSize ? dwWriteBlockSize : dwTotalSize;
 		lpDrcb->lpInputBuffer  = lpBuffer;
-		lpDrvObject->DeviceWrite((__COMMON_OBJECT*)lpDrvObject,
-			(__COMMON_OBJECT*)lpDevObject,
+
+		lpDrvObject->DeviceWrite((struct __COMMON_OBJECT*)lpDrvObject,
+			(struct __COMMON_OBJECT*)lpDevObject,
 			lpDrcb);  //Commit the write transaction.
 
 		if(DRCB_STATUS_SUCCESS != lpDrcb->dwStatus)  //Failed to write.
 		{
 			goto __TERMINAL;
 		}
-		if(dwTotalSize <= dwWriteBlockSize)    //This indicates the write transaction is
-			                                   //over.
+		if(dwTotalSize <= dwWriteBlockSize)    //This indicates the write transaction is over.
 		{
 			*lpWrittenSize = dwWriteSize;
 			bResult = TRUE;
 			goto __TERMINAL;
 		}
 		dwTotalSize -= dwWriteBlockSize;
-		lpBuffer = (LPVOID)((DWORD)lpBuffer + dwWriteBlockSize);  //Adjust the buffer.
+		lpBuffer = (LPVOID) ((DWORD)lpBuffer + dwWriteBlockSize);  //Adjust the buffer.
 	}
 
 __TERMINAL:
 	if(lpDrcb != NULL)    //Destroy the DRCB object.
 	{
 		ObjectManager.DestroyObject(&ObjectManager,
-			(__COMMON_OBJECT*)lpDrcb);
+			(struct __COMMON_OBJECT*)lpDrcb);
 	}
 	return bResult;
 }
@@ -530,17 +533,16 @@ __TERMINAL:
 //    reference counter,and return.
 //
 
-static VOID CloseFile(__COMMON_OBJECT*  lpThis,
-					  __COMMON_OBJECT*  lpFileObj)
+static VOID CloseFile(struct __COMMON_OBJECT*  lpThis, struct __COMMON_OBJECT*  lpFileObj)
 {
-	__IO_MANAGER*              lpIoManager        = NULL;
-	__DEVICE_OBJECT*           lpDevObject        = NULL;
+	struct __IO_MANAGER*              lpIoManager        = NULL;
+	struct __DEVICE_OBJECT*           lpDevObject        = NULL;
 
 	if((NULL == lpThis) || (NULL == lpFileObj)) //Parameter check.
 		return;
 
-	lpIoManager = (__IO_MANAGER*)lpThis;
-	lpDevObject = (__DEVICE_OBJECT*)lpFileObj;
+	lpIoManager = (struct __IO_MANAGER*)lpThis;
+	lpDevObject = (struct __DEVICE_OBJECT*)lpFileObj;
 
 	/*if(lpDevObject->dwDevType != DEVICE_TYPE_FILE)  //Not a normal file.
 	{
@@ -564,8 +566,7 @@ static VOID CloseFile(__COMMON_OBJECT*  lpThis,
 // 1. 
 //
 
-static BOOL IOControl(__COMMON_OBJECT* lpThis,
-					  __COMMON_OBJECT* lpFileObj,
+static BOOL IOControl(struct __COMMON_OBJECT* lpThis, struct __COMMON_OBJECT* lpFileObj,
 					  DWORD            dwCommand,
 					  LPVOID           lpParameter,
 					  DWORD            dwOutputBufLen,
@@ -587,10 +588,10 @@ static BOOL IOControl(__COMMON_OBJECT* lpThis,
 // 1. 
 //
 
-static BOOL SetFilePointer(__COMMON_OBJECT* lpThis,
-						   __COMMON_OBJECT* lpFileObj,
+static BOOL SetFilePointer(struct __COMMON_OBJECT* lpThis,
+						   struct __COMMON_OBJECT* lpFileObj,
 						   DWORD            dwWhereBegin,
-						   INT              nOffset)
+						   int              nOffset)
 {
 	BOOL                   bResult          = FALSE;
 
@@ -606,8 +607,8 @@ static BOOL SetFilePointer(__COMMON_OBJECT* lpThis,
 // 1. 
 //
 
-static BOOL FlushFile(__COMMON_OBJECT*  lpThis,
-					  __COMMON_OBJECT*  lpFileObj)
+static BOOL FlushFile(struct __COMMON_OBJECT*  lpThis,
+					  struct __COMMON_OBJECT*  lpFileObj)
 {
 	BOOL              bResult           = FALSE;
 
@@ -628,17 +629,17 @@ static BOOL FlushFile(__COMMON_OBJECT*  lpThis,
 // 4. Inserts the device object into device object's list.
 //
 
-static __DEVICE_OBJECT* CreateDevice(__COMMON_OBJECT*  lpThis,
+static struct __DEVICE_OBJECT* CreateDevice(struct __COMMON_OBJECT*  lpThis,
 									 LPSTR             lpszDevName,
 									 DWORD             dwAttribute,
 									 DWORD             dwBlockSize,
 									 DWORD             dwMaxReadSize,
 									 DWORD             dwMaxWriteSize,
 									 LPVOID            lpDevExtension,
-									 __DRIVER_OBJECT*  lpDrvObject)
+									 struct __DRIVER_OBJECT*  lpDrvObject)
 {
-	__DEVICE_OBJECT*                 lpDevObject       = NULL;
-	__IO_MANAGER*                    lpIoManager       = (__IO_MANAGER*)lpThis;
+	struct __DEVICE_OBJECT*                 lpDevObject       = NULL;
+	struct __IO_MANAGER*                    lpIoManager       = (struct __IO_MANAGER*)lpThis;
 	DWORD                            dwFlags           = 0L;
 
 	//Check the parameters.
@@ -648,12 +649,12 @@ static __DEVICE_OBJECT* CreateDevice(__COMMON_OBJECT*  lpThis,
 		return NULL;
 	}
 
-	if(StrLen(lpszDevName) > MAX_DEV_NAME_LEN)  //The device's name is too long.
-	{
-		return NULL;
-	}
+	//if(strlen(lpszDevName) > MAX_DEV_NAME_LEN)  //The device's name is too long.
+	//{
+	//	return NULL;
+	//}
 	
-	lpDevObject    = (__DEVICE_OBJECT*)ObjectManager.CreateObject(
+	lpDevObject    = (struct __DEVICE_OBJECT*)ObjectManager.CreateObject(
 		&ObjectManager,
 		NULL,
 		OBJECT_TYPE_DEVICE);
@@ -662,10 +663,10 @@ static __DEVICE_OBJECT* CreateDevice(__COMMON_OBJECT*  lpThis,
 		return NULL;
 	}
 
-	if(!lpDevObject->Initialize((__COMMON_OBJECT*)lpDevObject)) //Failed to initialize the object.
+	if(!lpDevObject->Initialize((struct __COMMON_OBJECT*)lpDevObject)) //Failed to initialize the object.
 	{
 		ObjectManager.DestroyObject(&ObjectManager,
-			(__COMMON_OBJECT*)lpDevObject);
+			(struct __COMMON_OBJECT*)lpDevObject);
 		return NULL;
 	}
 
@@ -677,7 +678,8 @@ static __DEVICE_OBJECT* CreateDevice(__COMMON_OBJECT*  lpThis,
 	lpDevObject->dwMaxWriteSize = dwMaxWriteSize;
 	lpDevObject->dwMaxReadSize  = dwMaxReadSize;
 
-	StrCpy(lpszDevName,(LPSTR)&lpDevObject->DevName[0]);
+	//Need Implement strcpy
+	//strcpy(lpszDevName,(LPSTR)&lpDevObject->DevName[0]);
 
 	//
 	//The following code add the device object into device object's list.
@@ -703,10 +705,10 @@ static __DEVICE_OBJECT* CreateDevice(__COMMON_OBJECT*  lpThis,
 //The implementation of DestroyDevice.
 //
 
-static VOID DestroyDevice(__COMMON_OBJECT* lpThis,
-						  __DEVICE_OBJECT* lpDeviceObject)
+static VOID DestroyDevice(struct __COMMON_OBJECT* lpThis,
+						  struct __DEVICE_OBJECT* lpDeviceObject)
 {
-	__IO_MANAGER*         lpIoManager    = (__IO_MANAGER*)lpThis;
+	struct __IO_MANAGER*         lpIoManager    = (struct __IO_MANAGER*)lpThis;
 	DWORD                 dwFlags        = 0L;
 
 	if((NULL == lpThis) || (NULL == lpDeviceObject)) //Parameters check.
@@ -747,7 +749,7 @@ static VOID DestroyDevice(__COMMON_OBJECT* lpThis,
 
 	//Destroy the device object.
 	ObjectManager.DestroyObject(&ObjectManager,
-		(__COMMON_OBJECT*)lpDeviceObject);
+		(struct __COMMON_OBJECT*)lpDeviceObject);
 
 	return;
 }
@@ -758,9 +760,7 @@ static VOID DestroyDevice(__COMMON_OBJECT* lpThis,
 // 1. 
 //
 
-static BOOL ReserveResource(__COMMON_OBJECT*    lpThis,
-							__RESOURCE_DESCRIPTOR*
-							                    lpResDesc)
+static BOOL ReserveResource(struct __COMMON_OBJECT*    lpThis, struct __RESOURCE_DESCRIPTOR* lpResDesc)
 {
 	BOOL                    bResult             = FALSE;
 
@@ -776,7 +776,7 @@ static BOOL ReserveResource(__COMMON_OBJECT*    lpThis,
 //
 static BOOL LoadDriver(__DRIVER_ENTRY DrvEntry)
 {
-	__DRIVER_OBJECT*   lpDrvObject  = NULL;
+	struct __DRIVER_OBJECT*   lpDrvObject  = NULL;
 
 	if(NULL == DrvEntry)  //Invalid parameter.
 	{
@@ -784,7 +784,7 @@ static BOOL LoadDriver(__DRIVER_ENTRY DrvEntry)
 		return FALSE;
 	}
 
-	lpDrvObject = (__DRIVER_OBJECT*)ObjectManager.CreateObject(
+	lpDrvObject = (struct __DRIVER_OBJECT*)ObjectManager.CreateObject(
 		&ObjectManager,
 		NULL,
 		OBJECT_TYPE_DRIVER);
@@ -792,7 +792,7 @@ static BOOL LoadDriver(__DRIVER_ENTRY DrvEntry)
 	{
 		return FALSE;
 	}
-	if(!lpDrvObject->Initialize((__COMMON_OBJECT*)lpDrvObject)) //Initialize failed.
+	if(!lpDrvObject->Initialize((struct __COMMON_OBJECT*)lpDrvObject)) //Initialize failed.
 	{
 		return FALSE;
 	}
@@ -805,7 +805,7 @@ static BOOL LoadDriver(__DRIVER_ENTRY DrvEntry)
 	//Failed to call DrvEntry routine,so release the driver object.
 	ObjectManager.DestroyObject(
 		&ObjectManager,
-		(__COMMON_OBJECT*)lpDrvObject);
+		(struct __COMMON_OBJECT*)lpDrvObject);
 	return FALSE;
 }
 
@@ -820,7 +820,7 @@ static BOOL LoadDriver(__DRIVER_ENTRY DrvEntry)
 //This object is a global object,and only one in the whole system life-cycle.
 //
 
-__IO_MANAGER IOManager = {
+struct __IO_MANAGER IOManager = {
 	NULL,                                   //lpDeviceRoot.
 	NULL,                                   //lpDriverRoot.
 	NULL,                                   //lpResDescriptor.

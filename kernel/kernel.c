@@ -127,10 +127,22 @@ int main()
 		goto __TERMINAL; 
 
 	printf("KernelThreadManager.Initialize Scuessed\n");
+
+	//Initialize the Device manager.
+	if(!DeviceManager.Initialize(&DeviceManager))  goto __TERMINAL;
+
+	printf("DeviceManager.Initialize Scuessed\n");
+
+	//Initialize Input-Output Manager.
+	if(!IOManager.Initialize((struct __COMMON_OBJECT*)&IOManager))  goto __TERMINAL;
+
+	printf("IOManager.Initialize Scuessed\n");
+
 /*
 	if(!System.Initialize((struct __COMMON_OBJECT*) &System))                        //Initialize system object.
 		goto __TERMINAL;
 */
+
 	lpIdleThread = KernelThreadManager.CreateKernelThread(    //Create system idle thread.
 		(struct __COMMON_OBJECT*)&KernelThreadManager,
 		0L,
@@ -147,26 +159,6 @@ int main()
 		//__ERROR_HANDLER(ERROR_LEVEL_FATAL,0L,NULL);
 		goto __TERMINAL;
 	}
-
-	/*
-	//Create statistics kernel thread.
-	lpStatKernelThread = KernelThreadManager.CreateKernelThread(
-		(struct __COMMON_OBJECT*)&KernelThreadManager,
-		0L,
-		KERNEL_THREAD_STATUS_READY,
-		PRIORITY_LEVEL_HIGH,  //With high priority.
-		StatThreadRoutine,
-		NULL,
-		NULL,
-		"CPU STAT");
-
-	if(NULL == lpStatKernelThread)
-	{
-		//PrintLine("Can not create idle kernel thread,please restart the system.");
-		__ERROR_HANDLER(ERROR_LEVEL_FATAL,0L,NULL);
-		goto __TERMINAL;
-	}
-	*/
 
 	lpShellThread = KernelThreadManager.CreateKernelThread(   //Create shell thread.
 		(struct __COMMON_OBJECT*)&KernelThreadManager,

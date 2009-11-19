@@ -32,7 +32,7 @@ BEGIN_DECLARE_INIT_DATA(ObjectInitData)
 	OBJECT_INIT_DATA(OBJECT_TYPE_KERNEL_THREAD, sizeof(struct __KERNEL_THREAD_OBJECT),
 	KernelThreadInitialize, KernelThreadUninitialize)
 
-        OBJECT_INIT_DATA(0,0,0,0)
+         OBJECT_INIT_DATA(0,0,0,0)
 
 /*
 	OBJECT_INIT_DATA(OBJECT_TYPE_EVENT, sizeof(struct __EVENT),
@@ -86,7 +86,7 @@ static VOID   DestroyObject(struct __OBJECT_MANAGER*,struct __COMMON_OBJECT*);
 //Taiwan.
 //
 
-struct __OBJECT_MANAGER    ObjectManager = 
+struct __OBJECT_MANAGER ObjectManager = 
 {
 	1,                                  //Current avaiable object ID.
 	{0},

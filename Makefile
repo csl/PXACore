@@ -47,6 +47,8 @@ KERNEL_SRC = \
 	./kernel/buffmgr.c \
 	./kernel/objqueue.c \
 	./kernel/shell.c \
+	./kernel/devmgr.c \
+	./kernel/iomgr.c \
 
 #	./kernel/main.c \
 #	./kernel/comqueue.c \

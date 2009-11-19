@@ -69,6 +69,7 @@ int putchar(int c);
 int puts(const char *s);
 
 int strcmp(char *s1, char *s2);
+static int strlen(const char* s);
 
 char *strtok(char * s,const char * ct);
 char *strpbrk(const char * cs,const char * ct);

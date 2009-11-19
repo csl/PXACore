@@ -37,6 +37,7 @@ BYTE g_bKThreadQueueStatus[MAX_KTHREAD_NUM] = {0};
 //4. Dead queue,countains the dead kernal thread;
 //5. Suspend queue,countains the suspended kernal thread.
 //
+
 static struct __KTHREAD_CONTROL_BLOCK*  g_pReadyQueue     = NULL;
 static struct __KTHREAD_CONTROL_BLOCK*  g_pBlockedQueue   = NULL;
 static struct __KTHREAD_CONTROL_BLOCK*  g_pRunningQueue   = NULL;

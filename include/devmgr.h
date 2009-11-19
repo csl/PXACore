@@ -25,25 +25,30 @@
 //The definition of device identifier.
 //
 
-//BEGIN_DEFINE_OBJECT(__IDENTIFIER)
-struct __IDENTIFIER{
+//BEGIN_DEFINE_OBJECT(struct __IDENTIFIER)
+struct __IDENTIFIER
+{
 	DWORD             dwBusType;
-	union{
-		struct{
+
+	union
+	{
+		struct
+		{
 			UCHAR     ucMask;
 			WORD      wVendor;
 			WORD      wDevice;
 			DWORD     dwClass;
 			UCHAR     ucHdrType;
 			WORD      wReserved;
-		}PCI_Identifier;            //PCI interface device's identifier.
+		} PCI_Identifier;            //PCI interface device's identifier.
 
-		struct{
+		struct
+		{
 			DWORD     dwDevice;
-		}ISA_Identifier;           //ISA bus device's identifier.
-		//
+		} ISA_Identifier;           //ISA bus device's identifier.
+		
 		//Add other bus device's identifier here.
-		//
+		
 	};
 //END_DEFINE_OBJECT()
 };
@@ -52,18 +57,22 @@ struct __IDENTIFIER{
 //The definition of resource descriptor object.
 //
 
-//BEGIN_DEFINE_OBJECT(__RESOURCE)
-struct __RESOURCE{
-	__RESOURCE*         lpNext;
-	__RESOURCE*         lpPrev;
-	DWORD               dwResType;        //Resource type.
-	union{
-		struct{
+//BEGIN_DEFINE_OBJECT(struct __RESOURCE)
+struct __RESOURCE
+{
+	struct __RESOURCE*         lpNext;
+	struct __RESOURCE*         lpPrev;
+	DWORD  dwResType;        //Resource type.
+	union
+	{
+		struct
+		{
 			WORD        wStartPort;
 			WORD        wEndPort;
 		}IOPort;                          //IO Port resource descriptor.
 
-		struct{
+		struct
+		{
 			LPVOID      lpStartAddr;
 			LPVOID      lpEndAddr;
 		}MemoryRegion;                    //Memory region resource descriptor.
@@ -81,8 +90,8 @@ struct __RESOURCE{
 #define MIN_IO_PORT              0x0000  //The minimal value of IO port in IA32.
 #define MAX_IO_PORT              0xFFFF  //The maximal value of IO port in IA32.
 
-//PREDECLARE_OBJECT_TYPE(__PHYSICAL_DEVICE);
-//PREDECLARE_OBJECT_TYPE(__SYSTEM_BUS);
+//PREDECLARE_OBJECT_TYPE(struct __PHYSICAL_DEVICE);
+//PREDECLARE_OBJECT_TYPE(struct __SYSTEM_BUS);
 struct __PHYSICAL_DEVICE;
 struct __SYSTEM_BUS;
 
@@ -91,16 +100,17 @@ struct __SYSTEM_BUS;
 //This object is used to describe a abstract object resides on bus.
 //
 
-//BEGIN_DEFINE_OBJECT(__PHYSICAL_DEVICE)
-struct __PHYSICAL_DEVICE{
-	__IDENTIFIER                  DevId;                  //Device's identifier.
-	UCHAR                          strName[MAX_DEV_NAME];  //Device's name.
-	__RESOURCE                    Resource[MAX_RESOURCE_NUM];  //Resource descripotrs.
-	__PHYSICAL_DEVICE*            lpNext;
-	//__PHYSICAL_DEVICE*            lpPrev;
-	__SYSTEM_BUS*                 lpHomeBus;      //Bus where the device resides.
-	__SYSTEM_BUS*                 lpChildBus;     //Child bus,if the device is a bridge.
-	LPVOID                        lpPrivateInfo;  //Pointing to a bus type specific structure
+//BEGIN_DEFINE_OBJECT(struct __PHYSICAL_DEVICE)
+struct __PHYSICAL_DEVICE
+{
+	struct __IDENTIFIER           DevId;                  //Device's identifier.
+	UCHAR                         strName[MAX_DEV_NAME];  //Device's name.
+	struct __RESOURCE            Resource[MAX_RESOURCE_NUM];  //Resource descripotrs.
+	struct __PHYSICAL_DEVICE*          lpNext;
+	//struct __PHYSICAL_DEVICE*        lpPrev;
+	struct __SYSTEM_BUS*               lpHomeBus;      //Bus where the device resides.
+	struct __SYSTEM_BUS*               lpChildBus;     //Child bus,if the device is a bridge.
+	LPVOID                          lpPrivateInfo;  //Pointing to a bus type specific structure
 	                                              //used to describe specific bus.
 //END_DEFINE_OBJECT()
 };
@@ -110,15 +120,16 @@ struct __PHYSICAL_DEVICE{
 //This object is used to describe a common bus.
 //
 
-//BEGIN_DEFINE_OBJECT(__SYSTEM_BUS)
-struct __SYSTEM_BUS{
-	__SYSTEM_BUS*                lpParentBus;    //Parent bus.
-	__PHYSICAL_DEVICE*           lpDevListHdr;   //List devices in this bus.
-	__PHYSICAL_DEVICE*           lpHomeBridge;   //Bridge this bus resides.
-	__RESOURCE                   Resource;       //Resource list header in this bus.
+//BEGIN_DEFINE_OBJECT(struct __SYSTEM_BUS)
+struct __SYSTEM_BUS
+{
+	struct __SYSTEM_BUS*                lpParentBus;    //Parent bus.
+	struct __PHYSICAL_DEVICE*           lpDevListHdr;   //List devices in this bus.
+	struct __PHYSICAL_DEVICE*           lpHomeBridge;   //Bridge this bus resides.
+	struct __RESOURCE             Resource;       //Resource list header in this bus.
 
-	DWORD                        dwBusNum;       //Bus number.
-	DWORD                        dwBusType;      //Bus type.
+	DWORD                         dwBusNum;       //Bus number.
+	DWORD                         dwBusType;      //Bus type.
 //END_DEFINE_OBJECT()
 };
 
@@ -134,33 +145,32 @@ struct __SYSTEM_BUS{
 //by this object.
 //
 
-//BEGIN_DEFINE_OBJECT(__DEVICE_MANAGER)
-struct __DEVICE_MANAGER{
-	__SYSTEM_BUS                 SystemBus[MAX_BUS_NUM];    //Bus array.
-	__RESOURCE                   FreePortResource;          //Used to link free port region
+//BEGIN_DEFINE_OBJECT(struct __DEVICE_MANAGER)
+struct __DEVICE_MANAGER
+{
+	struct __SYSTEM_BUS                 SystemBus[MAX_BUS_NUM];    //Bus array.
+	struct __RESOURCE              FreePortResource;          //Used to link free port region
 	                                                        //together.
-	__RESOURCE                   UsedPortResource;          //Links used port region together.
+	struct __RESOURCE              UsedPortResource;          //Links used port region together.
 
-	BOOL                         (*Initialize)(__DEVICE_MANAGER*);    //Initialize routine.
-	__PHYSICAL_DEVICE*           (*GetDevice)(__DEVICE_MANAGER*,
-		                                      DWORD               dwBusType,
-											  __IDENTIFIER*       lpIdentifier,
-											  __PHYSICAL_DEVICE*  lpStart);
+	BOOL                         (*Initialize)(struct __DEVICE_MANAGER*);    //Initialize routine.
+	struct __PHYSICAL_DEVICE*   (*GetDevice)(struct __DEVICE_MANAGER*, DWORD dwBusType, 
+					struct __IDENTIFIER*  lpIdentifier, struct __PHYSICAL_DEVICE*  lpStart);
 
-	BOOL                         (*AppendDevice)(__DEVICE_MANAGER*,
-		                                         __PHYSICAL_DEVICE*);
+	BOOL                         (*AppendDevice)(struct __DEVICE_MANAGER*,
+		                                         struct __PHYSICAL_DEVICE*);
 
-	VOID                         (*DeleteDevice)(__DEVICE_MANAGER*,
-		                                         __PHYSICAL_DEVICE*);
+	VOID                         (*DeleteDevice)(struct __DEVICE_MANAGER*,
+		                                         struct __PHYSICAL_DEVICE*);
 	
-	BOOL                         (*CheckPortRegion)(__DEVICE_MANAGER*,
-		                                            __RESOURCE*);
+	BOOL                         (*CheckPortRegion)(struct __DEVICE_MANAGER*,
+		                                            struct __RESOURCE*);
 
-	BOOL                         (*ReservePortRegion)(__DEVICE_MANAGER*,
-		                                              __RESOURCE*);
+	BOOL                         (*ReservePortRegion)(struct __DEVICE_MANAGER*,
+		                                              struct __RESOURCE*);
 
-	VOID                         (*ReleasePortRegion)(__DEVICE_MANAGER*,
-		                                              __RESOURCE*);
+	VOID                         (*ReleasePortRegion)(struct __DEVICE_MANAGER*,
+		                                              struct __RESOURCE*);
 
 //END_DEFINE_OBJECT()
 };
@@ -174,4 +184,4 @@ struct __DEVICE_MANAGER{
 //Declaration of DeviceManager object.
 //
 
-extern __DEVICE_MANAGER DeviceManager;
+extern struct __DEVICE_MANAGER DeviceManager;
