@@ -40,8 +40,8 @@
 
 static DWORD WaitForCompletion(struct __COMMON_OBJECT* lpThis)
 {
-	struct __DRCB*                    lpDrcb           = NULL;
-	struct __EVENT*                   lpEvent          = NULL;
+	struct __DRCB* lpDrcb           = NULL;
+	struct __EVENT* lpEvent          = NULL;
 
 	if(NULL == lpThis) //Invalid parameter.
 		return 0L;
@@ -109,7 +109,7 @@ BOOL DrcbInitialize(struct __COMMON_OBJECT*  lpThis)
 	if(NULL == lpSynObject)    //Failed to create event object.
 		return FALSE;
 
-	if(!lpSynObject->Initialize((struct __COMMON_OBJECT*)lpSynObject)) //Failed to initialize.
+	if(!lpSynObject->Initialize((struct __COMMON_OBJECT*) lpSynObject)) //Failed to initialize.
 	{
 		ObjectManager.DestroyObject(&ObjectManager,
 			(struct __COMMON_OBJECT*)lpSynObject);

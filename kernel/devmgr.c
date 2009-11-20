@@ -61,6 +61,7 @@ static BOOL DevMgrInitialize(struct __DEVICE_MANAGER* lpDevMgr)
 	lpDevMgr->FreePortResource.dwResType = RESOURCE_TYPE_EMPTY;
 	lpDevMgr->FreePortResource.lpNext    = lpRes;
 	lpDevMgr->FreePortResource.lpPrev    = lpRes;
+
 	lpRes->lpNext  = &lpDevMgr->FreePortResource;
 	lpRes->lpPrev  = &lpDevMgr->FreePortResource;
 
@@ -89,10 +90,9 @@ static BOOL DevMgrInitialize(struct __DEVICE_MANAGER* lpDevMgr)
 	return TRUE;
 }
 
-//
+
 //A helper routine,used to insert a IO port region into list,and keeps all port region
 //in order.
-//
 static VOID InsertIntoList(struct __RESOURCE* lpListHdr,struct __RESOURCE* lpRes)
 {
 	struct __RESOURCE*            lpBefore              = NULL;
@@ -109,9 +109,8 @@ static VOID InsertIntoList(struct __RESOURCE* lpListHdr,struct __RESOURCE* lpRes
 		}
 		lpBefore = lpBefore->lpNext;
 	}
-	//
+	
 	//Insert lpRes into the list.
-	//
 	lpRes->lpNext            = lpBefore;
 	lpRes->lpPrev            = lpBefore->lpPrev;
 	lpBefore->lpPrev->lpNext = lpRes;

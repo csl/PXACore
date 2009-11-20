@@ -21,10 +21,7 @@
 #define MAX_RESOURCE_NUM    7    //Maximal resource records one device can have.
 #define MAX_DEV_NAME       32    //The maximal length of device's name.
 
-//
 //The definition of device identifier.
-//
-
 //BEGIN_DEFINE_OBJECT(struct __IDENTIFIER)
 struct __IDENTIFIER
 {
@@ -40,12 +37,12 @@ struct __IDENTIFIER
 			DWORD     dwClass;
 			UCHAR     ucHdrType;
 			WORD      wReserved;
-		} PCI_Identifier;            //PCI interface device's identifier.
+		} PCI_Identifier;            //USB interface device's identifier.
 
 		struct
 		{
 			DWORD     dwDevice;
-		} ISA_Identifier;           //ISA bus device's identifier.
+		} ISA_Identifier;           //GPIO bus device's identifier.
 		
 		//Add other bus device's identifier here.
 		
@@ -62,7 +59,9 @@ struct __RESOURCE
 {
 	struct __RESOURCE*         lpNext;
 	struct __RESOURCE*         lpPrev;
+
 	DWORD  dwResType;        //Resource type.
+
 	union
 	{
 		struct
@@ -148,12 +147,13 @@ struct __SYSTEM_BUS
 //BEGIN_DEFINE_OBJECT(struct __DEVICE_MANAGER)
 struct __DEVICE_MANAGER
 {
-	struct __SYSTEM_BUS                 SystemBus[MAX_BUS_NUM];    //Bus array.
-	struct __RESOURCE              FreePortResource;          //Used to link free port region
-	                                                        //together.
+	struct __SYSTEM_BUS            SystemBus[MAX_BUS_NUM];    //Bus array.
+
+	struct __RESOURCE              FreePortResource;          //Used to link free port region together.
 	struct __RESOURCE              UsedPortResource;          //Links used port region together.
 
 	BOOL                         (*Initialize)(struct __DEVICE_MANAGER*);    //Initialize routine.
+
 	struct __PHYSICAL_DEVICE*   (*GetDevice)(struct __DEVICE_MANAGER*, DWORD dwBusType, 
 					struct __IDENTIFIER*  lpIdentifier, struct __PHYSICAL_DEVICE*  lpStart);
 
