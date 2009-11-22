@@ -16,11 +16,9 @@
 //    Lines number              :
 //***********************************************************************/
 
-#ifndef __STDAFX_H__
-#include "StdAfx.h"
-#endif
+#include "stdafx.h"
 
-#include "COMMDRV.H"
+//#include "COMMDRV.H"
 
 __DRIVER_ENTRY DriverEntryArray[] = 
 {

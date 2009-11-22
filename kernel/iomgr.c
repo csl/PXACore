@@ -49,7 +49,9 @@ static DWORD WaitForCompletion(struct __COMMON_OBJECT* lpThis)
 	lpDrcb   = (struct __DRCB*)lpThis;
 	lpEvent  = lpDrcb->lpSynObject;
 	
-	lpEvent->WaitForThisObject((struct __COMMON_OBJECT*) lpEvent);  //Block the current kernel thread.
+	//Block the current kernel thread.
+	lpEvent->WaitForThisObject((struct __COMMON_OBJECT*) lpEvent);  
+
 	return 1L;
 }
 
@@ -58,8 +60,6 @@ static DWORD WaitForCompletion(struct __COMMON_OBJECT* lpThis)
 //This routine does the following:
 // 1. Check the parameter's validation;
 // 2. Wakeup the kernel thread who waiting for the current device operation.
-//
-
 static DWORD OnCompletion(struct __COMMON_OBJECT* lpThis)
 {
 	struct __EVENT*              lpEvent          = NULL;
@@ -72,12 +72,9 @@ static DWORD OnCompletion(struct __COMMON_OBJECT* lpThis)
 	return 1L;
 }
 
-//
 //The implementation of OnCancel.
 //This routine does the following:
 // 1. 
-//
-
 static DWORD OnCancel(struct __COMMON_OBJECT* lpThis)
 {
 	if(NULL == lpThis)    //Parameter check.
@@ -145,10 +142,7 @@ BOOL DrcbInitialize(struct __COMMON_OBJECT*  lpThis)
 	return TRUE;
 }
 
-//
 //The Uninitialize of DRCB.
-//
-
 VOID DrcbUninitialize(struct __COMMON_OBJECT*  lpThis)
 {
 	struct __DRCB*           lpDrcb            = NULL;
@@ -165,10 +159,7 @@ VOID DrcbUninitialize(struct __COMMON_OBJECT*  lpThis)
 	return;
 }
 
-//
 //The implementation of driver object's initialize routine.
-//
-
 BOOL DrvObjInitialize(struct __COMMON_OBJECT*  lpThis)
 {
 	struct __DRIVER_OBJECT*       lpDrvObj     = NULL;
@@ -184,19 +175,13 @@ BOOL DrvObjInitialize(struct __COMMON_OBJECT*  lpThis)
 	return TRUE;
 }
 
-//
 //The implementation of driver object's Uninitialize routine.
-//
-
 VOID DrvObjUninitialize(struct __COMMON_OBJECT* lpThis)
 {
 	return;
 }
 
-//
 //The implementation of device object's initialize routine.
-//
-
 BOOL DevObjInitialize(struct __COMMON_OBJECT* lpThis)
 {
 	struct __DEVICE_OBJECT*          lpDevObject = NULL;
@@ -313,6 +298,7 @@ static BOOL  ReadFile(struct __COMMON_OBJECT*    lpThis,
 		    LPVOID              lpBuffer,
 		    DWORD*              lpdwReadSize)
 {
+
 	BOOL              bResult             = FALSE;
 	struct __DRCB*           lpDrcb              = NULL;
 	struct __IO_MANAGER*     lpIoManager         = NULL;

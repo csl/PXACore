@@ -15,7 +15,6 @@
 
 #include "stdafx.h"
 
-
 #define PCI_IDENTIFIER_MASK_VENDOR      0x01
 #define PCI_IDENTIFIER_MASK_DEVICE      0x02
 #define PCI_IDENTIFIER_MASK_CLASS       0x04
@@ -37,9 +36,7 @@ static VOID DeleteDevice(struct __DEVICE_MANAGER*,struct __PHYSICAL_DEVICE*);
 static BOOL AppendDevice(struct __DEVICE_MANAGER*,struct __PHYSICAL_DEVICE*);
 static struct __PHYSICAL_DEVICE* GetDevice(struct __DEVICE_MANAGER*, DWORD, struct __IDENTIFIER*, struct __PHYSICAL_DEVICE*);
 
-//
 //The implementation of DeviceManager's initialize routine.
-//
 static BOOL DevMgrInitialize(struct __DEVICE_MANAGER* lpDevMgr)
 {
 	BOOL bResult = FALSE;
@@ -119,9 +116,7 @@ static VOID InsertIntoList(struct __RESOURCE* lpListHdr,struct __RESOURCE* lpRes
 	return;
 }
 
-//
 //Some macros used to operate bi-direction link list.
-//
 
 #define INSERT_INTO_LIST(listhdr,node)        \
 	InsertIntoList(listhdr,node)
@@ -130,7 +125,6 @@ static VOID InsertIntoList(struct __RESOURCE* lpListHdr,struct __RESOURCE* lpRes
 	(node)->lpNext->lpPrev = (node)->lpPrev;  \
 	(node)->lpPrev->lpNext = (node)->lpNext;
 
-
 //The following routine is used to merge continues IO port region into one region.
 //This is a helper routine,used by ReleasePortRegion to merge continues port region
 //into one region.
@@ -138,6 +132,7 @@ static VOID InsertIntoList(struct __RESOURCE* lpListHdr,struct __RESOURCE* lpRes
 //first region equals to wStartPort - 1 of the second region),then modify the first
 //region's wEndPort to the second region's wEndPort,and delete the second region from
 //list.
+
 static VOID MergeRegion(struct __RESOURCE* lpListHdr)
 {
 	struct __RESOURCE*         lpFirst     = NULL;
@@ -157,11 +152,13 @@ static VOID MergeRegion(struct __RESOURCE* lpListHdr)
 		{
 			break;
 		}
-		if(lpFirst->IOPort.wEndPort + 1 == lpSecond->IOPort.wStartPort)  //Statisfy the continues
-			                                                             //condition.
+
+		//Statisfy the continues condition.
+		if(lpFirst->IOPort.wEndPort + 1 == lpSecond->IOPort.wStartPort)  
 		{
 			DELETE_FROM_LIST(lpSecond);    //Delete the second port region.
-			lpFirst->IOPort.wEndPort = lpSecond->IOPort.wEndPort;  //Modify the first port region.
+			//Modify the first port region.
+			lpFirst->IOPort.wEndPort = lpSecond->IOPort.wEndPort;  
 			KMemFree((LPVOID) lpSecond,KMEM_SIZE_TYPE_ANY,0L);
 			//free((LPVOID)lpSecond);
 			continue;

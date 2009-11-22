@@ -23,9 +23,7 @@
 //    Lines number              :
 //***********************************************************************/
 
-#ifndef __STDAFX_H__
 #include "StdAfx.h"
-#endif
 
 //
 //Previous declare of static routine.

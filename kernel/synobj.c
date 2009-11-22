@@ -340,7 +340,9 @@ static DWORD WaitForEventObject(struct __COMMON_OBJECT* lpThis)
 		return OBJECT_WAIT_FAILED;
 
 	lpEvent = (struct __EVENT*)lpThis;
+
 	__ENTER_CRITICAL_SECTION(NULL,dwFlags);
+
 	if(EVENT_STATUS_FREE == lpEvent->dwEventStatus)
 	{
 		__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
@@ -354,17 +356,17 @@ static DWORD WaitForEventObject(struct __COMMON_OBJECT* lpThis)
 			(struct __COMMON_OBJECT*)lpEvent->lpWaitingQueue,
 			(struct __COMMON_OBJECT*)lpKernelThread,
 			0L);
+
 		__LEAVE_CRITICAL_SECTION(NULL,dwFlags);    //Leave critical section here is safety.
+
 		//lpContext = &lpKernelThread->KernelThreadContext;
 		KernelThreadManager.ScheduleFromProc(NULL);
 	}
 	return OBJECT_WAIT_RESOURCE;
 }
 
-//
 //WaitForEventObjectEx's implementation.
-//
-static DWORD WaitForEventObjectEx(struct __COMMON_OBJECT* lpObject,DWORD dwMillionSecond)
+static DWORD WaitForEventObjectEx(struct __COMMON_OBJECT* lpObject, DWORD dwMillionSecond)
 {
 	struct __EVENT*                      lpEvent         = (struct __EVENT*)lpObject;
 	struct __KERNEL_THREAD_OBJECT*       lpKernelThread  = NULL;
@@ -410,12 +412,14 @@ static DWORD WaitForEventObjectEx(struct __COMMON_OBJECT* lpObject,DWORD dwMilli
 			(struct __COMMON_OBJECT*)lpEvent->lpWaitingQueue,
 			(struct __COMMON_OBJECT*)lpKernelThread,
 			0L);
+
 		__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
 		
 		switch(TimeOutWaiting((struct __COMMON_OBJECT*)lpEvent,lpEvent->lpWaitingQueue,
 			lpKernelThread,dwTimeSpan))
 		{
-			case OBJECT_WAIT_RESOURCE:  //Should loop to while again to check the status.
+ 			//Should loop to while again to check the status.
+			case OBJECT_WAIT_RESOURCE:  
 				__ENTER_CRITICAL_SECTION(NULL,dwFlags);
 				break;
 			case OBJECT_WAIT_TIMEOUT:
@@ -427,7 +431,9 @@ static DWORD WaitForEventObjectEx(struct __COMMON_OBJECT* lpObject,DWORD dwMilli
 				return OBJECT_WAIT_FAILED;
 		}
 	}
+
 	__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
+
 	return OBJECT_WAIT_RESOURCE;
 }
 

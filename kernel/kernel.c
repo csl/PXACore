@@ -125,17 +125,14 @@ int main()
 	//Initialize Kernel Thread Manager.
 	if(!KernelThreadManager.Initialize((struct __COMMON_OBJECT*) &KernelThreadManager))
 		goto __TERMINAL; 
-
 	printf("KernelThreadManager.Initialize Scuessed\n");
 
 	//Initialize the Device manager.
 	if(!DeviceManager.Initialize(&DeviceManager))  goto __TERMINAL;
-
 	printf("DeviceManager.Initialize Scuessed\n");
 
 	//Initialize Input-Output Manager.
 	if(!IOManager.Initialize((struct __COMMON_OBJECT*)&IOManager))  goto __TERMINAL;
-
 	printf("IOManager.Initialize Scuessed\n");
 
 /*

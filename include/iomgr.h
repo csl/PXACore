@@ -6,7 +6,7 @@
 //     This module countains the pre-definition of Input and
 //     Output(I/O) manager.
 //    Last modified Author      :
-//    Last modified Date        :
+//    Last modified Date :
 //    Last modified Content     :
 //     1.
 //     2.
@@ -35,35 +35,38 @@ typedef DWORD (*DRCB_CANCEL_ROUTINE) (struct __COMMON_OBJECT*);
 
 BEGIN_DEFINE_OBJECT(__DRCB)
     INHERIT_FROM_COMMON_OBJECT
-    	struct __EVENT*        lpSynObject;      //Used to synchronize the access.
-    	struct __KERNEL_THREAD_OBJECT*  lpKernelThread;   //The kernel thread who originates
-	       //the device access.
-	DWORD           dwDrcbFlag;
-	DWORD           dwStatus;
-	DWORD           dwRequestMode;    //Read,write,io control,etc.
-	DWORD           dwCtrlCommand;    //If the request mode is io control,
-	       //then is variable is used to indicate
-	       //the control command.
 
-	//DWORD           dwOffset;
-	DWORD           dwOutputLen;      //Output buffer's length.
-	LPVOID          lpOutputBuffer;   //Output buffer.
+    	struct __EVENT* lpSynObject;      //Used to synchronize the access.
 
-	DWORD           dwInputLen;
-	LPVOID          lpInputBuffer;
+	//The kernel thread who originates the device access.
+    	struct __KERNEL_THREAD_OBJECT*  lpKernelThread;   
 
-	struct __DRCB*         lpNext;
-	struct __DRCB*         lpPrev;
+	DWORD    dwDrcbFlag;
+	DWORD    dwStatus;
+	DWORD    dwRequestMode;    //Read,write,io control,etc.
+	DWORD    dwCtrlCommand;    //If the request mode is io control, 
+		//then is variable is used to indicate
+	        //the control command.
+
+	//DWORD    dwOffset;
+	DWORD    dwOutputLen;      //Output buffer's length.
+	LPVOID   lpOutputBuffer;   //Output buffer.
+
+	DWORD    dwInputLen;
+	LPVOID   lpInputBuffer;
+
+	struct __DRCB*  lpNext;
+	struct __DRCB*  lpPrev;
 
 	DRCB_WAITING_ROUTINE     WaitForCompletion;  //Called when waiting the current
-	         //device request to finish.
+	  //device request to finish.
 	DRCB_COMPLETION_ROUTINE  OnCompletion;       //Called when the current request
-	         //is over.
+	  //is over.
 	DRCB_CANCEL_ROUTINE      OnCancel;
 
-	//DWORD           dwDrcbExtension[1];
-	LPVOID          lpDrcbExtension;
-END_DEFINE_OBJECT()            //End of struct __DRCB's definition.
+	//DWORD    dwDrcbExtension[1];
+	LPVOID   lpDrcbExtension;
+END_DEFINE_OBJECT()     //End of struct __DRCB's definition.
 
 //
 //Initialize routine and Uninitialize routine's definition.
@@ -86,15 +89,15 @@ VOID DrcbUninitialize(struct __COMMON_OBJECT*);
 //DRCB request mode definition.
 //
 
-#define DRCB_REQUEST_MODE_READ        0x00000001        //Read operations.
-#define DRCB_REQUEST_MODE_WRITE       0x00000002        //Write operations.
-#define DRCB_REQUEST_MODE_OPEN        0x00000004        //Open operations.
-#define DRCB_REQUEST_MODE_CLOSE       0x00000008        //Close operations.
-#define DRCB_REQUEST_MODE_SEEK        0x00000010        //Seek(or SetFilePointer) operations.
-#define DRCB_REQUEST_MODE_FLUSH       0x00000020        //Flush operations.
-#define DRCB_REQUEST_MODE_CREATE      0x00000040        //Create operations.
-#define DRCB_REQUEST_MODE_DESTROY     0x00000080        //Destroy operations.
-#define DRCB_REQUEST_MODE_IOCTRL      0x00000100        //IOControl operations.
+#define DRCB_REQUEST_MODE_READ 0x00000001 //Read operations.
+#define DRCB_REQUEST_MODE_WRITE       0x00000002 //Write operations.
+#define DRCB_REQUEST_MODE_OPEN 0x00000004 //Open operations.
+#define DRCB_REQUEST_MODE_CLOSE       0x00000008 //Close operations.
+#define DRCB_REQUEST_MODE_SEEK 0x00000010 //Seek(or SetFilePointer) operations.
+#define DRCB_REQUEST_MODE_FLUSH       0x00000020 //Flush operations.
+#define DRCB_REQUEST_MODE_CREATE      0x00000040 //Create operations.
+#define DRCB_REQUEST_MODE_DESTROY     0x00000080 //Destroy operations.
+#define DRCB_REQUEST_MODE_IOCTRL      0x00000100 //IOControl operations.
 
 //
 //The following definitions are used to indicate the appropriate I/O control command.
@@ -117,7 +120,7 @@ BEGIN_DEFINE_OBJECT(__RESOURCE_DESCRIPTOR)
 	DWORD     dwEndPort;
 	DWORD     dwDmaChannel;
 	DWORD     dwInterrupt;
-	LPVOID     lpMemoryStartAddr;
+	LPVOID    lpMemoryStartAddr;
 	DWORD     dwMemoryLen;
 END_DEFINE_OBJECT()  //End definition of struct __RESOURCE_DESCRIPTOR.
 
@@ -132,11 +135,11 @@ BEGIN_DEFINE_OBJECT(__DRIVER_OBJECT)
         struct __DRIVER_OBJECT*   lpNext;
 
 	DWORD (*DeviceRead)(struct __COMMON_OBJECT*  lpDrv,    //Read routine.
-	           struct __COMMON_OBJECT*  lpDev,
+	    struct __COMMON_OBJECT*  lpDev,
 								 struct __DRCB*  lpDrcb);
 
-         DWORD         (*DeviceWrite)(struct __COMMON_OBJECT*  lpDrv,   //Write routine.
-		        struct __COMMON_OBJECT*  lpDev,
+        DWORD (*DeviceWrite)(struct __COMMON_OBJECT*  lpDrv,   //Write routine.
+		 struct __COMMON_OBJECT*  lpDev,
 								  struct __DRCB*  lpDrcb);
 
 	DWORD (*CreateFileSystem)(struct __COMMON_OBJECT*  lpDrv,    //CreateFileSystem.
@@ -148,7 +151,7 @@ BEGIN_DEFINE_OBJECT(__DRIVER_OBJECT)
 								 struct __DRCB*  lpDrcb);
 
 	DWORD (*DeviceFlush)(struct __COMMON_OBJECT*  lpDrv,
-		        struct __COMMON_OBJECT*  lpDev,
+		 struct __COMMON_OBJECT*  lpDev,
 								  struct __DRCB*  lpDrcb);
 
 	DWORD (*DeviceSeek)(struct __COMMON_OBJECT*   lpDrv,
@@ -160,15 +163,15 @@ BEGIN_DEFINE_OBJECT(__DRIVER_OBJECT)
 								 struct __DRCB*   lpDrcb);
 
 	DWORD (*DeviceClose)(struct __COMMON_OBJECT*  lpDrv,
-		        struct __COMMON_OBJECT*  lpDev,
+		 struct __COMMON_OBJECT*  lpDev,
 								  struct __DRCB*  lpDrcb);
 
 	DWORD (*DeviceCreate)(struct __COMMON_OBJECT*  lpDrv,
-		         struct __COMMON_OBJECT*  lpDev,
+		  struct __COMMON_OBJECT*  lpDev,
 								   struct __DRCB*  lpDrcb);
 
 	DWORD (*DeviceDestroy)(struct __COMMON_OBJECT* lpDrv,
-		          struct __COMMON_OBJECT* lpDev,
+		   struct __COMMON_OBJECT* lpDev,
 									struct __DRCB* lpDrcb);
 
 END_DEFINE_OBJECT() //End definition of struct __DRIVER_OBJECT.
@@ -191,24 +194,25 @@ BEGIN_DEFINE_OBJECT(__DEVICE_OBJECT)
 	struct __DEVICE_OBJECT*   lpNext;
 
 	UCHAR     DevName[MAX_DEV_NAME_LEN + 1];
-    //DWORD     dwDevType;
+ //DWORD     dwDevType;
 	DWORD     dwAttribute;
 	DWORD     dwBlockSize;
 	DWORD     dwMaxReadSize;
 	DWORD     dwMaxWriteSize;
 
 	struct __DRIVER_OBJECT*   lpDriverObject;    //Point back to this device's driver.
+
 	//DWORD     dwRefCounter;      //Reference counter,record how many
-	           //kernel thread open this device object.
+	//kernel thread open this device object.
 
 	DWORD     dwStartPort;       //Start port of this device used.
-	DWORD     dwEndPort;         //End port of this device used.
+	DWORD     dwEndPort;  //End port of this device used.
 
 	DWORD     dwDmaChannel;      //DMA channel number is device used.
 	DWORD     dwInterrupt;       //Interrupt vector number.
 
 	LPVOID    lpMemoryStartAddr; //Start address of the device mapped to
-	           //system memory space.
+	    //system memory space.
 	DWORD     dwMemLen;
 
 	//DWORD     DevExtension[1];   //Device's extension.
@@ -226,10 +230,10 @@ VOID DevObjUninitialize(struct __COMMON_OBJECT*);
 //Device type definition.
 //
 
-#define DEVICE_TYPE_NORMAL    0x00000000         //Normal devices.
-#define DEVICE_TYPE_FILE_SYSTEM        0x00000001         //File system devices.
-#define DEVICE_TYPE_STORAGE   0x00000002         //Storage devices.
-#define DEVICE_TYPE_FILE      0x00000004         //File.
+#define DEVICE_TYPE_NORMAL    0x00000000  //Normal devices.
+#define DEVICE_TYPE_FILE_SYSTEM 0x00000001  //File system devices.
+#define DEVICE_TYPE_STORAGE   0x00000002  //Storage devices.
+#define DEVICE_TYPE_FILE      0x00000004  //File.
 
 //
 //Driver entry routine.
@@ -249,67 +253,68 @@ BEGIN_DEFINE_OBJECT(__IO_MANAGER)
     struct __DEVICE_OBJECT*      lpDeviceRoot;      //Pointes to device object's list.
     struct __DRIVER_OBJECT*      lpDriverRoot;      //Pointes to driver object's list.
 
-    struct __RESOURCE_DESCRIPTOR*         lpResDescriptor;   //Pointes to resource descriptor's list.
+    //Pointes to resource descriptor's list.
+    struct __RESOURCE_DESCRIPTOR*  lpResDescriptor;   
 
-	BOOL        (*Initialize)(struct __COMMON_OBJECT*    lpThis);  //Initialize routine.
+
+    BOOL (*Initialize)(struct __COMMON_OBJECT*    lpThis);  //Initialize routine.
 
 	//
 	//The following routines are implemented to user kernel thread.
 	//
-	struct __COMMON_OBJECT*     (*CreateFile)(struct __COMMON_OBJECT*    lpThis,
-		    LPSTR      lpszFileName,
-									   DWORD      dwAccessMode,
-									   DWORD      dwShareMode,
-									   LPVOID     lpReserved);  //CreateFile routine.
+    struct __COMMON_OBJECT* (*CreateFile)(struct __COMMON_OBJECT*    lpThis,
+		    LPSTR    lpszFileName, 
+                    DWORD      dwAccessMode,
+		    DWORD      dwShareMode,
+		    LPVOID     lpReserved);  //CreateFile routine.
 
-	BOOL        (*ReadFile)(struct __COMMON_OBJECT*   lpThis,
-		           struct __COMMON_OBJECT*   lpFileObject,
+
+    BOOL (*ReadFile)(struct __COMMON_OBJECT*   lpThis,
+		     struct __COMMON_OBJECT*   lpFileObject,
 									 DWORD     dwByteSize,
 									 LPVOID    lpBuffer,
 									 DWORD*    lpReadSize);
 
-	BOOL        (*WriteFile)(struct __COMMON_OBJECT*  lpThis,
-		   struct __COMMON_OBJECT*  lpFileObject,
+    BOOL (*WriteFile)(struct __COMMON_OBJECT*  lpThis,
+		      struct __COMMON_OBJECT*  lpFileObject,
 									  DWORD    dwWriteSize,
 									  LPVOID   lpBuffer,
 									  DWORD*   lpWrittenSize);
 
-	VOID        (*CloseFile)(struct __COMMON_OBJECT*  lpThis,
-		   struct __COMMON_OBJECT*  lpFileObject);
+    VOID (*CloseFile)(struct __COMMON_OBJECT*  lpThis,
+		      struct __COMMON_OBJECT*  lpFileObject);
 
-	BOOL        (*IOControl)(struct __COMMON_OBJECT*  lpThis,
-		   struct __COMMON_OBJECT*  lpFileObject,
+    BOOL (*IOControl)(struct __COMMON_OBJECT*  lpThis,
+		      struct __COMMON_OBJECT*  lpFileObject,
 									  DWORD    dwCommand,
 									  LPVOID   lpParameter,
 									  DWORD    dwOutputBufLen,
 									  LPVOID   lpOutBuffer,
 									  DWORD*   lpdwOutFilled);
 
-	BOOL        (*SetFilePointer)(struct __COMMON_OBJECT*  lpThis,
-		        struct __COMMON_OBJECT*  lpFileObject, 
-						DWORD dwWhereBegin,int nOffSet);
+    BOOL (*SetFilePointer)(struct __COMMON_OBJECT*  lpThis,
+		           struct __COMMON_OBJECT*  lpFileObject, DWORD dwWhereBegin,int nOffSet);
 
-	BOOL        (*FlushFile)(struct __COMMON_OBJECT*  lpThis,
-		   struct __COMMON_OBJECT*  lpFileObject);
+    BOOL (*FlushFile)(struct __COMMON_OBJECT*  lpThis,
+		      sftruct __COMMON_OBJECT*  lpFileObject);
 
 	//The following routines are called by device driver(s).
 
-	struct __DEVICE_OBJECT*     (*CreateDevice)( struct __COMMON_OBJECT*  lpThis,
-		      LPSTR    lpszDevName,
-					      DWORD    dwAttribute,
+     struct __DEVICE_OBJECT*     (*CreateDevice)( struct __COMMON_OBJECT*  lpThis,
+		      LPSTR    lpszDevName,   DWORD    dwAttribute,
 					      DWORD    dwBlockSize,
 					      DWORD    dwMaxReadSize,
 					      DWORD    dwMaxWriteSize,
 					      LPVOID   lpDevExtension,
 					      struct __DRIVER_OBJECT*  lpDrvObject);
 
-	VOID        (*DestroyDevice)(struct __COMMON_OBJECT* lpThis,
+     VOID (*DestroyDevice)(struct __COMMON_OBJECT* lpThis,
 		       struct __DEVICE_OBJECT* lpDevObj);
 
-	BOOL        (*ReserveResource)(struct __COMMON_OBJECT*  lpThis,
-		         struct __RESOURCE_DESCRIPTOR*
-											         lpResDesc);
-	BOOL        (*LoadDriver)(__DRIVER_ENTRY DrvEntry);
+     BOOL (*ReserveResource)(struct __COMMON_OBJECT*  lpThis,
+		  struct __RESOURCE_DESCRIPTOR*   lpResDesc);
+
+     BOOL (*LoadDriver)(__DRIVER_ENTRY DrvEntry);
 
 END_DEFINE_OBJECT()    //End of __IO_MANAGER.
 
@@ -317,8 +322,8 @@ END_DEFINE_OBJECT()    //End of __IO_MANAGER.
 //The following macros are used by CreateFile.
 //
 
-#define FILE_ACCESS_READ         0x00000001    //Read access.
-#define FILE_ACCESS_WRITE        0x00000002    //Write access.
+#define FILE_ACCESS_READ  0x00000001    //Read access.
+#define FILE_ACCESS_WRITE 0x00000002    //Write access.
 #define FILE_ACCESS_READWRITE    0x00000003    //Read and write access.
 #define FILE_ACCESS_CREATE       0x00000004    //Create a new file.
 
@@ -326,7 +331,7 @@ END_DEFINE_OBJECT()    //End of __IO_MANAGER.
 //The following macros are used by SetFilePointer routine.
 //
 
-#define SET_FILE_POINTER_FROM_BEGIN        0x00000001
+#define SET_FILE_POINTER_FROM_BEGIN 0x00000001
 #define SET_FILE_POINTER_FROM_CURRENT      0x00000002
 
 /*************************************************************************
