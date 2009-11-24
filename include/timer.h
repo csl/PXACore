@@ -38,9 +38,7 @@ typedef struct __TSO
 
 //Time handle procedures.
 VOID TimerHandler(DWORD);
-
 BOOL SetTimer(struct __TASK_CTRL_BLOCK*,DWORD,WORD);
-
 DWORD GetRunTime();
 
 #endif //timer.h

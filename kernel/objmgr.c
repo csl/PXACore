@@ -32,7 +32,10 @@ BEGIN_DECLARE_INIT_DATA(ObjectInitData)
 	OBJECT_INIT_DATA(OBJECT_TYPE_KERNEL_THREAD, sizeof(struct __KERNEL_THREAD_OBJECT),
 	KernelThreadInitialize, KernelThreadUninitialize)
 
-         OBJECT_INIT_DATA(0,0,0,0)
+	OBJECT_INIT_DATA(OBJECT_TYPE_TIMER,sizeof(struct __TIMER_OBJECT),
+	TimerInitialize, TimerUninitialize)
+
+        OBJECT_INIT_DATA(0,0,0,0)
 
 /*
 	OBJECT_INIT_DATA(OBJECT_TYPE_EVENT, sizeof(struct __EVENT),
@@ -41,8 +44,7 @@ BEGIN_DECLARE_INIT_DATA(ObjectInitData)
 	OBJECT_INIT_DATA(OBJECT_TYPE_MUTEX, sizeof(struct __MUTEX),
 	MutexInitialize, MutexUninitialize)
 
-	OBJECT_INIT_DATA(OBJECT_TYPE_TIMER,sizeof(struct __TIMER_OBJECT),
-	TimerInitialize,TimerUninitialize)
+
 
 	OBJECT_INIT_DATA(OBJECT_TYPE_INTERRUPT,sizeof(struct __INTERRUPT_OBJECT),
 	InterruptInitialize,InterruptUninitialize)
@@ -109,8 +111,7 @@ struct __OBJECT_MANAGER ObjectManager =
 //   otherwise,returns NULL.
 //
 
-static struct __COMMON_OBJECT* CreateObject(struct __OBJECT_MANAGER* lpObjectManager,    
-										//Object Manager.
+static struct __COMMON_OBJECT* CreateObject(struct __OBJECT_MANAGER* lpObjectManager,    //Object Manager.
 				     struct __COMMON_OBJECT*  lpObjectOwner,      //Object's owner.
 				     DWORD dwType)
 {
@@ -159,6 +160,7 @@ static struct __COMMON_OBJECT* CreateObject(struct __OBJECT_MANAGER* lpObjectMan
 	pObject->lpObjectOwner    = lpObjectOwner;
 
 	//The following code insert the new created object into ObjectArrayList.
+
 	if(NULL == lpObjectManager->ObjectListHeader[dwType].lpFirstObject)  //If this is the
 	 //first object of this type.
 	{
@@ -178,6 +180,7 @@ static struct __COMMON_OBJECT* CreateObject(struct __OBJECT_MANAGER* lpObjectMan
 	pObject->lpNextObject->lpPrevObject = pObject;
 	pObject->lpPrevObject = NULL;
 	lpObjectManager->ObjectListHeader[dwType].lpFirstObject = pObject;
+
 	if(lpObjectManager->ObjectListHeader[dwType].dwMaxObjectID < pObject->dwObjectID)
 	{
 		lpObjectManager->ObjectListHeader[dwType].dwMaxObjectID = pObject->dwObjectID;

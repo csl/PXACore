@@ -62,6 +62,7 @@ static BOOL TimerInterruptHandler(LPVOID lpEsp,LPVOID)
 		lpTimerObject = (struct __TIMER_OBJECT*)lpTimerQueue->GetHeaderElement(
 				(struct __COMMON_OBJECT*)lpTimerQueue,
 				&dwPriority);
+
 		if(NULL == lpTimerObject) goto __CONTINUE_1;
 
 		dwPriority = MAX_DWORD_VALUE - dwPriority;
@@ -257,8 +258,6 @@ struct __COMMON_OBJECT* BOOL ConnectInterrupt(struct __COMMON_OBJECT*     lpThis
 
 //
 //The implementation of DisconnectInterrupt.
-//
-
 static VOID DisconnectInterrupt(struct __COMMON_OBJECT* lpThis, struct __COMMON_OBJECT* lpInterrupt)
 {
 	struct __INTERRUPT_OBJECT*   lpIntObject    = NULL;
@@ -296,10 +295,8 @@ static VOID DisconnectInterrupt(struct __COMMON_OBJECT* lpThis, struct __COMMON_
 	return;
 }
 
-//
-//The implementation of Initialize routine of interrupt object.
-//
 
+//The implementation of Initialize routine of interrupt object.
 BOOL InterruptInitialize(struct __COMMON_OBJECT* lpThis)
 {
 	struct __INTERRUPT_OBJECT*    lpInterrupt = NULL;
@@ -316,21 +313,16 @@ BOOL InterruptInitialize(struct __COMMON_OBJECT* lpThis)
 	return TRUE;
 }
 
-//
 //The implementation of Uninitialize of interrupt object.
 //This routine does nothing.
-//
-
 VOID InterruptUninitialize(struct __COMMON_OBJECT* lpThis)
 {
 	return;
 }
 
 
-//
-//The implementation of timer object.
-//
 
+//The implementation of timer object.
 BOOL TimerInitialize(struct __COMMON_OBJECT* lpThis)    //Initializing routine of timer object.
 {
 	struct __TIMER_OBJECT*     lpTimer  = NULL;
@@ -348,10 +340,7 @@ BOOL TimerInitialize(struct __COMMON_OBJECT* lpThis)    //Initializing routine o
 	return TRUE;
 }
 
-//
 //Uninitializing routine of timer object.
-//
-
 VOID TimerUninitialize(struct __COMMON_OBJECT* lpThis)
 {
 	return;
@@ -382,23 +371,26 @@ static BOOL SystemInitialize(struct __COMMON_OBJECT* lpThis)
 	if(NULL == lpThis)
 		return FALSE;
 
-	lpSystem = (struct __SYSTEM*)lpThis;
-	lpPriorityQueue = (struct __PRIORITY_QUEUE*)ObjectManager.CreateObject(&ObjectManager,
-		NULL,
-		OBJECT_TYPE_PRIORITY_QUEUE);
+	lpSystem = (struct __SYSTEM*) lpThis;
+
+	lpPriorityQueue = (struct __PRIORITY_QUEUE*) ObjectManager.CreateObject(&ObjectManager,
+							NULL,
+							OBJECT_TYPE_PRIORITY_QUEUE);
 
 	if(NULL == lpPriorityQueue)  //Failed to create priority queue.
 		return FALSE;
 
-	if(!lpPriorityQueue->Initialize((struct __COMMON_OBJECT*)lpPriorityQueue))  //Failed to initialize
-		                                                                 //priority queue.
+	//Failed to initialize priority queue.
+	if(!lpPriorityQueue->Initialize((struct __COMMON_OBJECT*) lpPriorityQueue))  
 		goto __TERMINAL;
+
 	lpSystem->lpTimerQueue = lpPriorityQueue;
 
 	lpIntObject = (struct __INTERRUPT_OBJECT*)ObjectManager.CreateObject(
 		&ObjectManager,
 		NULL,
 		OBJECT_TYPE_INTERRUPT);
+
 	if(NULL == lpIntObject)
 		goto __TERMINAL;
 
@@ -413,9 +405,8 @@ static BOOL SystemInitialize(struct __COMMON_OBJECT* lpThis)
 	//ENTER_CRITICAL_SECTION();
 	__ENTER_CRITICAL_SECTION(NULL,dwFlags);
 	lpSystem->lpInterruptVector[INTERRUPT_VECTOR_TIMER] = lpIntObject;
-	//
+	
 	//Here,maybe some code initializes all other interrupt vector.
-	//
 	//LEAVE_CRITICAL_SECTION();
 	__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
 	bResult = TRUE;
@@ -729,10 +720,12 @@ static VOID CancelTimer(struct __COMMON_OBJECT* lpThis,struct __COMMON_OBJECT* l
 	//	return;
 	lpSystem->lpTimerQueue->DeleteFromQueue((struct __COMMON_OBJECT*)lpSystem->lpTimerQueue,
 		lpTimer);
+
 	lpTimerObject = (struct __TIMER_OBJECT*)
 		lpSystem->lpTimerQueue->GetHeaderElement(
 		(struct __COMMON_OBJECT*)lpSystem->lpTimerQueue,
 		&dwPriority);
+
 	if(NULL == lpTimerObject)    //There is not any timer object to be processed.
 		return;
 
@@ -775,7 +768,8 @@ static VOID CancelTimer(struct __COMMON_OBJECT* lpThis,struct __COMMON_OBJECT* l
 
 //The definition of system object.
 
-struct __SYSTEM System = {
+struct __SYSTEM System = 
+{
 	{0},                      //lpInterruptVector[MAX_INTERRUPT_VECTOR].
 	NULL,                     //lpTimerQueue.
 	0L,                       //dwClockTickCounter,
@@ -814,7 +808,3 @@ VOID GeneralIntHandler(DWORD dwVector,LPVOID lpEsp)
 
 	System.DispatchInterrupt((struct __COMMON_OBJECT*)&System, lpEsp, ucVector);
 }
-
-
-
-

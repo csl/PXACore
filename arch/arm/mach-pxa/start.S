@@ -100,6 +100,12 @@ reset_handler:
 set_misc:	
        
         ldr r0, =0x2001			/* Allows access to all coprocessors */
+
+	//<MRC|MCR>{<cond>} cp, opcode1, Rd, Cn, Cm {, opcode2}
+	//MRC MCR coprocessor register transfer—move data to/from coprocessor registers
+
+	//CP15 register-0 contains the processor identification number
+	//transferring the contents of CP15 register c0 to register r10
         mcr     p15, 0, r0, c15, c1, 0
         nop
         nop
@@ -107,6 +113,7 @@ set_misc:
 	
         ldr     r0, =0x00000078         /* Disable MMU, caches, write buffer */
         mcr     p15, 0, r0, c1, c0, 0
+
         nop
         nop
         nop
