@@ -38,14 +38,15 @@ typedef BOOL (*__INTERRUPT_HANDLER)(LPVOID lpEsp,LPVOID);    //Interrupt handler
 /*
 #ifdef __I386__ //Interrupt vector value's definition.
 */
-#define INTERRUPT_VECTOR_TIMER         0x20
+#define INTERRUPT_VECTOR_TIMER         0x26
+/*
 #define INTERRUPT_VECTOR_KEYBOARD      0x21
 #define INTERRUPT_VECTOR_MOUSE         0x22
 #define INTERRUPT_VECTOR_COM1          0x23
 #define INTERRUPT_VECTOR_COM2          0x24
 #define INTERRUPT_VECTOR_CLOCK         0x25
 #define INTERRUPT_VECTOR_IDE           0x26
-/*
+
 #else
 #endif
 */

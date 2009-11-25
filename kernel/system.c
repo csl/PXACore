@@ -50,6 +50,7 @@ struct __PERF_RECORDER  TimerIntPr =
 
 static BOOL TimerInterruptHandler(LPVOID lpEsp, LPVOID omit)
 {
+	printf("TimerInterruptHandler %d %d\n", System.dwClockTickCounter, System.dwNextTimerTick);
 	DWORD dwPriority = 0L;
 	struct __TIMER_OBJECT*    lpTimerObject     = 0L;
 	struct __KERNEL_THREAD_MESSAGE   Msg;
@@ -58,11 +59,12 @@ static BOOL TimerInterruptHandler(LPVOID lpEsp, LPVOID omit)
 	struct __KERNEL_THREAD_OBJECT*   lpKernelThread    = NULL;
 	DWORD dwFlags = 0L;
 
-	if(NULL == lpEsp)    //Parameter check.
-		return TRUE;
+	//if(NULL == lpEsp)    //Parameter check.
+		//return TRUE;
 
 	if(System.dwClockTickCounter == System.dwNextTimerTick)     //Should schedule timer.
 	{
+		printf("Should schedule timer\n");
 		lpTimerQueue = System.lpTimerQueue;
 		lpTimerObject = (struct __TIMER_OBJECT*)lpTimerQueue->GetHeaderElement(
 				(struct __COMMON_OBJECT*)lpTimerQueue,
@@ -246,6 +248,7 @@ struct __COMMON_OBJECT* ConnectInterrupt(struct __COMMON_OBJECT*     lpThis,
 	__ENTER_CRITICAL_SECTION(NULL,dwFlags);
 
 	lpObjectRoot = lpSystem->lpInterruptVector[ucVector];
+
 	if(NULL == lpObjectRoot)    //If this is the first interrupt object of the vector.
 	{
 		System.lpInterruptVector[ucVector]  = lpInterrupt;
@@ -403,6 +406,7 @@ static BOOL SystemInitialize(struct __COMMON_OBJECT* lpThis)
 		goto __TERMINAL;
 
 	bResult = lpIntObject->Initialize((struct __COMMON_OBJECT*)lpIntObject);
+
 	if(!bResult)
 		goto __TERMINAL;
 
@@ -566,12 +570,13 @@ __DEADLOOP:    //If a unhandled interrupt or exception occurs,the system will ha
 }
 
 
-static VOID DispatchInterrupt(struct __COMMON_OBJECT omit, struct __COMMON_OBJECT* lpThis, LPVOID lpEsp, UCHAR ucVector)
+static VOID DispatchInterrupt(struct __COMMON_OBJECT* lpThis, LPVOID lpEsp, UCHAR ucVector)
 {
 	struct __INTERRUPT_OBJECT*    lpIntObject  = NULL;
 	struct __SYSTEM*              lpSystem     = NULL;
 
-	if((NULL == lpThis) || (NULL == lpEsp))
+//	if((NULL == lpThis) || (NULL == lpEsp))
+	if((NULL == lpThis))
 		return;
 
 	lpSystem = (struct __SYSTEM*) lpThis;
@@ -597,7 +602,7 @@ static VOID DispatchInterrupt(struct __COMMON_OBJECT omit, struct __COMMON_OBJEC
 
 	if(NULL == lpIntObject)  //The current interrupt vector has not handler object.
 	{
-		DefaultIntHandler(lpEsp,ucVector);
+		DefaultIntHandler(lpEsp, ucVector);
 		goto __RETFROMINT;
 	}
 
@@ -617,7 +622,8 @@ __RETFROMINT:
 	if(0 == lpSystem->ucIntNestLevel)  //The outmost interrupt.
 	{
 		//(struct __COMMON_OBJECT*)&KernelThreadManager, lpEsp
-		KernelThreadManager.ScheduleFromInt();  //Re-schedule kernel thread.
+		//exit to do this, not here
+		//KernelThreadManager.ScheduleFromInt();  //Re-schedule kernel thread.
 	}
 	else
 	{

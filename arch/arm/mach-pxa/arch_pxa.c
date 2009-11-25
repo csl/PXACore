@@ -119,7 +119,7 @@ void ExitInterrupt()
 		interrupt_nesting--;
 */
 #ifdef  DEBUG
-	printf("\ntimer count = %d\n", KernelThreadManager.lpCurrentKernelThread->dwTotalRunTime);
+	//printf("\ntimer count = %d\n", KernelThreadManager.lpCurrentKernelThread->dwTotalRunTime);
 #endif
 	
 	KernelThreadManager.lpCurrentKernelThread->dwTotalRunTime++;
@@ -136,7 +136,8 @@ void InterruptHandler()
 	if (INT_REG(INT_ICIP) & BIT26) 
 	{
 		TMR_REG(TMR_OSCR) = 0x00;
-		
+		printf("GeneralIntHandler\n");
+		GeneralIntHandler(INTERRUPT_VECTOR_TIMER, NULL);
 		TMR_REG(TMR_OSSR) = BIT0;
 	}
 }

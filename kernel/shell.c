@@ -1668,7 +1668,7 @@ DWORD shell_execute()
 	struct __KERNEL_THREAD_MESSAGE KernelThreadMessage;
 
 	//Enable Interrupt
-	//EnableInterrupt();
+	EnableInterrupt();
 
 	char buf[80] = { '\0' };
 
