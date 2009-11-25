@@ -23,8 +23,13 @@
 //    Lines number              :
 //***********************************************************************/
 
+//Note: hex2str omit
+
 #include "stdafx.h"
 
+#define KERNEL_MESSAGE_TIMER        0x0006
+
+/*
 struct __PERF_RECORDER  TimerIntPr = 
 {
 	U64_ZERO,
@@ -33,7 +38,7 @@ struct __PERF_RECORDER  TimerIntPr =
 	U64_ZERO
 };                  //Performance recorder object used to mesure
                                 //the performance of timer interrupt.
-
+*/
 //
 //TimerInterruptHandler routine.
 //The following routine is the most CRITICAL routine of kernel of Hello Taiwan.
@@ -43,15 +48,15 @@ struct __PERF_RECORDER  TimerIntPr =
 // 3. Schedule kernel thread(s).
 //
 
-static BOOL TimerInterruptHandler(LPVOID lpEsp,LPVOID)
+static BOOL TimerInterruptHandler(LPVOID lpEsp, LPVOID omit)
 {
-	DWORD                     dwPriority        = 0L;
+	DWORD dwPriority = 0L;
 	struct __TIMER_OBJECT*    lpTimerObject     = 0L;
 	struct __KERNEL_THREAD_MESSAGE   Msg;
 	struct __PRIORITY_QUEUE*         lpTimerQueue      = NULL;
 	struct __PRIORITY_QUEUE*         lpSleepingQueue   = NULL;
 	struct __KERNEL_THREAD_OBJECT*   lpKernelThread    = NULL;
-	DWORD                     dwFlags           = 0L;
+	DWORD dwFlags = 0L;
 
 	if(NULL == lpEsp)    //Parameter check.
 		return TRUE;
@@ -203,7 +208,7 @@ __TERMINAL:
 // 2. Set the object's data members correctly.
 //
 
-struct __COMMON_OBJECT* BOOL ConnectInterrupt(struct __COMMON_OBJECT*     lpThis,
+struct __COMMON_OBJECT* ConnectInterrupt(struct __COMMON_OBJECT*     lpThis,
 							 __INTERRUPT_HANDLER  lpInterruptHandler,
 							 LPVOID               lpHandlerParam,
 							 UCHAR                ucVector,
@@ -226,6 +231,7 @@ struct __COMMON_OBJECT* BOOL ConnectInterrupt(struct __COMMON_OBJECT*     lpThis
 
 	lpInterrupt = (struct __INTERRUPT_OBJECT*)
 		ObjectManager.CreateObject(&ObjectManager,NULL,OBJECT_TYPE_INTERRUPT);
+
 	if(NULL == lpInterrupt)    //Failed to create interrupt object.
 		return FALSE;
 	if(!lpInterrupt->Initialize((struct __COMMON_OBJECT*)lpInterrupt))  //Failed to initialize.
@@ -274,6 +280,7 @@ static VOID DisconnectInterrupt(struct __COMMON_OBJECT* lpThis, struct __COMMON_
 
 	//ENTER_CRITICAL_SECTION();
 	__ENTER_CRITICAL_SECTION(NULL,dwFlags);
+
 	if(NULL == lpIntObject->lpPrevInterruptObject)  //This is the first interrupt object.
 	{
 		lpSystem->lpInterruptVector[ucVector] = lpIntObject->lpNextInterruptObject;
@@ -386,6 +393,7 @@ static BOOL SystemInitialize(struct __COMMON_OBJECT* lpThis)
 
 	lpSystem->lpTimerQueue = lpPriorityQueue;
 
+	//Setting Timer Interrupt handler
 	lpIntObject = (struct __INTERRUPT_OBJECT*)ObjectManager.CreateObject(
 		&ObjectManager,
 		NULL,
@@ -404,11 +412,14 @@ static BOOL SystemInitialize(struct __COMMON_OBJECT* lpThis)
 
 	//ENTER_CRITICAL_SECTION();
 	__ENTER_CRITICAL_SECTION(NULL,dwFlags);
+
 	lpSystem->lpInterruptVector[INTERRUPT_VECTOR_TIMER] = lpIntObject;
 	
 	//Here,maybe some code initializes all other interrupt vector.
 	//LEAVE_CRITICAL_SECTION();
+
 	__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
+
 	bResult = TRUE;
 
 __TERMINAL:
@@ -468,7 +479,7 @@ static DWORD GetPhysicalMemorySize(struct __COMMON_OBJECT* lpThis)
 //will be called to handle the appropriate interrupt.
 //
 
-static VOID DefaultIntHandler(LPVOID lpEsp,UCHAR ucVector)
+static VOID DefaultIntHandler(LPVOID lpEsp, UCHAR ucVector)
 {
 	BYTE          strBuffer[16] = {0};
 	DWORD         dwTmp         = 0L;
@@ -483,14 +494,16 @@ static VOID DefaultIntHandler(LPVOID lpEsp,UCHAR ucVector)
 	printf("  Interrupt Vector:");
 
 	dwTmp   = ucVector;
-	lpdwEsp = (DWORD*)lpEsp;
+	lpdwEsp = (DWORD*) lpEsp;
 	strBuffer[0] = ' ';
 	strBuffer[1] = ' ';
 	strBuffer[2] = ' ';
 	strBuffer[3] = ' ';
 
-	Hex2Str(dwTmp,&strBuffer[4]);
+	//none
+	//hex2str(dwTmp, &strBuffer[4]);
 	printf("%s\n", strBuffer);  //Print out the interrupt or exception's vector.
+
 	if(dwTmp == 0x2B)      //--------- ** debug ** ---------------
 	{
 		printf("NIC interrupt : -------------------------------");
@@ -526,14 +539,14 @@ __REPEAT:
 	for(dwLoop = 0;dwLoop < 12;dwLoop ++)
 	{
 		dwTmp = *lpdwEsp;
-		Hex2Str(dwTmp,&strBuffer[4]);
+		//hex2str(dwTmp,&strBuffer[4]);
 		printf(strBuffer);
 		lpdwEsp ++;
 	}
 
 	if(dwTmp <= 0x20)    //---------- ** debug ** --------------
 	{
-		Hex2Str(dwTotalNum,strBuffer);
+		//hex2str(dwTotalNum,strBuffer);
 		printf("Total unhandled exception or interrupt is:");
 		printf("%s\n", strBuffer);
 __LOOP:
@@ -553,9 +566,7 @@ __DEADLOOP:    //If a unhandled interrupt or exception occurs,the system will ha
 }
 
 
-static VOID DispatchInterrupt(struct __COMMON_OBJECTstruct __COMMON_OBJECT* lpThis,
-							  LPVOID           lpEsp,
-							  UCHAR ucVector)
+static VOID DispatchInterrupt(struct __COMMON_OBJECT omit, struct __COMMON_OBJECT* lpThis, LPVOID lpEsp, UCHAR ucVector)
 {
 	struct __INTERRUPT_OBJECT*    lpIntObject  = NULL;
 	struct __SYSTEM*              lpSystem     = NULL;
@@ -563,15 +574,15 @@ static VOID DispatchInterrupt(struct __COMMON_OBJECTstruct __COMMON_OBJECT* lpTh
 	if((NULL == lpThis) || (NULL == lpEsp))
 		return;
 
-	lpSystem = (struct __SYSTEM*)lpThis;
+	lpSystem = (struct __SYSTEM*) lpThis;
 	
+	//nesting check
 	lpSystem->ucIntNestLevel += 1;    //Increment nesting level.
+
 	if(lpSystem->ucIntNestLevel <= 1)
 	{
-		//Call thread hook here,because current kernel thread is
-		//interrupted.
-		//If interrupt occurs before any kernel thread is scheduled,
-		//lpCurrentKernelThread is NULL.
+		//Call thread hook here,because current kernel thread is interrupted.
+		//If interrupt occurs before any kernel thread is scheduled, lpCurrentKernelThread is NULL.
 		if(KernelThreadManager.lpCurrentKernelThread)
 		{
 			KernelThreadManager.CallThreadHook(
@@ -580,6 +591,8 @@ static VOID DispatchInterrupt(struct __COMMON_OBJECTstruct __COMMON_OBJECT* lpTh
 				NULL);
 		}
 	}
+
+	//Geting ucVector handler
 	lpIntObject = lpSystem->lpInterruptVector[ucVector];
 
 	if(NULL == lpIntObject)  //The current interrupt vector has not handler object.
@@ -590,8 +603,8 @@ static VOID DispatchInterrupt(struct __COMMON_OBJECTstruct __COMMON_OBJECT* lpTh
 
 	while(lpIntObject)    //Travel the whole interrupt list of this vector.
 	{
-		if(lpIntObject->InterruptHandler(lpEsp,
-			lpIntObject->lpHandlerParam))    //If an interrupt object handles the interrupt,then returns.
+		//If an interrupt object handles the interrupt,then returns.
+		if(lpIntObject->InterruptHandler(lpEsp, lpIntObject->lpHandlerParam))    
 		{
 			break;
 		}
@@ -599,11 +612,12 @@ static VOID DispatchInterrupt(struct __COMMON_OBJECTstruct __COMMON_OBJECT* lpTh
 	}
 
 __RETFROMINT:
+
 	lpSystem->ucIntNestLevel -= 1;    //Decrement interrupt nesting level.
 	if(0 == lpSystem->ucIntNestLevel)  //The outmost interrupt.
 	{
-		KernelThreadManager.ScheduleFromInt((struct __COMMON_OBJECT*)&KernelThreadManager,
-			lpEsp);  //Re-schedule kernel thread.
+		//(struct __COMMON_OBJECT*)&KernelThreadManager, lpEsp
+		KernelThreadManager.ScheduleFromInt();  //Re-schedule kernel thread.
 	}
 	else
 	{
@@ -802,7 +816,7 @@ struct __SYSTEM System =
 //this routine then calls DispatchInterrupt of system object.
 //
 
-VOID GeneralIntHandler(DWORD dwVector,LPVOID lpEsp)
+VOID GeneralIntHandler(DWORD dwVector, LPVOID lpEsp)
 {
 	UCHAR    ucVector = LOBYTE(LOWORD(dwVector));
 

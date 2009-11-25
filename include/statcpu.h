@@ -20,15 +20,16 @@
 #define PERIOD_TIME            1000
 #define ONE_MINUTE_PERIOD      60
 
-struct __THREAD_STAT_OBJECT{
-	__THREAD_STAT_OBJECT*     lpPrev;
-	__THREAD_STAT_OBJECT*     lpNext;
+struct __THREAD_STAT_OBJECT
+{
+	struct __THREAD_STAT_OBJECT*     lpPrev;
+	struct __THREAD_STAT_OBJECT*     lpNext;
 
-	__U64                     TotalCpuCycle;
-	__U64                     CurrPeriodCycle;
-	__U64                     PreviousTsc;
+	//__U64                     TotalCpuCycle;
+	//__U64                     CurrPeriodCycle;
+	//__U64                     PreviousTsc;
 
-	__KERNEL_THREAD_OBJECT*   lpKernelThread;
+	struct __KERNEL_THREAD_OBJECT*   lpKernelThread;
 
 	WORD                      wQueueHdr;
 	WORD                      wQueueTail;
@@ -40,17 +41,18 @@ struct __THREAD_STAT_OBJECT{
 	WORD                      wReserved;
 };
 
-struct __STAT_CPU_OBJECT{
-	//__KERNEL_THREAD_OBJECT*   lpStatKernelThread;
-	__U64                     PreviousTsc;       //Previous time stamp counter.
-	__U64                     CurrPeriodCycle;   //CPU cycle conter in this stat period.
-	__U64                     TotalCpuCycle;     //Total CPU cycle counter since
+struct __STAT_CPU_OBJECT
+{
+	//struct __KERNEL_THREAD_OBJECT*   lpStatKernelThread;
+	//__U64                     PreviousTsc;       //Previous time stamp counter.
+	//__U64                     CurrPeriodCycle;   //CPU cycle conter in this stat period.
+	//__U64                     TotalCpuCycle;     //Total CPU cycle counter since
 	                                             //system startup.
-	__THREAD_STAT_OBJECT      IdleThreadStatObj;
+	struct __THREAD_STAT_OBJECT      IdleThreadStatObj;
 
-	BOOL                     (*Initialize)(__STAT_CPU_OBJECT*);    //Initialize routine.
-	__THREAD_STAT_OBJECT*    (*GetFirstThreadStatObj)();
-	__THREAD_STAT_OBJECT*    (*GetNextThreadSTatObj)(__THREAD_STAT_OBJECT*);
+	BOOL                     (*Initialize)(struct __STAT_CPU_OBJECT*);    //Initialize routine.
+	struct __THREAD_STAT_OBJECT*    (*GetFirstThreadStatObj)(void);
+	struct __THREAD_STAT_OBJECT*    (*GetNextThreadSTatObj)(struct __THREAD_STAT_OBJECT*);
 	VOID                     (*DoStat)();
 	VOID                     (*ShowStat)();
 };
@@ -60,5 +62,5 @@ extern __THREAD_HOOK_ROUTINE lpBeginScheduleHook;
 extern __THREAD_HOOK_ROUTINE lpEndScheduleHook;
 extern __THREAD_HOOK_ROUTINE lpTerminalHook;
 
-extern __STAT_CPU_OBJECT  StatCpuObject;
+extern struct __STAT_CPU_OBJECT  StatCpuObject;
 

@@ -68,7 +68,7 @@ DWORD SetThreadPriority(HANDLE hThread,DWORD dwPriority)
 
 BOOL GetMessage(MSG* lpMsg)
 {
-	__KERNEL_THREAD_OBJECT*  lpKernelThread = NULL;
+	struct __KERNEL_THREAD_OBJECT*  lpKernelThread = NULL;
 
 	lpKernelThread = KernelThreadManager.lpCurrentKernelThread;
 	return KernelThreadManager.GetMessage((struct __COMMON_OBJECT*) lpKernelThread, lpMsg);
@@ -109,10 +109,11 @@ VOID CancelTimer(HANDLE hTimer)
 		hTimer);
 }
 */
+
 HANDLE CreateEvent(BOOL bInitialStatus)
 {
 	struct __COMMON_OBJECT*         lpCommonObject    = NULL;
-	__EVENT*                 lpEvent           = NULL;
+	struct __EVENT*                 lpEvent           = NULL;
 
 	lpCommonObject = ObjectManager.CreateObject(&ObjectManager,
 		NULL,
@@ -127,7 +128,7 @@ HANDLE CreateEvent(BOOL bInitialStatus)
 		goto __TERMINAL;
 	}
 
-	lpEvent = (__EVENT*)lpCommonObject;
+	lpEvent = (struct __EVENT*)lpCommonObject;
 	if(bInitialStatus)
 		lpEvent->SetEvent((struct __COMMON_OBJECT*)lpEvent);
 
@@ -142,19 +143,19 @@ VOID DestroyEvent(HANDLE hEvent)
 
 DWORD SetEvent(HANDLE hEvent)
 {
-	return ((__EVENT*)hEvent)->SetEvent(hEvent);
+	return ((struct __EVENT*)hEvent)->SetEvent(hEvent);
 }
 
 DWORD ResetEvent(HANDLE hEvent)
 {
-	return ((__EVENT*)hEvent)->ResetEvent(hEvent);
+	return ((struct __EVENT*)hEvent)->ResetEvent(hEvent);
 }
 
 HANDLE CreateMutex()
 {
-	__MUTEX*            lpMutex    = NULL;
+	struct __MUTEX*            lpMutex    = NULL;
 
-	lpMutex = (__MUTEX*)ObjectManager.CreateObject(
+	lpMutex = (struct __MUTEX*)ObjectManager.CreateObject(
 		&ObjectManager,
 		NULL,
 		OBJECT_TYPE_MUTEX);
@@ -182,33 +183,33 @@ VOID DestroyMutex(HANDLE hMutex)
 
 DWORD ReleaseMutex(HANDLE hEvent)
 {
-	return ((__MUTEX*)hEvent)->ReleaseMutex(hEvent);
+	return ((struct __MUTEX*)hEvent)->ReleaseMutex(hEvent);
 }
 
 
 DWORD WaitForThisObject(HANDLE hObject)
 {
 	struct __COMMON_OBJECT* lpCommonObject = (struct __COMMON_OBJECT*)hObject;
-	__KERNEL_THREAD_OBJECT* lpThread = NULL;
-	__EVENT* lpEvent = NULL;
-	__MUTEX* lpMutex = NULL;
+	struct __KERNEL_THREAD_OBJECT* lpThread = NULL;
+	struct __EVENT* lpEvent = NULL;
+	struct __MUTEX* lpMutex = NULL;
 
 	if(NULL == lpCommonObject) //Invalid parameter.
 		return OBJECT_WAIT_FAILED;
 
 	switch(lpCommonObject->dwObjectType)
 	{
-	case OBJECT_TYPE_KERNEL_THREAD:
-		lpThread = (__KERNEL_THREAD_OBJECT*)lpCommonObject;
-		return lpThread->WaitForThisObject((struct __COMMON_OBJECT*)lpThread);
-	case OBJECT_TYPE_EVENT:
-		lpEvent = (__EVENT*)lpCommonObject;
-		return lpEvent->WaitForThisObject((struct __COMMON_OBJECT*)lpEvent);
-	case OBJECT_TYPE_MUTEX:
-		lpMutex = (__MUTEX*)lpCommonObject;
-		return lpMutex->WaitForThisObject((struct __COMMON_OBJECT*)lpMutex);
-	default:
-		break;
+		case OBJECT_TYPE_KERNEL_THREAD:
+			lpThread = (struct __KERNEL_THREAD_OBJECT*)lpCommonObject;
+			return lpThread->WaitForThisObject((struct __COMMON_OBJECT*)lpThread);
+		case OBJECT_TYPE_EVENT:
+			lpEvent = (struct __EVENT*)lpCommonObject;
+			return lpEvent->WaitForThisObject((struct __COMMON_OBJECT*)lpEvent);
+		case OBJECT_TYPE_MUTEX:
+			lpMutex = (struct __MUTEX*)lpCommonObject;
+			return lpMutex->WaitForThisObject((struct __COMMON_OBJECT*)lpMutex);
+		default:
+			break;
 	}
 	return OBJECT_WAIT_FAILED;
 }
@@ -216,9 +217,9 @@ DWORD WaitForThisObject(HANDLE hObject)
 DWORD WaitForThisObjectEx(HANDLE hObject,DWORD dwMillionSecond)
 {
 	struct __COMMON_OBJECT* lpCommonObject = (struct __COMMON_OBJECT*)hObject;
-	__KERNEL_THREAD_OBJECT* lpThread = NULL;
-	__EVENT* lpEvent = NULL;
-	__MUTEX* lpMutex = NULL;
+	struct __KERNEL_THREAD_OBJECT* lpThread = NULL;
+	struct __EVENT* lpEvent = NULL;
+	struct __MUTEX* lpMutex = NULL;
 
 	if(NULL == lpCommonObject) //Invalid parameter.
 		return OBJECT_WAIT_FAILED;
@@ -228,10 +229,10 @@ DWORD WaitForThisObjectEx(HANDLE hObject,DWORD dwMillionSecond)
 	case OBJECT_TYPE_KERNEL_THREAD:
 		return OBJECT_WAIT_FAILED;  //Don't support timeout waiting yet.
 	case OBJECT_TYPE_EVENT:
-		lpEvent = (__EVENT*)lpCommonObject;
+		lpEvent = (struct __EVENT*)lpCommonObject;
 		return lpEvent->WaitForThisObjectEx((struct __COMMON_OBJECT*)lpEvent,dwMillionSecond);
 	case OBJECT_TYPE_MUTEX:
-		lpMutex = (__MUTEX*)lpCommonObject;
+		lpMutex = (struct __MUTEX*)lpCommonObject;
 		return lpMutex->WaitForThisObjectEx((struct __COMMON_OBJECT*)lpMutex,dwMillionSecond);
 	default:
 		break;

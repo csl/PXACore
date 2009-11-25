@@ -18,8 +18,9 @@
 #include "statcpu.h"
 #include "l_stdio.h"
 
-__KERNEL_THREAD_OBJECT*  lpStatKernelThread = NULL;  //Used to save statistics kernel
-                                                     //thread's object.
+#define KERNEL_MESSAGE_TIMER        0x0006
+
+struct __KERNEL_THREAD_OBJECT*  lpStatKernelThread = NULL;  //Used to save statistics kernel thread's object.
 
 //
 //The following routine is used to print out all devices information
@@ -27,10 +28,10 @@ __KERNEL_THREAD_OBJECT*  lpStatKernelThread = NULL;  //Used to save statistics k
 //
 static VOID ShowDevList()
 {
-	__DEVICE_OBJECT*   lpDevObject = IOManager.lpDeviceRoot;
+	struct __DEVICE_OBJECT*   lpDevObject = IOManager.lpDeviceRoot;
 	BYTE strInfo[80];
 	
-	PrintLine("    Device Name    Attribute    BlockSize    RdSize/WrSize");
+	printf("    Device Name    Attribute    BlockSize    RdSize/WrSize\n");
 	while(lpDevObject)
 	{
 		sprintf(strInfo,"    %11s   0x%8X    %9d    %d/%d",
@@ -39,7 +40,7 @@ static VOID ShowDevList()
 			lpDevObject->dwBlockSize,
 			lpDevObject->dwMaxReadSize,
 			lpDevObject->dwMaxWriteSize);
-		PrintLine(strInfo);
+		printf("%s\n", strInfo);
 		lpDevObject = lpDevObject->lpNext;
 	}
 }
@@ -49,12 +50,12 @@ static VOID ShowDevList()
 //
 static VOID ShowStatInfo()  //Display the statistics information.
 {
-	__THREAD_STAT_OBJECT* lpStatObj = &StatCpuObject.IdleThreadStatObj;
+	struct __THREAD_STAT_OBJECT* lpStatObj = &StatCpuObject.IdleThreadStatObj;
 	char Buff[MAX_BUFFER_SIZE];
 
 	//Print table header.
-	PrintLine("      Thread Name  Thread ID  1s usage  60s usage  5m usage");
-	PrintLine("    -------------  ---------  --------  ---------  --------");
+	printf("      Thread Name  Thread ID  1s usage  60s usage  5m usage\n");
+	printf("    -------------  ---------  --------  ---------  --------\n");
 	//For each kernel thread,print out statistics information.
 	do{
 		sprintf(Buff,"    %13s  %9X  %6d.%d  %7d.%d  %6d.%d",
@@ -69,7 +70,7 @@ static VOID ShowStatInfo()  //Display the statistics information.
 			//lpStatObj->TotalCpuCycle.dwHighPart,
 			//lpStatObj->TotalCpuCycle.dwLowPart
 			);
-		PrintLine(Buff);
+		printf("%s\n", Buff);
 
 		lpStatObj = lpStatObj->lpNext;
 	}while(lpStatObj != &StatCpuObject.IdleThreadStatObj);
@@ -80,11 +81,11 @@ static VOID ShowStatInfo()  //Display the statistics information.
 //
 DWORD StatThreadRoutine(LPVOID lpData)
 {
-	__TIMER_OBJECT*           lpTimer  = NULL;
-	__KERNEL_THREAD_MESSAGE   msg;
+	struct __TIMER_OBJECT*           lpTimer  = NULL;
+	struct __KERNEL_THREAD_MESSAGE   msg;
 
 	//Set a timer,to calculate statistics information periodic.
-	lpTimer = (__TIMER_OBJECT*)System.SetTimer((__COMMON_OBJECT*)&System,
+	lpTimer = (struct __TIMER_OBJECT*)System.SetTimer((struct __COMMON_OBJECT*) &System,
 		KernelThreadManager.lpCurrentKernelThread,
 		1024,
 		1000,
@@ -117,7 +118,7 @@ DWORD StatThreadRoutine(LPVOID lpData)
 
 __EXIT:
 	//Cancel the timer first.
-	System.CancelTimer((__COMMON_OBJECT*)&System,
-		(__COMMON_OBJECT*)lpTimer);
+	System.CancelTimer((struct __COMMON_OBJECT*)&System,
+		(struct __COMMON_OBJECT*)lpTimer);
 	return 0L;
 }

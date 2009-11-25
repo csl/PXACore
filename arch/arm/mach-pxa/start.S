@@ -450,6 +450,7 @@ copy_loop:
 //	ble     copy_loop
 
 jump_to_main:
+	
 	bl main
 
 	/* the C code should never return */

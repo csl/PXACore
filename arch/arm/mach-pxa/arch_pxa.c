@@ -132,7 +132,7 @@ void ExitInterrupt()
 
 void InterruptHandler()
 {
-	//hander for timer
+	//Interrupt Handler: OS TIMER 0
 	if (INT_REG(INT_ICIP) & BIT26) 
 	{
 		TMR_REG(TMR_OSCR) = 0x00;

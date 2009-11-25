@@ -296,7 +296,7 @@ BEGIN_DEFINE_OBJECT(__IO_MANAGER)
 		           struct __COMMON_OBJECT*  lpFileObject, DWORD dwWhereBegin,int nOffSet);
 
     BOOL (*FlushFile)(struct __COMMON_OBJECT*  lpThis,
-		      sftruct __COMMON_OBJECT*  lpFileObject);
+		      struct __COMMON_OBJECT*  lpFileObject);
 
 	//The following routines are called by device driver(s).
 

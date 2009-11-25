@@ -14,7 +14,7 @@
 //    Lines number              :
 //***********************************************************************/
 
-extern __KERNEL_THREAD_OBJECT*  lpStatKernelThread;  //Global variables.
+extern struct __KERNEL_THREAD_OBJECT*  lpStatKernelThread;  //Global variables.
 
 DWORD StatThreadRoutine(LPVOID lpData); //Entry point of the statistics thread.
 

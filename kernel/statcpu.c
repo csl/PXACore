@@ -13,9 +13,8 @@
 //    Lines number              :
 //***********************************************************************/
 
-#include "..\INCLUDE\StdAfx.h"
-#include "..\INCLUDE\STATCPU.H"
-#include "..\INCLUDE\ARCHSTD.H"
+#include "stdafx.h"
+#include "statcpu.h"
 
 
 __THREAD_HOOK_ROUTINE  lpCreateHook        = NULL;
@@ -26,9 +25,9 @@ __THREAD_HOOK_ROUTINE  lpTerminalHook      = NULL;
 //
 //Create hook,when a kernel thread is created,this routine is called.
 //
-static DWORD CreateHook(__KERNEL_THREAD_OBJECT*  lpKernelThread,DWORD* lpdwUserData)
+static DWORD CreateHook(struct __KERNEL_THREAD_OBJECT*  lpKernelThread,DWORD* lpdwUserData)
 {
-	__THREAD_STAT_OBJECT*        lpStatObj = &StatCpuObject.IdleThreadStatObj;
+	struct __THREAD_STAT_OBJECT*        lpStatObj = &StatCpuObject.IdleThreadStatObj;
 	DWORD                        dwFlags;
 
 	if((NULL == lpdwUserData) || (NULL == lpKernelThread))  //Invalid parameter.
@@ -44,20 +43,23 @@ static DWORD CreateHook(__KERNEL_THREAD_OBJECT*  lpKernelThread,DWORD* lpdwUserD
 		return 1;
 	}
 	__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
+
 	//
 	//Should create a kernel stat object.
 	//
-	lpStatObj = (__THREAD_STAT_OBJECT*)GET_KERNEL_MEMORY(sizeof(__THREAD_STAT_OBJECT));
+	lpStatObj = (struct __THREAD_STAT_OBJECT*) GET_KERNEL_MEMORY(sizeof(struct __THREAD_STAT_OBJECT));
 	if(NULL == lpStatObj)  //Can not allocate memory.
 	{
 		return 0L;
 	}
 	//Initialize this object.
 	lpStatObj->lpKernelThread     = lpKernelThread;
-	lpStatObj->CurrPeriodCycle.dwHighPart = 0;
-	lpStatObj->CurrPeriodCycle.dwLowPart  = 0;
-	lpStatObj->TotalCpuCycle.dwHighPart   = 0;
-	lpStatObj->TotalCpuCycle.dwLowPart    = 0;
+
+	//NoMember
+	//lpStatObj->CurrPeriodCycle.dwHighPart = 0;
+	//lpStatObj->CurrPeriodCycle.dwLowPart  = 0;
+	//lpStatObj->TotalCpuCycle.dwHighPart   = 0;
+	//lpStatObj->TotalCpuCycle.dwLowPart    = 0;
 
 	lpStatObj->wQueueHdr   = 0;
 	lpStatObj->wQueueTail  = 0;
@@ -85,16 +87,16 @@ static DWORD CreateHook(__KERNEL_THREAD_OBJECT*  lpKernelThread,DWORD* lpdwUserD
 //Begin Schedule Hook,when a thread will be scheduled to run,this routine
 //is called.
 //
-static DWORD BeginScheduleHook(__KERNEL_THREAD_OBJECT* lpKernelThread,
-							   DWORD*                  lpdwUserData)
+static DWORD BeginScheduleHook(struct __KERNEL_THREAD_OBJECT* lpKernelThread, DWORD* lpdwUserData)
 {
 	if((NULL == lpKernelThread) || (NULL == lpdwUserData))
 	{
 		return 0L;
 	}
 
-	__THREAD_STAT_OBJECT* lpStatObj = (__THREAD_STAT_OBJECT*)(*lpdwUserData);
-	__GetTsc(&lpStatObj->PreviousTsc);  //Save current time stamp counter.
+	struct __THREAD_STAT_OBJECT* lpStatObj = (struct __THREAD_STAT_OBJECT*)(*lpdwUserData);
+	//??
+	//__GetTsc(&lpStatObj->PreviousTsc);  //Save current time stamp counter.
 
 	return 1L;
 }
@@ -103,14 +105,15 @@ static DWORD BeginScheduleHook(__KERNEL_THREAD_OBJECT* lpKernelThread,
 //End Schedule Hook,when a kernel thread was scheduled to give the CPU,this routine
 //is called.
 //
-static DWORD EndScheduleHook(__KERNEL_THREAD_OBJECT*   lpKernelThread,
+
+static DWORD EndScheduleHook(struct __KERNEL_THREAD_OBJECT*   lpKernelThread,
 							 DWORD*                    lpdwUserData)
 {
 	if((NULL == lpKernelThread) || (NULL == lpdwUserData))
 	{
 		return 0L;
 	}
-	__THREAD_STAT_OBJECT* lpStatObj = (__THREAD_STAT_OBJECT*)(*lpdwUserData);
+	struct __THREAD_STAT_OBJECT* lpStatObj = (struct __THREAD_STAT_OBJECT*)(*lpdwUserData);
 	__U64                 currtsc;
 
 	__GetTsc(&currtsc);  //Get current time stamp counter.
@@ -127,15 +130,14 @@ static DWORD EndScheduleHook(__KERNEL_THREAD_OBJECT*   lpKernelThread,
 //
 //Terminal Hook,when a kernel thread was destroyed,this routine will be called.
 //
-static DWORD TerminalHook(__KERNEL_THREAD_OBJECT*      lpKernelThread,
-						  DWORD*                       lpdwUserData)
+static DWORD TerminalHook(struct __KERNEL_THREAD_OBJECT* lpKernelThread, DWORD* lpdwUserData)
 {
 	if((NULL == lpKernelThread) || (NULL == lpdwUserData)) //Invalid parameters.
 	{
 		return 0L;
 	}
 
-	__THREAD_STAT_OBJECT* lpStatObj = (__THREAD_STAT_OBJECT*)(*lpdwUserData);
+	struct __THREAD_STAT_OBJECT* lpStatObj = (struct __THREAD_STAT_OBJECT*)(*lpdwUserData);
 	DWORD                 dwFlags;
 
 	//Delete this statistics object from stat object list.
@@ -149,7 +151,7 @@ static DWORD TerminalHook(__KERNEL_THREAD_OBJECT*      lpKernelThread,
 	return 1L;
 }
 
-static BOOL Initialize(__STAT_CPU_OBJECT*  lpStatObj)
+static BOOL Initialize(struct __STAT_CPU_OBJECT*  lpStatObj)
 {
 	lpCreateHook          = CreateHook;
 	lpBeginScheduleHook   = BeginScheduleHook;
@@ -172,12 +174,12 @@ static BOOL Initialize(__STAT_CPU_OBJECT*  lpStatObj)
 	return TRUE;
 }
 
-static __THREAD_STAT_OBJECT*  GetFirstThreadStat()
+static struct __THREAD_STAT_OBJECT*  GetFirstThreadStat()
 {
 	return NULL;
 }
 
-static __THREAD_STAT_OBJECT*  GetNextThreadStat(__THREAD_STAT_OBJECT* lpStatObj)
+static struct __THREAD_STAT_OBJECT*  GetNextThreadStat(struct __THREAD_STAT_OBJECT* lpStatObj)
 {
 	if(NULL == lpStatObj)
 	{
@@ -199,10 +201,11 @@ static VOID ShowStat()
 // 4. Update total CPU cycle counter;
 // 5. Record current CPU cycle counter.
 //
+
 static VOID DoStat()
 {
-	__STAT_CPU_OBJECT*    lpStatObj       = &StatCpuObject;
-	__THREAD_STAT_OBJECT* lpThreadStatObj = NULL;
+	struct __STAT_CPU_OBJECT*    lpStatObj       = &StatCpuObject;
+	struct __THREAD_STAT_OBJECT* lpThreadStatObj = NULL;
 	__U64                 currtsc;
 	__U64                 temp;
 	__U64                 remainder;
@@ -280,7 +283,7 @@ static VOID DoStat()
 //
 //Global object StatCpuObject's declaration.
 //
-__STAT_CPU_OBJECT StatCpuObject = {
+struct __STAT_CPU_OBJECT StatCpuObject = {
 	{0},                         //PreviousTsc.
 	{0},                         //CurrPeriodCycle.
 	{0},                         //TotalCpuCycle.
@@ -289,7 +292,7 @@ __STAT_CPU_OBJECT StatCpuObject = {
 	Initialize,                  //Initialize.
 	GetFirstThreadStat,          //GetFirstThreadStatObj.
 	GetNextThreadStat,           //GetNextThreadStatObj.
-	DoStat,                      //DoStat.
+	NULL//DoStat,                      //DoStat.
 	ShowStat                     //ShowStat.
 };
 

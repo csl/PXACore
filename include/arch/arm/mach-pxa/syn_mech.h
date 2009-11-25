@@ -27,7 +27,7 @@
 	#define __ENTER_CRITICAL_SECTION(lpObj,dwFlags) \
 		__asm push eax             \
 		__asm pushfd               \
-		__asm pop eax              \
+		 
 		__asm mov dwFlags,eax      \
 		__asm pop eax              \
 		__asm cli                  \

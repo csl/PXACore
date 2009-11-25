@@ -37,7 +37,7 @@ typedef BOOL (*__INTERRUPT_HANDLER)(LPVOID lpEsp,LPVOID);    //Interrupt handler
 
 /*
 #ifdef __I386__ //Interrupt vector value's definition.
-
+*/
 #define INTERRUPT_VECTOR_TIMER         0x20
 #define INTERRUPT_VECTOR_KEYBOARD      0x21
 #define INTERRUPT_VECTOR_MOUSE         0x22
@@ -45,7 +45,7 @@ typedef BOOL (*__INTERRUPT_HANDLER)(LPVOID lpEsp,LPVOID);    //Interrupt handler
 #define INTERRUPT_VECTOR_COM2          0x24
 #define INTERRUPT_VECTOR_CLOCK         0x25
 #define INTERRUPT_VECTOR_IDE           0x26
-
+/*
 #else
 #endif
 */
@@ -73,7 +73,7 @@ BEGIN_DEFINE_OBJECT(__TIMER_OBJECT)
     INHERIT_FROM_COMMON_OBJECT
 	//struct __TIMER_OBJECT*             lpPrevTimerObject;
         //struct __TIMER_OBJECT*             lpNextTimerObject;
-	DWORD        dwTimerID;            //Timer ID,one kernel thread may set
+	DWORD	dwTimerID;            //Timer ID,one kernel thread may set
 	   //several timers,this is it's ID.
 	DWORD        dwTimeSpan;           //Timer span in millisecond.
 	struct __KERNEL_THREAD_OBJECT* lpKernelThread;       //The kernel thread who set the timer.
@@ -133,7 +133,7 @@ BEGIN_DEFINE_OBJECT(__SYSTEM)
 
 
 	struct __COMMON_OBJECT* (*SetTimer)(struct __COMMON_OBJECT* lpThis,
-									__KERNEL_THREAD_OBJECT*  lpKernelThread,
+									struct __KERNEL_THREAD_OBJECT*  lpKernelThread,
 									DWORD     dwTimerID,
 									DWORD     dwTimeSpan,
 									__DIRECT_TIMER_HANDLER DirectTimerHandler, 
@@ -163,8 +163,8 @@ END_DEFINE_OBJECT()
 
 extern struct __SYSTEM System;    //Declares a global object--System.
 
-extern __PERF_RECORDER  TimerIntPr;    //Performance recorder object used to mesure
-       //the performance of timer interrupt.
+//Performance recorder object used to mesure the performance of timer interrupt.
+extern struct __PERF_RECORDER  TimerIntPr;    
 
 //-------------------------------------------------------------------------------------
 //

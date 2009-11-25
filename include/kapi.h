@@ -26,6 +26,7 @@
 #include "hellocn.h"
 #endif
 */
+/*
 #include "types.h"
 #include "commobj.h"
 //#include "syn_mech.h"
@@ -40,6 +41,9 @@
 //#include "VMM.H"
 #include "kmemmgr.h"
 //#include "ARCHSTD.H"
+*/
+
+#include "stdafx.h"
 
 typedef struct __COMMON_OBJECT* HANDLE;  //Use handle to refer any kernel object.
 typedef struct __KERNEL_THREAD_MESSAGE MSG;

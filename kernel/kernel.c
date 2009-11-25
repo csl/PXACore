@@ -1,5 +1,6 @@
 
 #include "stdafx.h"
+#include "stat_s.h"
 #include "l_stdio.h"
 
 //#include "port.h"
@@ -118,13 +119,14 @@ int main()
 	SerialInit();
 
 	DisableInterrupt();    //The following code is executed in no-interruptable envrionment.
-
+	
 	//printf("%s\n\n",pszStartMsg1);
 	printf("%s\n",pszWelcome);
 
 	//Initialize Kernel Thread Manager.
 	if(!KernelThreadManager.Initialize((struct __COMMON_OBJECT*) &KernelThreadManager))
 		goto __TERMINAL; 
+
 	printf("KernelThreadManager.Initialize Scuessed\n");
 
 	//Initialize the Device manager.
@@ -135,11 +137,10 @@ int main()
 	if(!IOManager.Initialize((struct __COMMON_OBJECT*)&IOManager))  goto __TERMINAL;
 	printf("IOManager.Initialize Scuessed\n");
 
-/*
 	if(!System.Initialize((struct __COMMON_OBJECT*) &System))                        //Initialize system object.
 		goto __TERMINAL;
-*/
 
+	
 	lpIdleThread = KernelThreadManager.CreateKernelThread(    //Create system idle thread.
 		(struct __COMMON_OBJECT*)&KernelThreadManager,
 		0L,

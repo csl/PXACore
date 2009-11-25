@@ -13,6 +13,7 @@
 //***********************************************************************/
 
 #include "stdafx.h"
+//#include "commobj.h"
 
 //
 //The following array is used by Object Manager to create object.
@@ -35,6 +36,9 @@ BEGIN_DECLARE_INIT_DATA(ObjectInitData)
 	OBJECT_INIT_DATA(OBJECT_TYPE_TIMER,sizeof(struct __TIMER_OBJECT),
 	TimerInitialize, TimerUninitialize)
 
+	OBJECT_INIT_DATA(OBJECT_TYPE_INTERRUPT,sizeof(struct __INTERRUPT_OBJECT),
+	InterruptInitialize,InterruptUninitialize)
+
         OBJECT_INIT_DATA(0,0,0,0)
 
 /*
@@ -46,8 +50,6 @@ BEGIN_DECLARE_INIT_DATA(ObjectInitData)
 
 
 
-	OBJECT_INIT_DATA(OBJECT_TYPE_INTERRUPT,sizeof(struct __INTERRUPT_OBJECT),
-	InterruptInitialize,InterruptUninitialize)
 
 	OBJECT_INIT_DATA(OBJECT_TYPE_DRIVER,sizeof(struct __DRIVER_OBJECT),
 	DrvObjInitialize,DrvObjUninitialize)
@@ -78,15 +80,14 @@ END_DECLARE_INIT_DATA()
 //The predefinition of ObjectManager's member functions.
 //
 
-static struct __COMMON_OBJECT* CreateObject(struct __OBJECT_MANAGER*,struct __COMMON_OBJECT*,DWORD);
-static struct __COMMON_OBJECT* GetObjectByID(struct __OBJECT_MANAGER*,DWORD);
+static struct __COMMON_OBJECT* CreateObject(struct __OBJECT_MANAGER*, struct __COMMON_OBJECT*,DWORD);
+static struct __COMMON_OBJECT* GetObjectByID(struct __OBJECT_MANAGER*, DWORD);
 static struct __COMMON_OBJECT* GetFirstObjectByType(struct __OBJECT_MANAGER*,DWORD);
-static VOID   DestroyObject(struct __OBJECT_MANAGER*,struct __COMMON_OBJECT*);
+static VOID   DestroyObject(struct __OBJECT_MANAGER*, struct __COMMON_OBJECT*);
 
-//
+
 //The definition of the ObjectManager,the first object and the only object in Hello
 //Taiwan.
-//
 
 struct __OBJECT_MANAGER ObjectManager = 
 {
@@ -95,7 +96,7 @@ struct __OBJECT_MANAGER ObjectManager =
 	CreateObject,                       //CreateObject routine.
 	GetObjectByID,                      //GetObjectByID routine.
 	GetFirstObjectByType,               //GetFirstObjectByType routine.
-	DestroyObject,                      //DestroyObject routine.
+	DestroyObject                       //DestroyObject routine.
 };
 
 //
@@ -115,7 +116,7 @@ static struct __COMMON_OBJECT* CreateObject(struct __OBJECT_MANAGER* lpObjectMan
 				     struct __COMMON_OBJECT*  lpObjectOwner,      //Object's owner.
 				     DWORD dwType)
 {
-	struct __COMMON_OBJECT* pObject         = NULL;
+	struct __COMMON_OBJECT* pObject  = NULL;
 	DWORD            dwLoop          = 0L;
 	BOOL             bFind           = FALSE;
 	DWORD            dwObjectSize    = 0L;
@@ -141,6 +142,7 @@ static struct __COMMON_OBJECT* CreateObject(struct __OBJECT_MANAGER* lpObjectMan
 		goto __TERMINAL;
 
 	dwObjectSize = ObjectInitData[dwLoop].dwObjectSize;
+
 	if(0 == dwObjectSize)  //Invalid object size.
 		goto __TERMINAL;
 
@@ -151,6 +153,7 @@ static struct __COMMON_OBJECT* CreateObject(struct __OBJECT_MANAGER* lpObjectMan
 
 	//The following lines initialize the new created object.
 	pObject->dwObjectID = lpObjectManager->dwCurrentObjectID;
+
 	lpObjectManager->dwCurrentObjectID ++;     //Now,update the Object Manager's status.
 
 	pObject->dwObjectSize     = dwObjectSize;
@@ -161,17 +164,21 @@ static struct __COMMON_OBJECT* CreateObject(struct __OBJECT_MANAGER* lpObjectMan
 
 	//The following code insert the new created object into ObjectArrayList.
 
-	if(NULL == lpObjectManager->ObjectListHeader[dwType].lpFirstObject)  //If this is the
-	 //first object of this type.
+	//If this is the first object of this type.
+	if(NULL == lpObjectManager->ObjectListHeader[dwType].lpFirstObject)  
 	{
 		pObject->lpNextObject = NULL;
 		pObject->lpPrevObject = NULL;
+
 		lpObjectManager->ObjectListHeader[dwType].lpFirstObject = pObject;
+
 		if(lpObjectManager->ObjectListHeader[dwType].dwMaxObjectID < pObject->dwObjectID)
 		{
-		  lpObjectManager->ObjectListHeader[dwType].dwMaxObjectID = pObject->dwObjectID;
+			lpObjectManager->ObjectListHeader[dwType].dwMaxObjectID = pObject->dwObjectID;
 		}
-		lpObjectManager->ObjectListHeader[dwType].dwObjectNum ++;
+
+		lpObjectManager->ObjectListHeader[dwType].dwObjectNum++;
+
 		goto __TERMINAL;
 	}
 
@@ -179,12 +186,14 @@ static struct __COMMON_OBJECT* CreateObject(struct __OBJECT_MANAGER* lpObjectMan
 	pObject->lpNextObject = lpObjectManager->ObjectListHeader[dwType].lpFirstObject;
 	pObject->lpNextObject->lpPrevObject = pObject;
 	pObject->lpPrevObject = NULL;
+
 	lpObjectManager->ObjectListHeader[dwType].lpFirstObject = pObject;
 
 	if(lpObjectManager->ObjectListHeader[dwType].dwMaxObjectID < pObject->dwObjectID)
 	{
 		lpObjectManager->ObjectListHeader[dwType].dwMaxObjectID = pObject->dwObjectID;
 	}
+
 	lpObjectManager->ObjectListHeader[dwType].dwObjectNum ++;
 
 __TERMINAL:
@@ -336,6 +345,7 @@ static VOID DestroyObject(struct __OBJECT_MANAGER* lpObjectManager, struct __COM
 	{
 		lpTmpObject = lpListHeader->lpFirstObject;
 		dwMaxID = lpTmpObject ? lpTmpObject->dwObjectID : 0;
+
 		while(lpTmpObject)
 		{
 			if(dwMaxID < lpTmpObject->dwObjectID)

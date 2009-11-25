@@ -24,8 +24,8 @@ struct __COMMON_OBJECT
 	struct __COMMON_OBJECT*   lpPrevObject;         //Point to previous object.
 	struct __COMMON_OBJECT*   lpNextObject;         //Point to next object.
 	struct __COMMON_OBJECT*   lpObjectOwner;        //This object's owner.
-	//__COMMON_OBJECT*   lpLeft;               //Used in the future,AVL tree's left branch.
-	//__COMMON_OBJECT*   lpRight;              //Used in the ruture,AVL tree's right branch.
+	//struct __COMMON_OBJECT*   lpLeft;               //Used in the future,AVL tree's left branch.
+	//struct __COMMON_OBJECT*   lpRight;              //Used in the ruture,AVL tree's right branch.
 	BOOL               (*Initialize)(struct __COMMON_OBJECT*); //Object's initialize routine.
 	VOID               (*Uninitialize)(struct __COMMON_OBJECT*);
 };
@@ -117,13 +117,12 @@ END_DEFINE_OBJECT()
 #define MAX_OBJECT_TYPE    64         //The maximal types in this version.
 
 BEGIN_DEFINE_OBJECT(__OBJECT_MANAGER)
-	DWORD                        dwCurrentObjectID;
+	DWORD dwCurrentObjectID;
 	struct __OBJECT_LIST_HEADER  ObjectListHeader[MAX_OBJECT_TYPE];
-	struct __COMMON_OBJECT*	(*CreateObject)(struct __OBJECT_MANAGER*,
-						struct __COMMON_OBJECT*,DWORD);
-	struct __COMMON_OBJECT* (*GetObjectByID)(struct __OBJECT_MANAGER*,DWORD);
-	struct __COMMON_OBJECT* (*GetFirstObjectByType)(struct __OBJECT_MANAGER*,DWORD);
-	VOID                    (*DestroyObject)(struct __OBJECT_MANAGER*,struct __COMMON_OBJECT*);
+	struct __COMMON_OBJECT*	(*CreateObject)(struct __OBJECT_MANAGER*, struct __COMMON_OBJECT*,DWORD);
+	struct __COMMON_OBJECT* (*GetObjectByID)(struct __OBJECT_MANAGER*, DWORD);
+	struct __COMMON_OBJECT* (*GetFirstObjectByType)(struct __OBJECT_MANAGER*, DWORD);
+	VOID (*DestroyObject)(struct __OBJECT_MANAGER*,struct __COMMON_OBJECT*);
 END_DEFINE_OBJECT()
 
 //
@@ -131,10 +130,8 @@ END_DEFINE_OBJECT()
 //************************************************************************
 //************************************************************************
 //The declare of ObjectManager,the first global object of Hello Taiwan!
-//
 
 extern struct __OBJECT_MANAGER ObjectManager;
-
 
 //
 //The following are object types's definition.

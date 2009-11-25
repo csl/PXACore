@@ -365,7 +365,7 @@ static struct __KERNEL_THREAD_OBJECT* CreateKernelThread(struct __COMMON_OBJECT*
 	//It's implementation depends on the hardware platform,so
 	//this routine is implemented in ARCH directory.
 	//
-
+	
 	//Depend on ARCH
 	lpKernelThread->lpInitStackPointer = InitKernelThreadContext(lpKernelThread);
 

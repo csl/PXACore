@@ -49,6 +49,11 @@ KERNEL_SRC = \
 	./kernel/shell.c \
 	./kernel/devmgr.c \
 	./kernel/iomgr.c \
+	./kernel/system.c \
+	./kernel/kapi.c \
+#	./kthread/stat_s.c \
+#	./kernel/statcpu.c \
+
 
 #	./kernel/main.c \
 #	./kernel/comqueue.c \
