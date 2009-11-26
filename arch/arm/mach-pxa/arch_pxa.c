@@ -1,9 +1,6 @@
 #include "stdafx.h"
 #include "l_stdio.h"
-
 #include "pxa255.h"
-
-static int count=0;
 
 
 //#define MIN_STACK_SIZE 128
@@ -23,6 +20,10 @@ static int count=0;
 //
 DWORD* InitKernelThreadContext(struct __KERNEL_THREAD_OBJECT* lpKernelThread);
 VOID RestoreKernelThread(struct __KERNEL_THREAD_OBJECT* lp) __attribute__ ( ( signal, naked ) );
+
+
+static int count=0;
+
 
 //
 //These three global variables are used as temp variables
