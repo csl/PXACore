@@ -60,6 +60,7 @@ static DWORD WaitForCompletion(struct __COMMON_OBJECT* lpThis)
 //This routine does the following:
 // 1. Check the parameter's validation;
 // 2. Wakeup the kernel thread who waiting for the current device operation.
+
 static DWORD OnCompletion(struct __COMMON_OBJECT* lpThis)
 {
 	struct __EVENT*              lpEvent          = NULL;
@@ -769,16 +770,19 @@ static BOOL LoadDriver(__DRIVER_ENTRY DrvEntry)
 		BUG();
 		return FALSE;
 	}
-
+	
+	//Request Object for Driver
 	lpDrvObject = (struct __DRIVER_OBJECT*)ObjectManager.CreateObject(
 		&ObjectManager,
 		NULL,
 		OBJECT_TYPE_DRIVER);
+
 	if(NULL == lpDrvObject)  //Can not create driver object.
 	{
 		return FALSE;
 	}
-	if(!lpDrvObject->Initialize((struct __COMMON_OBJECT*)lpDrvObject)) //Initialize failed.
+
+	if(!lpDrvObject->Initialize((struct __COMMON_OBJECT*) lpDrvObject)) //Initialize failed.
 	{
 		return FALSE;
 	}
@@ -788,10 +792,12 @@ static BOOL LoadDriver(__DRIVER_ENTRY DrvEntry)
 	{
 		return TRUE;
 	}
+
 	//Failed to call DrvEntry routine,so release the driver object.
 	ObjectManager.DestroyObject(
 		&ObjectManager,
 		(struct __COMMON_OBJECT*)lpDrvObject);
+
 	return FALSE;
 }
 

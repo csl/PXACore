@@ -3,6 +3,8 @@
 #include "stat_s.h"
 #include "l_stdio.h"
 
+//#include "comdrv.h"
+
 //#include "port.h"
 //#include "statcpu.h"
 //#include "stat_s.h"
@@ -15,12 +17,12 @@ char* pszWelcome   = "Welcome to use Hello Taiwan!";
 char* pszHelpInfo = "Any help please press 'help' + return.";
 
 //External global variables.
-//extern __DRIVER_ENTRY DriverEntryArray[];
+extern __DRIVER_ENTRY DriverEntryArray[];
 
 //KEY_HANDLER g_keyHandler = NULL;
 //INT_HANDLER g_intHandler = NULL;
 
-extern void SerialInit();
+//extern void SerialInit();
 
 void DeadLoop()
 {
@@ -114,31 +116,40 @@ int main()
 	struct __KERNEL_THREAD_OBJECT*       lpIdleThread     = NULL;
 	struct __KERNEL_THREAD_OBJECT*       lpShellThread    = NULL;
 	//struct __KERNEL_THREAD_OBJECT*       lpKeeperThread   = NULL;
-
-	//initizal serial device
-	SerialInit();
-
-	DisableInterrupt();    //The following code is executed in no-interruptable envrionment.
+	int dwIndex = 0;
 	
-	//printf("%s\n\n",pszStartMsg1);
-	printf("%s\n",pszWelcome);
-
+	//The following code is executed in no-interruptable envrionment.
+	DisableInterrupt();    
+	
 	//Initialize Kernel Thread Manager.
 	if(!KernelThreadManager.Initialize((struct __COMMON_OBJECT*) &KernelThreadManager))
 		goto __TERMINAL; 
 
-	printf("KernelThreadManager.Initialize Scuessed\n");
+	//printf("KernelThreadManager.Initialize Scuessed\n");
 
 	//Initialize the Device manager.
 	if(!DeviceManager.Initialize(&DeviceManager))  goto __TERMINAL;
-	printf("DeviceManager.Initialize Scuessed\n");
+	//printf("DeviceManager.Initialize Scuessed\n");
 
 	//Initialize Input-Output Manager.
 	if(!IOManager.Initialize((struct __COMMON_OBJECT*)&IOManager))  goto __TERMINAL;
-	printf("IOManager.Initialize Scuessed\n");
+	//printf("IOManager.Initialize Scuessed\n");
 
 	if(!System.Initialize((struct __COMMON_OBJECT*) &System))                        //Initialize system object.
 		goto __TERMINAL;
+
+	//Initialize Driver
+	//initizal serial device
+	dwIndex = 0;
+	while(DriverEntryArray[dwIndex])
+	{
+		if(!IOManager.LoadDriver(DriverEntryArray[dwIndex])) //Failed to load.
+		{
+			//sprintf(strInfo,"Failed to load the %dth driver." ,dwIndex); //Show an error.
+			//printf("%s\n", strInfo);
+		}
+		dwIndex++;  //Continue to load.
+	}
 
 	
 	lpIdleThread = KernelThreadManager.CreateKernelThread(    //Create system idle thread.
@@ -174,6 +185,8 @@ int main()
 		//__ERROR_HANDLER(ERROR_LEVEL_FATAL,0L,NULL);
 		goto __TERMINAL;
 	}
+
+	printf("%s\n",pszWelcome);
 
 	//Start first process
 	lpShellThread->dwThreadStatus = KERNEL_THREAD_STATUS_RUNNING;

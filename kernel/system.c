@@ -50,7 +50,10 @@ struct __PERF_RECORDER  TimerIntPr =
 
 static BOOL TimerInterruptHandler(LPVOID lpEsp, LPVOID omit)
 {
-	printf("TimerInterruptHandler %d %d\n", System.dwClockTickCounter, System.dwNextTimerTick);
+#if 0
+	printf("TimerInterruptHandler: %d %d\n", System.dwClockTickCounter, System.dwNextTimerTick);
+#endif
+
 	DWORD dwPriority = 0L;
 	struct __TIMER_OBJECT*    lpTimerObject     = 0L;
 	struct __KERNEL_THREAD_MESSAGE   Msg;
@@ -64,15 +67,23 @@ static BOOL TimerInterruptHandler(LPVOID lpEsp, LPVOID omit)
 
 	if(System.dwClockTickCounter == System.dwNextTimerTick)     //Should schedule timer.
 	{
+#if 0
 		printf("Should schedule timer\n");
+#endif
+
 		lpTimerQueue = System.lpTimerQueue;
 		lpTimerObject = (struct __TIMER_OBJECT*)lpTimerQueue->GetHeaderElement(
-				(struct __COMMON_OBJECT*)lpTimerQueue,
-				&dwPriority);
+					(struct __COMMON_OBJECT*)lpTimerQueue,
+					&dwPriority);
 
 		if(NULL == lpTimerObject) goto __CONTINUE_1;
 
 		dwPriority = MAX_DWORD_VALUE - dwPriority;
+
+#ifdef  DEBUG
+		printf("dwPriority = %d, dwNextTimerTick = %d\n", dwPriority, System.dwNextTimerTick);
+#endif
+
 		while(dwPriority <= System.dwNextTimerTick)    //Strictly speaking,the dwPriority
 			                                       //variable must EQUAL System.dw-
 							       //NextTimerTick,but in the implement-
@@ -81,23 +92,29 @@ static BOOL TimerInterruptHandler(LPVOID lpEsp, LPVOID omit)
 							      //dwPriority equal or less than dwNext-
 							      //TimerTic.
 		{
-			if(NULL == lpTimerObject->DirectTimerHandler)  //Send a message to the kernel thread.
+			//Send a message to the kernel thread.
+			if(NULL == lpTimerObject->DirectTimerHandler)
 			{
 				Msg.wCommand = KERNEL_MESSAGE_TIMER;
 				Msg.dwParam  = lpTimerObject->dwTimerID;
 				KernelThreadManager.SendMessage(
-					(struct __COMMON_OBJECT*)lpTimerObject->lpKernelThread,
+					(struct __COMMON_OBJECT*) lpTimerObject->lpKernelThread,
 					&Msg);
-				//printf("Send a timer message to kernel thread.");
+#ifdef  DEBUG
+				printf("Send a timer message to kernel thread.");
+#endif
 			}
 			else
 			{
+				//Call the associated handler. (ToDoTimerHandler)
 				lpTimerObject->DirectTimerHandler(
-					lpTimerObject->lpHandlerParam);    //Call the associated handler.
+					lpTimerObject->lpHandlerParam);    
 			}
 
+			//Checking Timer is once or always
 			switch(lpTimerObject->dwTimerFlags)
 			{
+
 			case TIMER_FLAGS_ONCE:        //Delete the timer object processed just now.
 				ObjectManager.DestroyObject(&ObjectManager,
 					(struct __COMMON_OBJECT*)lpTimerObject);
@@ -115,9 +132,10 @@ static BOOL TimerInterruptHandler(LPVOID lpEsp, LPVOID omit)
 				break;
 			}
 
-			lpTimerObject = (struct __TIMER_OBJECT*)lpTimerQueue->GetHeaderElement(
-				(struct __COMMON_OBJECT*)lpTimerQueue,
-				&dwPriority);    //Check another timer object.
+			//Check another timer object.
+			lpTimerObject = (struct __TIMER_OBJECT*) lpTimerQueue->GetHeaderElement(
+									(struct __COMMON_OBJECT*)lpTimerQueue,
+									&dwPriority);    
 
 			if(NULL == lpTimerObject)
 				break;
@@ -125,7 +143,8 @@ static BOOL TimerInterruptHandler(LPVOID lpEsp, LPVOID omit)
 			dwPriority = MAX_DWORD_VALUE - dwPriority;
 		}
 
-		if(NULL == lpTimerObject)  //There is no timer object in queue.
+		//There is no timer object in queue.
+		if(NULL == lpTimerObject)  
 		{
 			__ENTER_CRITICAL_SECTION(NULL,dwFlags);
 			System.dwNextTimerTick = 0L;
@@ -134,11 +153,14 @@ static BOOL TimerInterruptHandler(LPVOID lpEsp, LPVOID omit)
 		else
 		{
 			__ENTER_CRITICAL_SECTION(NULL,dwFlags);
-			System.dwNextTimerTick = dwPriority;    //Update the next timer tick counter.
+			//Update the next timer tick counter.
+			System.dwNextTimerTick = dwPriority;    
 			__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
+
+			//Insert back to TimerQueue
 			dwPriority = MAX_DWORD_VALUE - dwPriority;
 			lpTimerQueue->InsertIntoQueue((struct __COMMON_OBJECT*)lpTimerQueue,
-				(struct __COMMON_OBJECT*)lpTimerObject,
+				(struct __COMMON_OBJECT*) lpTimerObject,
 				dwPriority);
 		}
 	}
@@ -148,21 +170,28 @@ __CONTINUE_1:
 	//
 	//The following code wakes up all kernel thread(s) whose status is SLEEPING and
 	//the time it(then) set is out.
-	//
-	if(System.dwClockTickCounter == KernelThreadManager.dwNextWakeupTick)  //There must existes
-	 //kernel thread(s) to up.
+	//There must existes kernel thread(s) to up.
+#if 0	
+	printf("dwClockTickCounter = %d, dwNextWakeupTick = %d\n", 
+					System.dwClockTickCounter, KernelThreadManager.dwNextWakeupTick);	
+#endif
+	if(System.dwClockTickCounter == KernelThreadManager.dwNextWakeupTick)  
 	{
 		lpSleepingQueue = KernelThreadManager.lpSleepingQueue;
+
 		lpKernelThread  = (struct __KERNEL_THREAD_OBJECT*)lpSleepingQueue->GetHeaderElement(
 			(struct __COMMON_OBJECT*)lpSleepingQueue,
 			&dwPriority);
+
 		while(lpKernelThread)
 		{
 			dwPriority = MAX_DWORD_VALUE - dwPriority;  //Now,dwPriority countains the tick
 			                                            //counter value.
 			if(dwPriority > System.dwClockTickCounter)
 				break;    //This kernel thread should not be wake up.
+
 			lpKernelThread->dwThreadStatus = KERNEL_THREAD_STATUS_READY;
+
 			KernelThreadManager.AddReadyKernelThread(
 				(struct __COMMON_OBJECT*)&KernelThreadManager,
 				lpKernelThread);  //Insert the waked up kernel thread into ready queue.
@@ -183,8 +212,9 @@ __CONTINUE_1:
 			KernelThreadManager.dwNextWakeupTick = dwPriority;
 			__LEAVE_CRITICAL_SECTION(NULL,dwFlags);
 			dwPriority = MAX_DWORD_VALUE - dwPriority;
+
 			lpSleepingQueue->InsertIntoQueue((struct __COMMON_OBJECT*)lpSleepingQueue,
-				(struct __COMMON_OBJECT*)lpKernelThread,
+				(struct __COMMON_OBJECT*) lpKernelThread,
 				dwPriority);
 		}
 	}
@@ -459,10 +489,7 @@ static DWORD GetClockTickCounter(struct __COMMON_OBJECT* lpThis)
 	return lpSystem->dwClockTickCounter;
 }
 
-//
 //GetPhysicalMemorySize.
-//
-
 static DWORD GetPhysicalMemorySize(struct __COMMON_OBJECT* lpThis)
 {
 	if(NULL == lpThis)
@@ -621,9 +648,9 @@ __RETFROMINT:
 	lpSystem->ucIntNestLevel -= 1;    //Decrement interrupt nesting level.
 	if(0 == lpSystem->ucIntNestLevel)  //The outmost interrupt.
 	{
-		//(struct __COMMON_OBJECT*)&KernelThreadManager, lpEsp
-		//exit to do this, not here
+		//exit_interrupt to do this, not here
 		//KernelThreadManager.ScheduleFromInt();  //Re-schedule kernel thread.
+		//(struct __COMMON_OBJECT*)&KernelThreadManager, lpEsp
 	}
 	else
 	{
@@ -652,24 +679,26 @@ static struct __COMMON_OBJECT* SetTimer(struct __COMMON_OBJECT* lpThis,
 	struct __PRIORITY_QUEUE*            lpPriorityQueue    = NULL;
 	struct __SYSTEM*                    lpSystem           = NULL;
 	struct __TIMER_OBJECT*              lpTimerObject      = NULL;
-	BOOL                         bResult            = FALSE;
-	DWORD                        dwPriority         = 0L;
-	DWORD                        dwFlags            = 0L;
+	BOOL  bResult            = FALSE;
+	DWORD dwPriority         = 0L;
+	DWORD dwFlags            = 0L;
 
-	if((NULL == lpThis) ||
-	   (NULL == lpKernelThread))    //Parameters check.
+	if((NULL == lpThis) || (NULL == lpKernelThread))    //Parameters check.
 	   return NULL;
 
-	if(dwTimeSpan <= SYSTEM_TIME_SLICE)
-		dwTimeSpan = SYSTEM_TIME_SLICE;
+	if(dwTimeSpan <= SYSTEM_TIME_SLICE)  dwTimeSpan = SYSTEM_TIME_SLICE;
 
 	lpSystem = (struct __SYSTEM*)lpThis;
+
 	lpTimerObject = (struct __TIMER_OBJECT*)ObjectManager.CreateObject(&ObjectManager, NULL, OBJECT_TYPE_TIMER);
-	if(NULL == lpTimerObject)    //Can not create timer object.
+
+	//Can not create timer object.
+	if(NULL == lpTimerObject)
 		goto __TERMINAL;
+
 	bResult = lpTimerObject->Initialize((struct __COMMON_OBJECT*)lpTimerObject);  //Initialize.
-	if(!bResult)
-		goto __TERMINAL;
+
+	if(!bResult) goto __TERMINAL;
 
 	lpTimerObject->dwTimerID           = dwTimerID;
 	lpTimerObject->dwTimeSpan          = dwTimeSpan;
@@ -693,6 +722,7 @@ static struct __COMMON_OBJECT* SetTimer(struct __COMMON_OBJECT* lpThis,
 	bResult = lpSystem->lpTimerQueue->InsertIntoQueue((struct __COMMON_OBJECT*)lpSystem->lpTimerQueue,
 		(struct __COMMON_OBJECT*)lpTimerObject,
 		dwPriority);
+
 	if(!bResult)
 	{
 		__LEAVE_CRITICAL_SECTION(NULL,dwFlags);

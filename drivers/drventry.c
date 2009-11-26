@@ -17,19 +17,12 @@
 //***********************************************************************/
 
 #include "stdafx.h"
-
-//#include "COMMDRV.H"
+#include "comdrv.h"
 
 __DRIVER_ENTRY DriverEntryArray[] = 
 {
-	Com1DrvEntry,
+	Com1DrvInitial,
 	Com2DrvEntry,
-	Com3DrvEntry,
-	Com4DrvEntry,
-	Com5DrvEntry,
-	Com6DrvEntry,
-	Com7DrvEntry,
-	Com8DrvEntry,
 	NULL
 };
 

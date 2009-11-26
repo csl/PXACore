@@ -77,6 +77,7 @@ unsigned int strspn(const char *s, const char *accept);
 unsigned long strtoul(const char *str, char **endptr, int requestedbase);
 
 /* Byte swapping */
+
 #define SWAP8(X) 	(X)
 #define SWAP16(X) 	((((X) & 0x00ff) << 8) | \
 			 ((X) >> 8))

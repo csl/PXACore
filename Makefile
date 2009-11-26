@@ -34,8 +34,10 @@ HW_DEP_ASM_SRC = \
 
 HW_DEP_C_SRC = \
 	./arch/arm/mach-pxa/arch_pxa.c \
-	./drivers/serial.c \
+	./drivers/comdrv.c \
 	./lib/l_stdio.c \
+
+#	./drivers/serial.c \
 #	./arch/arm/mach-pxa/port.c \
 #	./lib/string.c \
 
@@ -51,6 +53,9 @@ KERNEL_SRC = \
 	./kernel/iomgr.c \
 	./kernel/system.c \
 	./kernel/kapi.c \
+	./drivers/drventry.c \
+
+
 #	./kthread/stat_s.c \
 #	./kernel/statcpu.c \
 

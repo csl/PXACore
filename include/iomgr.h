@@ -206,7 +206,7 @@ BEGIN_DEFINE_OBJECT(__DEVICE_OBJECT)
 	//kernel thread open this device object.
 
 	DWORD     dwStartPort;       //Start port of this device used.
-	DWORD     dwEndPort;  //End port of this device used.
+	DWORD     dwEndPort;  	     //End port of this device used.
 
 	DWORD     dwDmaChannel;      //DMA channel number is device used.
 	DWORD     dwInterrupt;       //Interrupt vector number.

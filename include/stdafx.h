@@ -1,12 +1,6 @@
 #ifndef __STDAFX_H__
 #define __STDAFX_H__
 
-/*
-#ifndef __HELLO_TAIWAN__
-#include "hellocn.h"
-#endif
-*/
-
 #include "types.h"
 #define LPVOID              void*
 #define UCHAR               unsigned char
