@@ -1,17 +1,28 @@
-/*! \file pxa255.h
- *  \brief register definitions for the PXA255 on-chip peripherals.
- */
-
 #define vulong volatile unsigned long
 
 /* --------------------------------------- */
-/** Memory Controller */
-#define MSC_BASE	0x48000000
-#define MSC_REG(_x_)	*(vulong *)(MSC_BASE + _x_)	
+// Memory Controller
 
+#define SDRAM_BASE_ADDRESS	0xa1000000
 
-//---------------------------------------
-/** UARTs */
+#define CFG_MECR_VAL		0x00000000
+#define CFG_MCMEM0_VAL		0x00004204
+#define CFG_MCMEM1_VAL		0x00000000
+#define CFG_MCATT0_VAL		0x00010504
+#define CFG_MCATT1_VAL		0x00000000
+#define CFG_MCIO0_VAL		0x00008407
+#define CFG_MCIO1_VAL		0x00000000
+	
+#define FIQ_STACK_SIZE		0x10000
+#define IRQ_STACK_SIZE		0x10000
+#define ABT_STACK_SIZE		0x10000
+#define UND_STACK_SIZE		0x10000
+#define SYS_STACK_SIZE		0x10000
+
+#define MSC_BASE		0x48000000
+#define MSC_REG(_x_)		*(vulong *)(MSC_BASE + _x_)	
+
+// UARTs
 #define FF_UART_BASE		0x40100000	/* Full Function UART Base Address */
 #define FF_UART_REG(_x_)	*(vulong *)(FF_UART_BASE + _x_)	
 #define BT_UART_BASE		0x40200000	/* Bluetooth UART Base Address */
@@ -33,8 +44,7 @@
 #define UART_DLH	0x04	/* Baud divisor higher byte (read/write) */
 #define UART_ISR	0x20	/* Infrared Select Register (read/write) */
 
-/* --------------------------------------- */
-/** OS Timer */
+// OS Timer
 #define TMR_BASE	0x40A00000   
 #define TMR_REG(_x_)	*(vulong *)(TMR_BASE + _x_)	
 #define TMR_OSMR0	0x00	/* OS timer match registers<3:0> */
@@ -46,9 +56,7 @@
 #define TMR_OWER	0x18	/* OS timer watchdog enable register */
 #define TMR_OIER	0x1C	/* OS timer interrupt enable register */
 
-
-/* --------------------------------------- */
-/** Interrupt Control */
+//Interrupt Control
 #define INT_BASE	0x40D00000	/* Interrupt controller IRQ pending register */
 #define INT_REG(_x_)	*(vulong *)(INT_BASE + _x_)	
 #define INT_ICIP	0x00	/* Interrupt controller IRQ pending register */
@@ -60,7 +68,7 @@
 
 
 /* --------------------------------------- */
-/** Clocks Manager */
+//Clocks Manager
 #define CLK_BASE	0x41300000   
 #define CLK_REG(_x_)	*(vulong *)(CLK_BASE + _x_)	
 #define CLK_CCCR	0x00	/* Core Clock Configuration Register */
@@ -69,7 +77,7 @@
 
 
 /* --------------------------------------- */
-/** Memory Controller Register */
+//Memory Controller Register
 #define MSC_MDCNFG	0x00	/* SDRAM configuration register 0 */
 #define MSC_MDREFR	0x04	/* SDRAM refresh control register */
 #define MSC_MSC0	0x08	/* Static memory control register 0 */
@@ -354,6 +362,7 @@
 #define GPIO_29		BIT29
 #define GPIO_30		BIT30
 #define GPIO_31		BIT31
+
 /* GPLR1, GPDR1, GPSR1, GPCR1, GPRE1, GPFE1, GPED1 */
 #define GPIO_32		BIT0
 #define GPIO_33		BIT1
@@ -387,6 +396,7 @@
 #define GPIO_61		BIT29
 #define GPIO_62		BIT30
 #define GPIO_63		BIT31
+
 /* GPLR2, GPDR2, GPSR2, GPCR2, GPRE2, GPFE2, GPED2 */
 #define GPIO_64		BIT0
 #define GPIO_65		BIT1
@@ -405,6 +415,7 @@
 #define GPIO_78		BIT14
 #define GPIO_79		BIT15
 #define GPIO_80		BIT16
+
 /* appendix: pxa255-pro3 */
 #define GPIO_81		BIT17
 #define GPIO_84		BIT20
@@ -529,7 +540,7 @@
 /* GPAFR2_U */
 #define GPIO_80_AF_CS4		(AF2 << 0)	/* Set GPDR1, BIT GPIO_80 = 1 */
 
-/** Power management */
+//Power management
 #define RCSR			0x40F00030	/* Reset Controller Status
 						   register */
 #define RCSR_SLEEP		0x00000004	/* Power Manager Sleep Configuration

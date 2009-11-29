@@ -9,8 +9,7 @@
 //                                ************
 //                                This file is the most important file of Hello Taiwan.
 //                                ************
-//    Last modified Author      : Garry
-//    Last modified Date        : Sep,30,2006
+//    Last modified Author      : csl
 //    Last modified Content     :
 //                                1. 
 //                                2.
@@ -19,13 +18,8 @@
 
 #include "stdafx.h"
 
-//#include "archstd.h"
-
-//
 //Pre-declare for extern global routines,these routines may
 //be implemented in KTMGRx.CPP file,where x is 2,3,etc.
-//
-
 extern __THREAD_HOOK_ROUTINE SetThreadHook(DWORD dwHookType, __THREAD_HOOK_ROUTINE lpRoutine);
 extern VOID CallThreadHook(DWORD dwHookType, struct __KERNEL_THREAD_OBJECT* lpPrev, 			
 								struct __KERNEL_THREAD_OBJECT* lpNext);

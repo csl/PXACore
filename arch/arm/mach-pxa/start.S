@@ -1,24 +1,5 @@
-/*
- * start.S
- */
 
 #include "pxa255.h"
-
-#define SDRAM_BASE_ADDRESS	0xa1000000
-
-#define CFG_MECR_VAL		0x00000000
-#define CFG_MCMEM0_VAL	0x00004204
-#define CFG_MCMEM1_VAL	0x00000000
-#define CFG_MCATT0_VAL	0x00010504
-#define CFG_MCATT1_VAL	0x00000000
-#define CFG_MCIO0_VAL		0x00008407
-#define CFG_MCIO1_VAL		0x00000000
-	
-#define FIQ_STACK_SIZE		0x10000
-#define IRQ_STACK_SIZE		0x10000
-#define ABT_STACK_SIZE		0x10000
-#define UND_STACK_SIZE		0x10000
-#define SYS_STACK_SIZE		0x10000
 
 	/* Declare the names of stacks */
 	.global _start
@@ -75,121 +56,62 @@ fiq_handler:
 	b loop
 
 reset_handler:
-	bl set_misc
-
-	bl mask_off_int_reg
-
-	bl init_clock_reg
-
-	bl set_core_clock
-
-	bl set_os_timer
-
-	bl init_gpio
-
-	bl init_mem_ctrl
-
-	bl set_stack_pointer
-
-	bl set_svc_mode
-	
-	bl relocate
-	
-	bl jump_to_main
-					
-set_misc:	
-       
-        ldr r0, =0x2001			/* Allows access to all coprocessors */
-
-	//<MRC|MCR>{<cond>} cp, opcode1, Rd, Cn, Cm {, opcode2}
-	//MRC MCR coprocessor register transfer—move data to/from coprocessor registers
-
-	//CP15 register-0 contains the processor identification number
-	//transferring the contents of CP15 register c0 to register r10
-        mcr     p15, 0, r0, c15, c1, 0
-        nop
-        nop
-        nop
-	
-        ldr     r0, =0x00000078         /* Disable MMU, caches, write buffer */
-        mcr     p15, 0, r0, c1, c0, 0
-
-        nop
-        nop
-        nop
-
-        ldr     r0, =0x00000000
-        mcr     p15, 0, r0, c8, c7, 0 		/* Flush TLB's */
-        mcr     p15, 0, r0, c7, c7, 0 		/* Flush Caches */
-        mcr     p15, 0, r0, c7, c10, 4 		/* Flush Write Buffer */
-        nop
-        nop
-        nop
-
-        mvn    r0, #0                   /* grant manager access to all domains */
-        mcr    p15,0,r0,c3,c0,0
-
-
-        /*
-         * Initializing PXA250 interrupt controller.
-         */
-
-mask_off_int_reg:	/* Mask off all IRQs and FIQs */
-        ldr r1, =(INT_BASE | INT_ICMR)
-        ldr r2, =0x0	/* interrupt gets mask off */
-        str r2, [r1]
-
-init_clock_reg:		/* PXA250 Clock Register initialization */
-        ldr r1, =CLK_BASE	/* base of clock registers */
-        ldr r2, =0x00000241     /* memory clock: 100MHz,
-				   nomal core clock: 200MHz,
-				   turbo mode: 400MHz */
-        str r2, [r1, #CLK_CCCR]
-
-set_core_clock:		/* PXA250 Core Clock is set to Turbo Mode */
-        ldr r0,=0
-        mrc p14,0,r0,c6,c0,0
-        ldr r0,=3
-        mcr p14,0,r0,c6,c0,0
-
-set_os_timer:		/* OS Timer initialization */
-        ldr r1, =TMR_BASE	/* reset the OS Timer Count to zero */
-        mov r2, #0
-        str r2, [r1, #TMR_OSCR]
-        ldr r4, =0x300	/* really 0x2E1 (0.27uS * 0x2E1 = 198uS) is about 200usec,   */
-			/* so 0x300 should be plenty :	Wait OS Timer stabilize */
-1:
-        ldr r2, [r1, #TMR_OSCR]
-        cmp r4, r2
-        bgt 1b
+	b mask_off_int_reg
+				
+//Disable all IRQs and FIQs
+mask_off_int_reg:
+        ldr     r1, =INT_BASE
+        ldr     r2, =0x00000000
+	//Interrupt Controller Mask Register
+        str     r2, [r1, #INT_ICMR]
+	////Interrupt Controller Level Register (determined IRQ or	
+        str     r2, [r1, #INT_ICMR]
 
 init_gpio:
         // FFUART
         ldr r12, =FFUART_BASE
 
         ldr r0, =0x00000000
+	//Line Control Register
         str r0, [r12, #FFLCR]
+
         ldr r0, =0x00000000
+	//Interrupt Enable Register
         str r0, [r12, #FFIER]
         ldr r0, =0x00000080
+
+	//Line Control Register
         str r0, [r12, #FFLCR]
         ldr r0, =0x00000018
+
+	//Divisor Latch Low Register
         str r0, [r12, #FFDLL]
         ldr r0, =0x00000000
+
+	//Divisor Latch High Register
         str r0, [r12, #FFDLH]
         ldr r0, =0x00000000
+
+	//Line Control Register
         str r0, [r12, #FFLCR]
-        ldr r0, =0x00000003
+        ldr r0, =0x00000003		//8-bit character
         str r0, [r12, #FFLCR]
-        ldr r0, =0x00000001
-        str r0, [r12, #FFFCR]
-        ldr r0, =0x00000007
+        ldr r0, =0x00000001		//6-bit character
+
+        str r0, [r12, #FFFCR]		
+        ldr r0, =0x00000007		//Transmit and Receive FIFO Enable
+					//Reset Receiver FIFO
+					//Reset transmitter FIFO
         str r0, [r12, #FFFCR]
         ldr r0, =0x00000000
+
+	//Interrupt Enable Register
         str r0, [r12, #FFIER]
         ldr r0, =0x00000000
-        str r0, [r12, #FFMCR]
 
+	//Modem Control Register
+        str r0, [r12, #FFMCR]
+	//Infrared Selection Register
         ldr r0, =FFISR_VALUE
         str r0, [r12, #FFISR]
 
@@ -198,8 +120,8 @@ init_gpio:
         str r0, [r12, #FFIER]
 
         // clear the rx fifo errors
-        ldr r0, =FFFCR_VALUE
-        and r0, r0, #0x00000002
+        ldr r0, =FFFCR_VALUE		
+        and r0, r0, #0x00000002		//Reset Receiver FIFO
         str r0, [r12, #FFFCR]
 
         // First set the output values to a safe/disabled state before we change
@@ -268,7 +190,35 @@ init_gpio:
         ldr r0, =(PSSR_RDH | PSSR_PH)
         str r0, [r12]
 
-init_mem_ctrl:		/* PXA250 Memory Controller initialization */
+
+//PXA250 Clock Register initialization
+init_clock_reg:		
+        ldr r1, =CLK_BASE	/* base of clock registers */
+        ldr r2, =0x00000241     /* memory clock: 100MHz,
+				   nomal core clock: 200MHz,
+				   turbo mode: 400MHz */
+        str r2, [r1, #CLK_CCCR]
+
+/* PXA250 Core Clock is set to Turbo Mode */
+set_core_clock:
+        ldr r0,=0
+        mrc p14, 0, r0, c6, c0, 0
+        ldr r0,=3
+        mcr p14,0, r0, c6, c0, 0
+
+set_os_timer:		/* OS Timer initialization */
+        ldr r1, =TMR_BASE	/* reset the OS Timer Count to zero */
+        mov r2, #0
+        str r2, [r1, #TMR_OSCR]
+        ldr r4, =0x300	/* really 0x2E1 (0.27uS * 0x2E1 = 198uS) is about 200usec,   */
+			/* so 0x300 should be plenty :	Wait OS Timer stabilize */
+1:
+        ldr r2, [r1, #TMR_OSCR]
+        cmp r4, r2
+        bgt 1b
+
+/* PXA250 Memory Controller initialization */
+init_mem_ctrl:
         ldr r1, =MSC_BASE	/* base of memory controller */
 
         /* static memory controller initialization */
@@ -380,6 +330,7 @@ init_mem_ctrl:		/* PXA250 Memory Controller initialization */
         /* sdram initialize done */
 
 set_stack_pointer:
+
         /* FIQ mode */
         mrs r0, cpsr		/* move CPSR to r0 */
         bic r0, r0, #0x1f	/* clear all mode bits */

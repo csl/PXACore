@@ -5,7 +5,7 @@
 //    Module Funciton           : 
 //                                This module countains the implementation code of
 //                                I/O Manager.
-//    Last modified Author      :
+//    Last modified Author      : csl
 //    Last modified Date        :
 //    Last modified Content     :
 //                                1.
@@ -84,10 +84,7 @@ static DWORD OnCancel(struct __COMMON_OBJECT* lpThis)
 	return 1L;
 }
 
-//
 //The Initialize routine and UnInitialize routine of DRCB.
-//
-
 BOOL DrcbInitialize(struct __COMMON_OBJECT*  lpThis)
 {
 	struct __EVENT*          lpSynObject     = NULL;
