@@ -45,6 +45,7 @@
 #define TMR_OSSR	0x14	/* OS timer status register */
 #define TMR_OWER	0x18	/* OS timer watchdog enable register */
 #define TMR_OIER	0x1C	/* OS timer interrupt enable register */
+#define TMR_OSNR	0x20	/* OS Timer Snapshot register */
 
 
 /* --------------------------------------- */
