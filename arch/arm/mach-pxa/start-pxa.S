@@ -82,6 +82,33 @@ mask_off_int_reg:	/* Mask off all IRQs and FIQs */
 //PXA Clock Register initialization
 init_clock:		
         ldr r1, =CLK_BASE	/* base of clock registers */
+
+	/*
+		Turbo-mode frequency (T) = 13-MHz processor-oscillator frequency * L * N
+
+		Run-mode frequency (R) = 13-MHz processor-oscillator frequency * L
+
+		System-bus frequency = 13-MHz processor-oscillator frequency * L / B,
+			where B = 1 (when in fast-bus mode) or B = 2 (when not in fast-bus mode)
+		
+	For CCCR[A] = 0 (see Table 3-7):
+		Memory-controller frequency = 13-MHz processor-oscillator frequency * L / M,
+		where M = 1 (L = 2-10), M = 2 (L = 11-20), or M = 4 (L = 21-31)
+
+		LCD frequency = 13-MHz processor-oscillator frequency * L / K,
+		where K = 1 (L = 2-7), K = 2 (L = 8-16), or K = 4 (L = 17-31)
+
+	For CLKCFG[B] = 0 and CCCR[A] = 1 (see Table 3-7):
+		Memory-controller frequency = 13-MHz processor-oscillator frequency * L / 2
+		LCD frequency = 13-MHz processor-oscillator frequency * L / K,
+		where K = 1 (L = 2-7), K = 2 (L = 8-16), or K = 4 (L = 17-31)
+
+	For CLKCFG[B] = 1 and CCCR[A] = 1 (see Table 3-7):
+		Memory-controller frequency = 13-MHz processor-oscillator frequency * L
+		LCD frequency = 13-MHz processor-oscillator frequency * L / K,	
+		where K = 1 (L = 2-7), K = 2 (L = 8-16), or K = 4 (L = 17-31)
+	*/
+
         ldr r2, =0x00000241     /* memory clock: 100MHz,
 				   nomal core clock: 200MHz,
 				   turbo mode: 400MHz */
@@ -113,43 +140,47 @@ init_gpio:
 
         ldr r0, =0x00000000
         str r0, [r12, #FFLCR]
+
         ldr r0, =0x00000000
         str r0, [r12, #FFIER]
-        ldr r0, =0x00000080
 
+        ldr r0, =0x00000080	//Even Parity Select
         str r0, [r12, #FFLCR]
-        ldr r0, =0x00000018
 
+	//Divisor Latch Registers, Low and High
+        ldr r0, =0x00000018	//00011000: R/W DLL Low-byte compare value to generate baud rate
+				//BaudRate = 14.7456 MHz/(16xDivisor) = 0.384 MHz
         str r0, [r12, #FFDLL]
+
         ldr r0, =0x00000000
         str r0, [r12, #FFDLH]
+
         ldr r0, =0x00000000
-
         str r0, [r12, #FFLCR]
-        ldr r0, =0x00000003
+        ldr r0, =0x00000003	//8-bit character
         str r0, [r12, #FFLCR]
-        ldr r0, =0x00000001
 
+        ldr r0, =0x00000001	//Transmit and Receive FIFO Enable
         str r0, [r12, #FFFCR]
-        ldr r0, =0x00000007
+
+        ldr r0, =0x00000007	//Reset Receive FIFO && Reset Transmit FIFO && Transmit and Receive FIFO Enable
         str r0, [r12, #FFFCR]
+
         ldr r0, =0x00000000
-
         str r0, [r12, #FFIER]
+
         ldr r0, =0x00000000
-
         str r0, [r12, #FFMCR]
-
         ldr r0, =FFISR_VALUE
         str r0, [r12, #FFISR]
 
         ldr r12, =FFUART_BASE
-        ldr r0, =0x00000040
+        ldr r0, =0x00000040	//UART Unit Enable
         str r0, [r12, #FFIER]
 
-        // clear the rx fifo errors
-        ldr r0, =FFFCR_VALUE
-        and r0, r0, #0x00000002
+        //Reset Receive FIFO
+        ldr r0, =FFFCR_VALUE	
+        and r0, r0, #0x00000002	
         str r0, [r12, #FFFCR]
 
         // First set the output values to a safe/disabled state before we change
