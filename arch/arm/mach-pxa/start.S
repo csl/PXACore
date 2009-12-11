@@ -98,7 +98,6 @@ reset_handler:
 	bl jump_to_main
 					
 set_misc:	
-       
         ldr r0, =0x2001			/* Allows access to all coprocessors */
 
 	//<MRC|MCR>{<cond>} cp, opcode1, Rd, Cn, Cm {, opcode2}

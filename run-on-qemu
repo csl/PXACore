@@ -4,18 +4,17 @@ FLASH_IMAGE_NAME=flash-image
 
 rm -f $FLASH_IMAGE_NAME
 if [ -e x-boot255 ]; then
-    dd of=$FLASH_IMAGE_NAME bs=1k count=16k if=/dev/zero
+#     dd of=FLASH_IMAGE_NAME bs=128k count=256 if=/dev/zero
+#     dd of=FLASH_IMAGE_NAME bs=128k conv=notrunc if=u-boot-verdex-400-r1578.bin
+
+    dd of=$FLASH_IMAGE_NAME bs=1k count=32k if=/dev/zero
     dd of=$FLASH_IMAGE_NAME bs=1k conv=notrunc if=x-boot255
     dd of=$FLASH_IMAGE_NAME bs=1k conv=notrunc seek=29 if=pxacore_image.bin
     qemu-system-arm \
-        -M connex \
+        -M verdex \
         -pflash flash-image \
         -serial stdio
 else
     echo "Please invoke 'make' to get one."
     exit 1
 fi
-
-
-
-
