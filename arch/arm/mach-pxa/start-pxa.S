@@ -109,7 +109,7 @@ init_clock:
 		where K = 1 (L = 2-7), K = 2 (L = 8-16), or K = 4 (L = 17-31)
 	*/
 
-        ldr r2, =0x00000241     /* memory clock: 100MHz,
+        ldr r2, =0x00000207     /* memory clock: 100MHz,
 				   nomal core clock: 200MHz,
 				   turbo mode: 400MHz */
         str r2, [r1, #CLK_CCCR]
