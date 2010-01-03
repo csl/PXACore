@@ -78,7 +78,7 @@
 #define GPIO_GPDR0	0x0C	/* GPIO<31: 0>	direction register */
 #define GPIO_GPDR1	0x10	/* GPIO<63:32>	direction register */
 #define GPIO_GPDR2	0x14	/* GPIO<95:64>	direction register */
-#define GPIO_GPDR2	0x10C	/* GPIO<120:96>	direction register */
+#define GPIO_GPDR3	0x10C	/* GPIO<120:96>	direction register */
 
 #define GPIO_GPSR0	0x18	/* GPIO<31: 0>	output set register */
 #define GPIO_GPSR1	0x1C	/* GPIO<63:32>	output set register */
@@ -147,4 +147,162 @@
 #define MSC_MDMRS	0x40	/* MRS value to be written to SDRAM */
 #define MSC_BOOTDEF	0x44	/* Read-Only Boot-time register.
 				   Contains BOOT_SEL and PKG_SEL values. */
+
+#define BIT0		0x00000001
+#define BIT1		0x00000002
+#define BIT2		0x00000004
+#define BIT3		0x00000008
+#define BIT4		0x00000010
+#define BIT5		0x00000020
+#define BIT6		0x00000040
+#define BIT7		0x00000080
+#define BIT8		0x00000100
+#define BIT9		0x00000200
+#define BIT10		0x00000400
+#define BIT11		0x00000800
+#define BIT12		0x00001000
+#define BIT13		0x00002000
+#define BIT14		0x00004000
+#define BIT15		0x00008000
+#define BIT16		0x00010000
+#define BIT17		0x00020000
+#define BIT18		0x00040000
+#define BIT19		0x00080000
+#define BIT20		0x00100000
+#define BIT21		0x00200000
+#define BIT22		0x00400000
+#define BIT23		0x00800000
+#define BIT24		0x01000000
+#define BIT25		0x02000000
+#define BIT26		0x04000000
+#define BIT27		0x08000000
+#define BIT28		0x10000000
+#define BIT29		0x20000000
+#define BIT30		0x40000000
+#define BIT31		0x80000000
+
+#define GPIO_0		BIT0
+#define GPIO_1		BIT1
+#define GPIO_2		BIT2
+#define GPIO_3		BIT3
+#define GPIO_4		BIT4
+#define GPIO_5		BIT5
+#define GPIO_6		BIT6
+#define GPIO_7		BIT7
+#define GPIO_8		BIT8
+#define GPIO_9		BIT9
+#define GPIO_10		BIT10
+#define GPIO_11		BIT11
+#define GPIO_12		BIT12
+#define GPIO_13		BIT13
+#define GPIO_14		BIT14
+#define GPIO_15		BIT15
+#define GPIO_16		BIT16
+#define GPIO_17		BIT17
+#define GPIO_18		BIT18
+#define GPIO_19		BIT19
+#define GPIO_20		BIT20
+#define GPIO_21		BIT21
+#define GPIO_22		BIT22
+#define GPIO_23		BIT23
+#define GPIO_24		BIT24
+#define GPIO_25		BIT25
+#define GPIO_26		BIT26
+#define GPIO_27		BIT27
+#define GPIO_28		BIT28
+#define GPIO_29		BIT29
+#define GPIO_30		BIT30
+#define GPIO_31		BIT31
+/* GPLR1, GPDR1, GPSR1, GPCR1, GPRE1, GPFE1, GPED1 */
+#define GPIO_32		BIT0
+#define GPIO_33		BIT1
+#define GPIO_34		BIT2
+#define GPIO_35		BIT3
+#define GPIO_36		BIT4
+#define GPIO_37		BIT5
+#define GPIO_38		BIT6
+#define GPIO_39		BIT7
+#define GPIO_40		BIT8
+#define GPIO_41		BIT9
+#define GPIO_42		BIT10
+#define GPIO_43		BIT11
+#define GPIO_44		BIT12
+#define GPIO_45		BIT13
+#define GPIO_46		BIT14
+#define GPIO_47		BIT15
+#define GPIO_48		BIT16
+#define GPIO_49		BIT17
+#define GPIO_50		BIT18
+#define GPIO_51		BIT19
+#define GPIO_52		BIT20
+#define GPIO_53		BIT21
+#define GPIO_54		BIT22
+#define GPIO_55		BIT23
+#define GPIO_56		BIT24
+#define GPIO_57		BIT25
+#define GPIO_58		BIT26
+#define GPIO_59		BIT27
+#define GPIO_60		BIT28
+#define GPIO_61		BIT29
+#define GPIO_62		BIT30
+#define GPIO_63		BIT31
+/* GPLR2, GPDR2, GPSR2, GPCR2, GPRE2, GPFE2, GPED2 */
+#define GPIO_64		BIT0
+#define GPIO_65		BIT1
+#define GPIO_66		BIT2
+#define GPIO_67		BIT3
+#define GPIO_68		BIT4
+#define GPIO_69		BIT5
+#define GPIO_70		BIT6
+#define GPIO_71		BIT7
+#define GPIO_72		BIT8
+#define GPIO_73		BIT9
+#define GPIO_74		BIT10
+#define GPIO_75		BIT11
+#define GPIO_76		BIT12
+#define GPIO_77		BIT13
+#define GPIO_78		BIT14
+#define GPIO_79		BIT15
+#define GPIO_80		BIT16
+#define GPIO_81		BIT17
+#define GPIO_82		BIT18
+#define GPIO_83		BIT19
+#define GPIO_84		BIT20
+#define GPIO_85		BIT21
+#define GPIO_86		BIT22
+#define GPIO_87		BIT23
+#define GPIO_88		BIT24
+#define GPIO_89		BIT25
+#define GPIO_90		BIT26
+#define GPIO_91		BIT27
+#define GPIO_92		BIT28
+#define GPIO_93		BIT29
+#define GPIO_94		BIT30
+#define GPIO_95		BIT31
+/* GPLR3, GPDR3, GPSR3, GPCR3, GPRE3, GPFE3, GPED3 */
+#define GPIO_96		BIT0
+#define GPIO_97		BIT1
+#define GPIO_98		BIT2
+#define GPIO_99		BIT3
+#define GPIO_100	BIT4
+#define GPIO_101	BIT5
+#define GPIO_102	BIT6
+#define GPIO_103	BIT7
+#define GPIO_104	BIT8
+#define GPIO_105	BIT9
+#define GPIO_106	BIT10
+#define GPIO_107	BIT11
+#define GPIO_108	BIT12
+#define GPIO_109	BIT13
+#define GPIO_110	BIT14
+#define GPIO_111	BIT15
+#define GPIO_112	BIT16
+#define GPIO_113	BIT17
+#define GPIO_114	BIT18
+#define GPIO_115	BIT19
+#define GPIO_116	BIT20
+#define GPIO_117	BIT21
+#define GPIO_118	BIT22
+#define GPIO_119	BIT23
+#define GPIO_120	BIT24
 

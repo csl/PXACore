@@ -30,7 +30,7 @@ OBJCOPYFLAGS = \
 SHELL_SRC = ./kernel/kernel.c
 
 HW_DEP_ASM_SRC = \
-	./arch/arm/mach-pxa/start.S \
+	./arch/arm/mach-pxa/start-pxa.S \
 
 HW_DEP_C_SRC = \
 	./arch/arm/mach-pxa/arch_pxa.c \

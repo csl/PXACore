@@ -163,7 +163,8 @@ init_gpio:
         ldr r0, =0x00000001	//Transmit and Receive FIFO Enable
         str r0, [r12, #FFFCR]
 
-        ldr r0, =0x00000007	//Reset Receive FIFO && Reset Transmit FIFO && Transmit and Receive FIFO Enable
+	//Reset Receive FIFO && Reset Transmit FIFO && Transmit and Receive FIFO Enable
+        ldr r0, =0x00000007	
         str r0, [r12, #FFFCR]
 
         ldr r0, =0x00000000
@@ -183,17 +184,15 @@ init_gpio:
         and r0, r0, #0x00000002	
         str r0, [r12, #FFFCR]
 
-        // First set the output values to a safe/disabled state before we change
-        // any GPIO's outputs
-        // start by settings all of them high which is the safest for most signals
-
+	//
         ldr r12, =GPIO_BASE
 
         ldr r0, =0xffffffff
         str r0, [r12, #GPIO_GPSR0]
         str r0, [r12, #GPIO_GPSR1]
         str r0, [r12, #GPIO_GPSR2]
-/*
+        str r0, [r12, #GPIO_GPSR3]
+
         // GPCR0
         // Now clear any high true outputs that need to start low
         ldr r0, =(GPIO_7 | GPIO_13 | GPIO_17 | GPIO_27)	// USB speed = high
@@ -202,7 +201,7 @@ init_gpio:
 							// Passive LCD enable = off
 
         str r0, [r12, #GPIO_GPCR0]
-*/
+
         // Next, set the correct direction for out functions. A one meas output.
         ldr r0, =(GPIO_3 | GPIO_4 | GPIO_6  | GPIO_7 | GPIO_11 | GPIO_13 | GPIO_15 | GPIO_17 | GPIO_23 | GPIO_24 | GPIO_25 | GPIO_27 | GPIO_30 | GPIO_31)
 
